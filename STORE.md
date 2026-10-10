@@ -25,7 +25,7 @@ Word to LaTeX (Offline) brings the full power of Pandoc into your browser using 
 KEY FEATURES:
 • Three Conversion Modes:
   1. Upload File: Select any .docx file for instantaneous local compilation.
-  2. Paste Content: Paste rich text, formatted tables, or outlines copied from Microsoft Word, Google Docs, or web pages into the interactive editor. Structure, headers, bold, italics, and tabular columns are accurately preserved.
+  2. Paste Content: Paste rich text, formatted tables, or outlines copied from Microsoft Word, Google Docs, or web pages into the interactive editor. Structure, headers, bold, italics, and tabular columns are preserved.
   3. Image to LaTeX (Experimental): Built-in offline OCR for simple typed equations, French accents, and basic formulas.
 • Paste-Ready Fragments: Produces clean LaTeX snippets without unwanted \documentclass or \begin{document} wrappers, ready to drop straight into your existing Overleaf or TeXstudio projects.
 • Automated Cleanup Pipeline: Automatically removes Pandoc's bare \tightlist artifacts, unwraps nested \pandocbounded{} commands, normalizes whitespace, and prepends a list of required LaTeX packages (\usepackage{booktabs}, \usepackage{longtable}, etc.) in comments.
@@ -36,7 +36,7 @@ IMAGE OCR SCOPE & LIMITATIONS:
 • Supported: Simple typed equations, French accented text, Unicode superscripts/subscripts, simple inline fractions, and narrow stacked definite integrals.
 • Limited or Unsupported: Image radicals (OCR reads √ as V), matrix reconstruction from images, summation vertical limits, systems of equations without an explicit brace, handwriting, and rotated/stylized math. Unreadable glyphs are preserved as "?" with diagnostic review warnings.
 • Word Document Layout: Preserves paragraph alignment (center, flushright), explicit and approximate page breaks following Word's saved layout, and floating text boxes in document flow with proportional widths. Does not replicate exact 2D coordinates, graphical stamps, or Word line spacing.
-• Review Notice: Image OCR output is experimental and must be reviewed and edited before use. Tested against an 80-sample golden corpus (median CER 19.2%, document compile rate 97.5%).
+• Review Notice: Image OCR output is experimental and must be reviewed and edited before use. Tested against an 80-sample synthetic golden corpus (median CER 19.2%, document compile rate 97.5%).
 ```
 
 ---
