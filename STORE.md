@@ -23,15 +23,19 @@ Convert Microsoft Word (.docx) documents, formatted text, and complex tables dir
 Word to LaTeX (Offline) brings the full power of Pandoc into your browser using WebAssembly. There are no server calls, no external APIs, and no accounts required. Your research papers, coursework, and confidential manuscripts never leave your computer.
 
 KEY FEATURES:
-• Dual Conversion Modes:
+• Three Conversion Modes:
   1. Upload File: Select any .docx file for instantaneous local compilation.
   2. Paste Content: Paste rich text, formatted tables, or outlines copied from Microsoft Word, Google Docs, or web pages into the interactive editor. Structure, headers, bold, italics, and tabular columns are accurately preserved.
+  3. Image to LaTeX (Experimental): Built-in offline OCR for simple typed equations, French accents, and basic formulas.
 • Paste-Ready Fragments: Produces clean LaTeX snippets without unwanted \documentclass or \begin{document} wrappers, ready to drop straight into your existing Overleaf or TeXstudio projects.
 • Automated Cleanup Pipeline: Automatically removes Pandoc's bare \tightlist artifacts, unwraps nested \pandocbounded{} commands, normalizes whitespace, and prepends a list of required LaTeX packages (\usepackage{booktabs}, \usepackage{longtable}, etc.) in comments.
 • Instant Clipboard Sync: Converted LaTeX is immediately copied to your clipboard with a confirmation notice.
-• 100% Offline & Private: Bundles all WebAssembly binaries and translation shims inside the extension. Works seamlessly without an internet connection.
+• 100% Offline & Private: Zero external network requests (permissions: []). Bundles all WebAssembly binaries and translation shims inside the extension.
 
-Whether drafting mathematical papers, preparing thesis chapters, or converting tabular research data into booktabs syntax, Word to LaTeX (Offline) streamlines your typesetting workflow in Microsoft Edge.
+IMAGE OCR SCOPE & LIMITATIONS:
+• Supported: Simple typed equations, French accented text, Unicode superscripts/subscripts, simple inline fractions, and narrow stacked definite integrals.
+• Limited or Unsupported: Image radicals (OCR reads √ as V), matrix reconstruction from images, summation vertical limits, systems of equations without an explicit brace, handwriting, and rotated/stylized math. Unreadable glyphs are preserved as "?" with diagnostic review warnings.
+• Review Notice: Image OCR output is experimental and must be reviewed and edited before use. Tested against a 52-sample synthetic golden corpus.
 ```
 
 ---
@@ -41,7 +45,7 @@ Whether drafting mathematical papers, preparing thesis chapters, or converting t
 - **Suggested Category**: `Productivity`
   - *Rationale*: Word to LaTeX (Offline) is primarily used by researchers, students, engineers, and academics to accelerate document drafting and eliminate manual reformatting between office suites and LaTeX editors. (Alternative: *Developer Tools*).
 - **Search Terms / Keywords** *(Up to 21 words total, feature-based, non-deceptive)*:
-  `latex docx word converter pandoc offline table academic overleaf tex typesetting markdown equation bibtex manuscript paper document format`
+  `latex docx word converter pandoc offline table academic overleaf tex typesetting markdown equation ocr manuscript paper document format`
   *(Count: 17 keywords)*
 
 ---
@@ -49,7 +53,7 @@ Whether drafting mathematical papers, preparing thesis chapters, or converting t
 ### 4. Support, URLs & Declarations
 
 - **Single Purpose Statement**:
-  `Converts Microsoft Word documents and pasted rich text or tables into clean, paste-ready LaTeX fragments locally in the browser.`
+  `Converts Microsoft Word documents, pasted rich text/tables, and typed math images into clean, paste-ready LaTeX fragments locally in the browser.`
 - **Website URL**:
   `https://your-domain-or-github-io.com/landing-page.html`
 - **Privacy Policy URL**:
@@ -64,7 +68,7 @@ Whether drafting mathematical papers, preparing thesis chapters, or converting t
 Please provide the following text in the Partner Center **"Notes for certification"** field:
 
 ```
-No login, subscription, or test credentials are required to verify this extension. All functionality runs client-side offline using a bundled WebAssembly engine (pandoc-wasm) and requires no external network connections.
+No login, subscription, or test credentials are required to verify this extension. All functionality runs client-side offline using bundled WebAssembly engines (pandoc-wasm and offline Tesseract OCR with bundled traineddata) and requires no external network connections (permissions: []).
 
 STEPS TO TEST:
 1. Open the extension popup from the Microsoft Edge toolbar.
@@ -77,6 +81,9 @@ STEPS TO TEST:
    - Copy a formatted table or formatted text with bold/italic styling from a web page or Word, and paste it into the editor box.
    - Click "Convert Pasted Content".
    - Verify that the converted LaTeX fragment renders in the textarea and copies to the clipboard.
+4. Test Image to LaTeX Mode:
+   - Switch to "Image to LaTeX" tab, upload a math equation PNG, and click "Convert Image to LaTeX".
+   - Verify that recognized LaTeX displays with diagnostic review comments and editability.
 ```
 
 ---
@@ -91,5 +98,6 @@ STEPS TO TEST:
 | **Screenshot 1 (Upload)**| 1280x800 PNG | `assets/screenshots/1-upload-file-selected.png` | ✅ Captured live |
 | **Screenshot 2 (Output)**| 1280x800 PNG | `assets/screenshots/2-conversion-output-copied.png` | ✅ Captured live |
 | **Screenshot 3 (Paste)** | 1280x800 PNG | `assets/screenshots/3-paste-table-converted.png` | ✅ Captured live |
+| **Screenshot 4 (Image)** | 1280x800 PNG | `assets/screenshots/4-image-ocr-converted.png` | ✅ Captured live |
 
 *Note: Microsoft Partner Center may occasionally adjust exact pixel dimension requirements for featured promotional tiles. Please verify current dimensions on the live dashboard before uploading.*

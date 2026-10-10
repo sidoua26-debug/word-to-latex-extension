@@ -11,12 +11,22 @@
  * 7. Golden Corpus manifest schema and fixture file integrity
  */
 
-import { describe, it } from 'node:test';
+import { describe, it, after } from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const ROOT = path.resolve(__dirname, '..');
+const CORPUS_DIR = path.join(ROOT, 'corpus');
+const MANIFEST_PATH = path.join(CORPUS_DIR, 'manifest.json');
+const TEST_TMP_DIR = path.join(os.tmpdir(), `eval_test_${Date.now()}`);
+if (!fs.existsSync(TEST_TMP_DIR)) {
+  fs.mkdirSync(TEST_TMP_DIR, { recursive: true });
+}
 
 import {
   normalizeForCer,
@@ -34,11 +44,6 @@ import {
   detectStructurePresence,
   detectEmittedStructures,
 } from '../scripts/eval.mjs';
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const ROOT = path.resolve(__dirname, '..');
-const CORPUS_DIR = path.join(ROOT, 'corpus');
-const MANIFEST_PATH = path.join(CORPUS_DIR, 'manifest.json');
 
 describe('Corpus Evaluation Helpers', () => {
   describe('CER & Normalization', () => {
@@ -215,6 +220,7 @@ describe('Corpus Evaluation Helpers', () => {
         'scripts/eval.mjs',
         '--skip-compile',
         '--ids', 'seed_french_sample',
+        '--output-dir', TEST_TMP_DIR,
         '--compare', tmpBaseline,
       ], { cwd: ROOT, encoding: 'utf8' });
 
@@ -240,6 +246,7 @@ describe('Corpus Evaluation Helpers', () => {
         'scripts/eval.mjs',
         '--skip-compile',
         '--ids', 'seed_french_sample',
+        '--output-dir', TEST_TMP_DIR,
         '--compare', tmpBaseline,
       ], { cwd: ROOT, encoding: 'utf8' });
 
@@ -255,16 +262,18 @@ describe('Corpus Evaluation Helpers', () => {
         'scripts/eval.mjs',
         '--skip-compile',
         '--ids', 'seed_french_sample',
+        '--output-dir', TEST_TMP_DIR,
       ], { cwd: ROOT, encoding: 'utf8' });
       assert.equal(evalRes.status, 0);
 
-      const report = JSON.parse(fs.readFileSync(path.join(ROOT, 'eval-report.json'), 'utf8'));
+      const report = JSON.parse(fs.readFileSync(path.join(TEST_TMP_DIR, 'eval-report.json'), 'utf8'));
       fs.writeFileSync(tmpBaseline, JSON.stringify(report), 'utf8');
 
       const compareRes = spawnSync('node', [
         'scripts/eval.mjs',
         '--skip-compile',
         '--ids', 'seed_french_sample',
+        '--output-dir', TEST_TMP_DIR,
         '--compare', tmpBaseline,
       ], { cwd: ROOT, encoding: 'utf8' });
 
@@ -300,5 +309,11 @@ describe('Corpus Evaluation Helpers', () => {
         assert.ok(['supported', 'known_limitation'].includes(gt.status), `status must be supported or known_limitation: ${sample.id}`);
       }
     });
+  });
+
+  after(() => {
+    try {
+      fs.rmSync(TEST_TMP_DIR, { recursive: true, force: true });
+    } catch {}
   });
 });

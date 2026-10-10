@@ -4,17 +4,39 @@ A browser extension (Manifest V3) that converts `.docx` (Microsoft Word) files a
 
 ## Features
 
-- **100% Offline & Private**: All processing happens in-browser via WebAssembly. Your documents and clipboard contents never leave your machine.
-- **Two Conversion Modes**:
+- **100% Offline & Private**: Zero external network requests (permissions: `[]`). All processing happens client-side via WebAssembly (`pandoc-wasm` and Tesseract.js with bundled traineddata). Your files, pasted content, and images never leave your machine.
+- **Three Conversion Modes**:
   - **Upload File**: Select and convert local `.docx` files.
   - **Paste Content**: Paste formatted content, tables, or text from Word, Google Docs, or web pages into a `contenteditable` container. Preserves formatting (bold, italic, tables, lists, headers) via `text/html` clipboard data, with graceful fallback to markdown/plain text.
-- **Paste-Ready Output**: Produces a LaTeX fragment (no `\documentclass` / `\begin{document}` wrapper) ready to paste directly into an existing document body.
+  - **Image to LaTeX (Experimental)**: Convert screenshots and typed math equation images into LaTeX offline.
+- **Paste-Ready Output**: Produces a LaTeX fragment (no `\documentclass` / `\begin{document}` wrapper) ready to paste directly into an existing document body. Complete Document mode is also available with full preambles.
 - **Auto-Cleanup Pipeline**:
   - Removes bare `\tightlist` lines.
   - Recursively unwraps `\pandocbounded{...}` commands while tracking brace depth.
   - Collapses 3+ consecutive blank lines down to 2 and trims trailing whitespace.
   - Detects required packages (`booktabs`, `longtable`, `graphicx`, `hyperref`) and prepends a `% Required packages` comment block.
-- **Instant Copy**: Automatically copies the converted LaTeX to clipboard with visual confirmation and source indication (e.g. `Converted from: pasted HTML`).
+- **Instant Copy**: Automatically copies the converted LaTeX to clipboard with visual confirmation and source indication.
+
+## Image to LaTeX: Supported Scope & Limitations
+
+The Image to LaTeX feature is designed for basic conversion assistance and is **experimental**. Users must review and edit output before use.
+
+- **Supported**:
+  - Clean, high-contrast, typed single-line equations.
+  - Greek letters and standard mathematical operators.
+  - French language text and accented characters (`é`, `è`, `à`, `ç`, `œ`, `ù`).
+  - Unicode superscripts, subscripts, and simple inline fractions (e.g. `1/2`).
+  - Line-by-line classification heuristics separating natural prose paragraphs from display math equations.
+  - Definite integrals in a narrow stacked 3-line layout (bracket/integral operator, limit lines, and integrand ending in a standalone differential `dx`).
+- **Limited or Unsupported**:
+  - **Radicals / Square roots**: OCR frequently transcribes square root symbols `√` as the letter `V`.
+  - **Matrices & Grids**: Grid reconstruction from images without clear brackets is unreliable.
+  - **Summations**: Vertical limits above and below `\sum` are frequently transcribed inline.
+  - **Systems of Equations**: Only parsed into a `cases` environment if an explicit left brace `{` or piecewise condition keywords are detected.
+  - **Handwriting & Stylized Math**: Handwritten notes, blackboard/whiteboard photos, and rotated or blurry images are not supported.
+  - **Unrecognized Glyphs**: Preserved as `?` with a `% [Warning]` header rather than guessed.
+- **Golden Evaluation Corpus**:
+  - Benchmarked against a 52-sample synthetic and curated test corpus (including dev, holdout, and stress sets). High accuracy is achieved on clean typed inputs, but degraded scans require manual correction.
 
 ## Prerequisites
 

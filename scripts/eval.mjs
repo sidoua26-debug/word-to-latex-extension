@@ -983,13 +983,24 @@ async function main() {
     console.log(`\n✓ Variance measured: Mean CER delta = ${(variance.meanCerVariance * 100).toFixed(4)}%, Identical = ${variance.identicalPredictions}`);
   }
 
+  let outputDir = ROOT;
+  const outDirIdx = args.indexOf('--output-dir');
+  if (outDirIdx !== -1 && args[outDirIdx + 1]) {
+    outputDir = path.resolve(args[outDirIdx + 1]);
+  } else if (process.env.EVAL_REPORT_DIR) {
+    outputDir = path.resolve(process.env.EVAL_REPORT_DIR);
+  }
+  if (!fs.existsSync(outputDir)) {
+    fs.mkdirSync(outputDir, { recursive: true });
+  }
+
   // Write eval-report.json
-  const evalReportJsonPath = path.join(ROOT, 'eval-report.json');
+  const evalReportJsonPath = path.join(outputDir, 'eval-report.json');
   fs.writeFileSync(evalReportJsonPath, JSON.stringify(run1, null, 2), 'utf8');
   console.log(`✓ Report written to ${evalReportJsonPath}`);
 
   // Write eval-report.md
-  const evalReportMdPath = path.join(ROOT, 'eval-report.md');
+  const evalReportMdPath = path.join(outputDir, 'eval-report.md');
   const mdContent = generateMarkdownReport(run1, variance);
   fs.writeFileSync(evalReportMdPath, mdContent, 'utf8');
   console.log(`✓ Markdown summary written to ${evalReportMdPath}`);
