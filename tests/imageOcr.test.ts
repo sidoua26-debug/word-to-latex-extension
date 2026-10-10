@@ -28,6 +28,7 @@ import {
   parseCases,
   parseAlignedEquations,
   parseOcrToLatex,
+  reconstructStackedIntegrals,
   isMathExpression,
   classifyWordSymbols,
   applySpatialSuperSubscripts,
@@ -616,16 +617,80 @@ describe('Mathematical Expression & Symbol Parser', () => {
     assert.ok(parsed.latex?.includes('x - 3y = 2'));
     assert.ok(parsed.latex?.includes('\\end{cases}'));
 
-    // In end-to-end math parser, equations are not hijacked by matrix parser
-    const resEq1 = parseOcrToLatex({ text: 'x + y = 1\n2x - y = 3', confidence: 90 });
+    // In end-to-end math parser, equations with leading brace become cases without matrix hijacking
+    const resEq1 = parseOcrToLatex({ text: '{ x + y = 1\n  2x - y = 3', confidence: 90 });
     assert.ok(resEq1.includes('\\begin{cases}'));
     assert.ok(!resEq1.includes('\\begin{pmatrix}'));
     assert.ok(!resEq1.includes('\\begin{bmatrix}'));
 
-    const resEq2 = parseOcrToLatex({ text: 'x + y = 10\n2x - y = 5', confidence: 90 });
+    const resEq2 = parseOcrToLatex({ text: '{ x + y = 10\n  2x - y = 5', confidence: 90 });
     assert.ok(resEq2.includes('\\begin{cases}'));
     assert.ok(!resEq2.includes('\\begin{pmatrix}'));
     assert.ok(!resEq2.includes('\\begin{bmatrix}'));
+  });
+
+  it('preserves stacked independent equations as separate display equations without cases wrapping', () => {
+    // 1. E = mc^2 and f(x) = x^2 + 2x + 1
+    const res1 = parseOcrToLatex({ text: 'E = mc^2\nf(x) = x^2 + 2x + 1', confidence: 90 });
+    assert.ok(!res1.includes('\\begin{cases}'), 'Independent equations must not be wrapped in cases');
+    assert.ok(res1.includes('E = mc^2'));
+    assert.ok(res1.includes('f(x) = x^2 + 2x + 1'));
+
+    // 2. x = 1 and y = 2
+    const res2 = parseOcrToLatex({ text: 'x = 1\ny = 2', confidence: 90 });
+    assert.ok(!res2.includes('\\begin{cases}'));
+    assert.ok(res2.includes('x = 1'));
+    assert.ok(res2.includes('y = 2'));
+
+    // 3. a + b = c and c = d
+    const res3 = parseOcrToLatex({ text: 'a + b = c\nc = d', confidence: 90 });
+    assert.ok(!res3.includes('\\begin{cases}'));
+    assert.ok(res3.includes('a + b = c'));
+    assert.ok(res3.includes('c = d'));
+  });
+
+  it('preserves ascender + x-height letters on same baseline without false subscripting', () => {
+    // Pairs: dx, dy, bx, hy, fx, kx
+    const pairs = ['dx', 'dy', 'bx', 'hy', 'fx', 'kx'];
+    for (const pair of pairs) {
+      const c1 = pair[0];
+      const c2 = pair[1];
+      const word: OcrWord = {
+        text: pair,
+        confidence: 95,
+        bbox: { x0: 10, y0: 10, x1: 30, y1: 25 },
+        symbols: [
+          { text: c1, confidence: 95, bbox: { x0: 10, y0: 10, x1: 20, y1: 25 } }, // ascender (h=15, baseline y1=25)
+          { text: c2, confidence: 95, bbox: { x0: 20, y0: 15, x1: 30, y1: 25 } }, // x-height (h=10, baseline y1=25, same baseline!)
+        ],
+      };
+      const classified = classifyWordSymbols(word);
+      assert.equal(classified, pair, `Expected ${pair} to remain baseline text, got: ${classified}`);
+    }
+
+    // A clearly lowered digit after a variable (a1 lowered) must still be a subscript
+    const loweredWord: OcrWord = {
+      text: 'a1',
+      confidence: 95,
+      bbox: { x0: 10, y0: 10, x1: 30, y1: 28 },
+      symbols: [
+        { text: 'a', confidence: 95, bbox: { x0: 10, y0: 10, x1: 20, y1: 20 } }, // base (y0=10, y1=20, h=10)
+        { text: '1', confidence: 95, bbox: { x0: 20, y0: 15, x1: 28, y1: 24 } }, // lowered (y0=15, y1=24, baseline shift +4 >= 2.5)
+      ],
+    };
+    assert.equal(classifyWordSymbols(loweredWord), 'a_{1}');
+
+    // A clearly raised digit must still be a superscript
+    const raisedWord: OcrWord = {
+      text: 'x2',
+      confidence: 95,
+      bbox: { x0: 10, y0: 5, x1: 30, y1: 20 },
+      symbols: [
+        { text: 'x', confidence: 95, bbox: { x0: 10, y0: 10, x1: 20, y1: 20 } }, // base (y0=10, y1=20, h=10)
+        { text: '2', confidence: 95, bbox: { x0: 20, y0: 5, x1: 28, y1: 13 } },  // raised (y0=5, y1=13, baseline shift -7)
+      ],
+    };
+    assert.equal(classifyWordSymbols(raisedWord), 'x^{2}');
   });
 
   it('parses multi-line aligned equations into align* environment', () => {
@@ -638,6 +703,70 @@ describe('Mathematical Expression & Symbol Parser', () => {
     assert.ok(parsed.latex?.includes('\\begin{align*}'));
     assert.ok(parsed.latex?.includes('&='));
     assert.ok(parsed.latex?.includes('\\end{align*}'));
+  });
+
+  it('preserves stacked equations with for/where/pour/ou as separate display equations', () => {
+    const testCases = [
+      'a = b\nc = d for all c',
+      'x = 5 where y = 3\nz = 1',
+      'x = 1 pour tout x\ny = 2',
+      'x = 0 ou x = 1\ny = 2',
+    ];
+
+    for (const input of testCases) {
+      const lines = input.split('\n');
+      const casesCheck = parseCases(lines);
+      assert.equal(casesCheck.isCases, false, `Expected no cases for: ${input}`);
+
+      const res = parseOcrToLatex({ text: input, confidence: 90 });
+      assert.ok(!res.includes('\\begin{cases}'), `Must not wrap in cases: ${input}`);
+    }
+  });
+
+  it('preserves "x = 1 for n ≥ 1\\ny = 2" as separate display equations', () => {
+    const input = 'x = 1 for n ≥ 1\ny = 2';
+    const lines = input.split('\n');
+    const casesCheck = parseCases(lines);
+    assert.equal(casesCheck.isCases, false);
+
+    const res = parseOcrToLatex({ text: input, confidence: 90 });
+    assert.ok(!res.includes('\\begin{cases}'), 'Must not wrap in cases');
+    assert.ok(res.includes('x = 1'));
+    assert.ok(res.includes('y = 2'));
+  });
+
+  it('parses "f(x) = 1 if x > 0\\nf(x) = 0 otherwise" as cases', () => {
+    const input = 'f(x) = 1 if x > 0\nf(x) = 0 otherwise';
+    const lines = input.split('\n');
+    const casesCheck = parseCases(lines);
+    assert.equal(casesCheck.isCases, true);
+    assert.ok(casesCheck.latex?.includes('\\begin{cases}'));
+
+    const res = parseOcrToLatex({ text: input, confidence: 90 });
+    assert.ok(res.includes('\\begin{cases}'));
+    assert.ok(res.includes('\\end{cases}'));
+  });
+
+  it('parses "{ 2x + y = 5\\n x - 3y = 2" as cases', () => {
+    const input = '{ 2x + y = 5\n x - 3y = 2';
+    const lines = input.split('\n');
+    const casesCheck = parseCases(lines);
+    assert.equal(casesCheck.isCases, true);
+    assert.ok(casesCheck.latex?.includes('\\begin{cases}'));
+
+    const res = parseOcrToLatex({ text: input, confidence: 90 });
+    assert.ok(res.includes('\\begin{cases}'));
+    assert.ok(res.includes('\\end{cases}'));
+  });
+
+  it('rejects "R&D = 5\\nQ&A = 3" from align* environment', () => {
+    const input = 'R&D = 5\nQ&A = 3';
+    const lines = input.split('\n');
+    const alignCheck = parseAlignedEquations(lines);
+    assert.equal(alignCheck.isAlign, false);
+
+    const res = parseOcrToLatex({ text: input, confidence: 90 });
+    assert.ok(!res.includes('\\begin{align*}'), 'Must not wrap in align*');
   });
 
   it('verifies display math delimiters \\[ \\] wrap matrix and cases environments', () => {
@@ -815,13 +944,643 @@ describe('Mathematical Expression & Symbol Parser', () => {
 
     // parseAlignedEquations idempotence
     const alignedInput = [
-      'a + \\alpha = b',
-      'c + \\beta = d',
+      'a + \\alpha &= b',
+      'c + \\beta &= d',
     ];
     const alignedRes = parseAlignedEquations(alignedInput);
     assert.equal(alignedRes.isAlign, true);
     assert.ok(alignedRes.latex?.includes('a + \\alpha &= b'));
     assert.ok(alignedRes.latex?.includes('c + \\beta &= d'));
+  });
+
+  it('isMathExpression correctly identifies MUST-be-prose list and stays unwrapped', () => {
+    const proseList = [
+      'This is a simple test document.',
+      'Figure 1 shows the relationship between temperature and pressure.',
+      'Notice that the continuous function approaches zero.',
+      'The value of x increases as y decreases.',
+      'Choose one of the following choices:',
+      'Format the text according to the standard code.',
+      'The speed of the particle is constant.',
+      'Equation 4 represents the general case.',
+      'Une valeur approchee de la vitesse est donnee par:',
+    ];
+
+    for (const prose of proseList) {
+      assert.equal(isMathExpression(prose), false, `Expected false for prose: ${prose}`);
+      const out = parseOcrToLatex({ lines: [{ text: prose, confidence: 90, bbox: { x0: 0, y0: 0, x1: 100, y1: 20 } }] });
+      assert.equal(out.includes('\\['), false, `Expected prose to stay unwrapped: ${prose}`);
+      assert.equal(out, prose);
+    }
+  });
+
+  it('isMathExpression correctly identifies MUST-be-wrapped math list and wraps in display math', () => {
+    const mathList = [
+      'x^2 + y^2 = r^2',
+      '\\int_0^\\infty e^{-x} dx = 1',
+      '\\frac{a}{b} + \\frac{c}{d}',
+      'E = mc^2',
+      '\\alpha + \\beta = \\gamma',
+      'f(x) = \\sin(x) + \\cos(x)',
+      '\\sum_{i=1}^n i = \\frac{n(n+1)}{2}',
+      '\\lim_{x \\to 0} \\frac{\\sin x}{x} = 1',
+      'A \\times B = C',
+      'x \\in [0, 1]',
+    ];
+
+    for (const math of mathList) {
+      assert.equal(isMathExpression(math), true, `Expected true for math: ${math}`);
+      const out = parseOcrToLatex({ lines: [{ text: math, confidence: 90, bbox: { x0: 0, y0: 0, x1: 100, y1: 20 } }] });
+      assert.ok(out.startsWith('\\['), `Expected display math \\[ for: ${math}`);
+      assert.ok(out.endsWith('\\]'), `Expected display math \\] for: ${math}`);
+    }
+  });
+
+  it('evaluates edge cases and wraps English condition words in \\text', () => {
+    // 1. "x_n = 1/n for n ≥ 1" -> math: true, "for" wrapped in \text{ for }
+    const expr1 = 'x_n = 1/n for n ≥ 1';
+    assert.equal(isMathExpression(expr1), true);
+    const out1 = parseOcrToLatex({ lines: [{ text: expr1, confidence: 90, bbox: { x0: 0, y0: 0, x1: 100, y1: 20 } }] });
+    assert.ok(out1.includes('\\text{ for }'), 'Condition word "for" must be wrapped in \\text{ for }');
+    assert.ok(out1.startsWith('\\['), 'Must be wrapped in display math');
+
+    // 2. "If x > 0 then y = sqrt(x)" -> math: false (2 stopwords "If", "then") -> prose
+    const expr2 = 'If x > 0 then y = sqrt(x)';
+    assert.equal(isMathExpression(expr2), false);
+    const out2 = parseOcrToLatex({ lines: [{ text: expr2, confidence: 90, bbox: { x0: 0, y0: 0, x1: 100, y1: 20 } }] });
+    assert.equal(out2, expr2);
+
+    // 3. "Speed = 5 m/s" -> math: true (speed removed from stopwords)
+    const expr3 = 'Speed = 5 m/s';
+    assert.equal(isMathExpression(expr3), true);
+    const out3 = parseOcrToLatex({ lines: [{ text: expr3, confidence: 90, bbox: { x0: 0, y0: 0, x1: 100, y1: 20 } }] });
+    assert.ok(out3.startsWith('\\['), 'Must be wrapped in display math');
+
+    // 4. "value = 3" -> math: true (value removed from stopwords)
+    const expr4 = 'value = 3';
+    assert.equal(isMathExpression(expr4), true);
+    const out4 = parseOcrToLatex({ lines: [{ text: expr4, confidence: 90, bbox: { x0: 0, y0: 0, x1: 100, y1: 20 } }] });
+    assert.ok(out4.startsWith('\\['), 'Must be wrapped in display math');
+
+    // 5. "Calculer f(x) = 2x pour x > 0" -> math: false (2 stopwords "Calculer", "pour") -> prose
+    const expr5 = 'Calculer f(x) = 2x pour x > 0';
+    assert.equal(isMathExpression(expr5), false);
+    const out5 = parseOcrToLatex({ lines: [{ text: expr5, confidence: 90, bbox: { x0: 0, y0: 0, x1: 100, y1: 20 } }] });
+    assert.equal(out5, expr5);
+
+    // 6. "Let f(x) = x^2." -> math: true (single stopword "Let", strong math "=")
+    const expr6 = 'Let f(x) = x^2.';
+    assert.equal(isMathExpression(expr6), true);
+    const out6 = parseOcrToLatex({ lines: [{ text: expr6, confidence: 90, bbox: { x0: 0, y0: 0, x1: 100, y1: 20 } }] });
+    assert.ok(out6.startsWith('\\['), 'Must be wrapped in display math');
+
+    // 7. "Set a = b + c in the code." -> math: false (3 stopwords "Set", "in", "the") -> prose
+    const expr7 = 'Set a = b + c in the code.';
+    assert.equal(isMathExpression(expr7), false);
+    const out7 = parseOcrToLatex({ lines: [{ text: expr7, confidence: 90, bbox: { x0: 0, y0: 0, x1: 100, y1: 20 } }] });
+    assert.equal(out7, expr7);
+  });
+
+  it('asserts exact formatted LaTeX strings for condition words and preserved symbols', () => {
+    const parse = (text: string) => {
+      const lines = text.split('\n').map((l, i) => ({
+        text: l,
+        confidence: 90,
+        bbox: { x0: 0, y0: i * 30, x1: 100, y1: (i + 1) * 30 },
+      }));
+      return parseOcrToLatex({ lines });
+    };
+
+    // 1. "x_n = 1/n for n ≥ 1" -> separates "for" with space padding inside \text{ for }
+    assert.equal(
+      parse('x_n = 1/n for n ≥ 1'),
+      '\\[\nx_n = \\frac{1}{n} \\text{ for } n  \\ge  1\n\\]'
+    );
+
+    // 2. "f(x) = 1 if x > 0\nf(x) = 0 otherwise" -> piecewise cases with spaces inside condition \text{ if } and \text{ otherwise }
+    assert.equal(
+      parse('f(x) = 1 if x > 0\nf(x) = 0 otherwise'),
+      '\\[\n\\begin{cases}\nf(x) = 1 \\text{ if } x > 0 \\\\\nf(x) = 0 \\text{ otherwise }\n\\end{cases}\n\\]'
+    );
+
+    // 3. "x \forall y" -> LaTeX macro \forall left completely untouched
+    assert.equal(parse('x \\forall y'), '\\[\nx \\forall y\n\\]');
+
+    // 4. "\iff" -> LaTeX macro \iff left completely untouched
+    assert.equal(parse('\\iff'), '\\[\n\\iff\n\\]');
+
+    // 5. "\text{if} x" -> pre-existing \text{...} argument left completely untouched
+    assert.equal(parse('\\text{if} x'), '\\[\n\\text{if} x\n\\]');
+
+    // 6. "diff = 3" -> word containing "if" substring left completely untouched
+    assert.equal(parse('diff = 3'), '\\[\ndiff = 3\n\\]');
+  });
+
+  describe('Definite Integral Reconstruction from OCR Geometry', () => {
+    it('reconstructs valid 3-line definite integral with explicit differential from OCR geometry', () => {
+      const ocrLines: OcrLine[] = [
+        {
+          text: '1',
+          confidence: 85,
+          bbox: { x0: 41, y0: 31, x1: 51, y1: 49 },
+          words: [{ text: '1', confidence: 85, bbox: { x0: 41, y0: 31, x1: 51, y1: 49 } }],
+        },
+        {
+          text: '[ x?dx',
+          confidence: 80,
+          bbox: { x0: 2, y0: 40, x1: 139, y1: 127 },
+          words: [
+            { text: '[', confidence: 80, bbox: { x0: 2, y0: 40, x1: 37, y1: 127 } },
+            { text: 'x?dx', confidence: 80, bbox: { x0: 63, y0: 59, x1: 139, y1: 93 } },
+          ],
+        },
+        {
+          text: '0',
+          confidence: 90,
+          bbox: { x0: 23, y0: 110, x1: 35, y1: 129 },
+          words: [{ text: '0', confidence: 90, bbox: { x0: 23, y0: 110, x1: 35, y1: 129 } }],
+        },
+      ];
+
+      const reconstructed = reconstructStackedIntegrals(ocrLines);
+      assert.equal(reconstructed.length, 1);
+      assert.equal(reconstructed[0].text, '\\int_{0}^{1} x?dx');
+
+      const latex = parseOcrToLatex({ text: '1\n[ x?dx\n0\n', confidence: 80, lines: ocrLines });
+      assert.ok(latex.includes('\\int_{0}^{1} x?dx'), `Expected \\int_{0}^{1} x?dx, got:\n${latex}`);
+      assert.ok(latex.startsWith('\\['), 'Display equation must start with \\[');
+      assert.ok(latex.endsWith('\\]'), 'Display equation must end with \\]');
+    });
+
+    it('preserves unreadable ? in integrand without guessing', () => {
+      const ocrLines: OcrLine[] = [
+        { text: 'b', confidence: 90, bbox: { x0: 30, y0: 20, x1: 40, y1: 35 }, words: [{ text: 'b', confidence: 90, bbox: { x0: 30, y0: 20, x1: 40, y1: 35 } }] },
+        {
+          text: '∫ f(?)+g(x)dx',
+          confidence: 85,
+          bbox: { x0: 10, y0: 30, x1: 150, y1: 110 },
+          words: [
+            { text: '∫', confidence: 85, bbox: { x0: 10, y0: 30, x1: 30, y1: 110 } },
+            { text: 'f(?)+g(x)dx', confidence: 85, bbox: { x0: 35, y0: 50, x1: 150, y1: 90 } },
+          ],
+        },
+        { text: 'a', confidence: 90, bbox: { x0: 25, y0: 95, x1: 35, y1: 110 }, words: [{ text: 'a', confidence: 90, bbox: { x0: 25, y0: 95, x1: 35, y1: 110 } }] },
+      ];
+
+      const latex = parseOcrToLatex({ text: 'b\n∫ f(?)+g(x)dx\na', confidence: 85, lines: ocrLines });
+      assert.ok(latex.includes('\\int_{a}^{b} f(?)+g(x)dx'));
+      assert.ok(!latex.includes('f(x)+g(x)'), 'Must not guess unreadable character');
+    });
+
+    it('reconstructs definite integral with Greek bounds and multi-token integrand', () => {
+      const ocrLines: OcrLine[] = [
+        { text: 'π', confidence: 92, bbox: { x0: 35, y0: 25, x1: 45, y1: 38 }, words: [{ text: 'π', confidence: 92, bbox: { x0: 35, y0: 25, x1: 45, y1: 38 } }] },
+        {
+          text: '∫ sin(t) dt',
+          confidence: 90,
+          bbox: { x0: 10, y0: 30, x1: 160, y1: 100 },
+          words: [
+            { text: '∫', confidence: 90, bbox: { x0: 10, y0: 30, x1: 30, y1: 100 } },
+            { text: 'sin(t)', confidence: 90, bbox: { x0: 40, y0: 55, x1: 90, y1: 80 } },
+            { text: 'dt', confidence: 90, bbox: { x0: 95, y0: 55, x1: 115, y1: 80 } },
+          ],
+        },
+        { text: '0', confidence: 95, bbox: { x0: 25, y0: 90, x1: 35, y1: 105 }, words: [{ text: '0', confidence: 95, bbox: { x0: 25, y0: 90, x1: 35, y1: 105 } }] },
+      ];
+
+      const latex = parseOcrToLatex({ text: 'π\n∫ sin(t) dt\n0', confidence: 90, lines: ocrLines });
+      assert.ok(latex.includes('\\int_{0}^{\\pi}'));
+      assert.ok(latex.includes('dt'));
+    });
+
+    it('negative: rejects 2-line input missing upper or lower limit', () => {
+      const ocrLines: OcrLine[] = [
+        {
+          text: '[ x^2 dx',
+          confidence: 80,
+          bbox: { x0: 2, y0: 40, x1: 139, y1: 127 },
+          words: [
+            { text: '[', confidence: 80, bbox: { x0: 2, y0: 40, x1: 37, y1: 127 } },
+            { text: 'x^2 dx', confidence: 80, bbox: { x0: 63, y0: 59, x1: 139, y1: 93 } },
+          ],
+        },
+        { text: '0', confidence: 90, bbox: { x0: 23, y0: 110, x1: 35, y1: 129 }, words: [{ text: '0', confidence: 90, bbox: { x0: 23, y0: 110, x1: 35, y1: 129 } }] },
+      ];
+
+      const reconstructed = reconstructStackedIntegrals(ocrLines);
+      assert.equal(reconstructed.length, 2, 'Must not reconstruct with only 2 lines');
+    });
+
+    it('negative: rejects 3-line input when middle line lacks differential anchor', () => {
+      const ocrLines: OcrLine[] = [
+        { text: '1', confidence: 85, bbox: { x0: 41, y0: 31, x1: 51, y1: 49 }, words: [{ text: '1', confidence: 85, bbox: { x0: 41, y0: 31, x1: 51, y1: 49 } }] },
+        {
+          text: '[ x + 1',
+          confidence: 80,
+          bbox: { x0: 2, y0: 40, x1: 139, y1: 127 },
+          words: [
+            { text: '[', confidence: 80, bbox: { x0: 2, y0: 40, x1: 37, y1: 127 } },
+            { text: 'x + 1', confidence: 80, bbox: { x0: 63, y0: 59, x1: 139, y1: 93 } },
+          ],
+        },
+        { text: '0', confidence: 90, bbox: { x0: 23, y0: 110, x1: 35, y1: 129 }, words: [{ text: '0', confidence: 90, bbox: { x0: 23, y0: 110, x1: 35, y1: 129 } }] },
+      ];
+
+      const reconstructed = reconstructStackedIntegrals(ocrLines);
+      assert.equal(reconstructed.length, 3, 'Must reject line without dx/dy/dt differential');
+    });
+
+    it('negative: rejects short bracket not meeting tall-operator height ratio', () => {
+      const ocrLines: OcrLine[] = [
+        { text: '1', confidence: 85, bbox: { x0: 41, y0: 31, x1: 51, y1: 49 }, words: [{ text: '1', confidence: 85, bbox: { x0: 41, y0: 31, x1: 51, y1: 49 } }] },
+        {
+          text: '[ x dx',
+          confidence: 80,
+          bbox: { x0: 2, y0: 50, x1: 100, y1: 70 }, // height 20px (not tall)
+          words: [
+            { text: '[', confidence: 80, bbox: { x0: 2, y0: 50, x1: 15, y1: 70 } },
+            { text: 'x dx', confidence: 80, bbox: { x0: 20, y0: 50, x1: 100, y1: 70 } },
+          ],
+        },
+        { text: '0', confidence: 90, bbox: { x0: 23, y0: 80, x1: 35, y1: 98 }, words: [{ text: '0', confidence: 90, bbox: { x0: 23, y0: 80, x1: 35, y1: 98 } }] },
+      ];
+
+      const reconstructed = reconstructStackedIntegrals(ocrLines);
+      assert.equal(reconstructed.length, 3, 'Must reject bracket that is not tall');
+    });
+
+    it('negative: preserves ordinary prose or expressions containing J, V, [, >', () => {
+      assert.equal(isMathExpression('The energy was 50 J in total.'), false);
+      assert.equal(isMathExpression('The voltage V = 220 V is nominal.'), false);
+      assert.equal(isMathExpression('Note: [Review required]'), false);
+      assert.equal(isMathExpression('If we have x > 0 and y > 0 then we proceed.'), false);
+    });
+
+    it('negative: rejects short ordinary f followed by f(x) dx', () => {
+      const ocrLines: OcrLine[] = [
+        { text: '1', confidence: 85, bbox: { x0: 10, y0: 10, x1: 20, y1: 25 }, words: [{ text: '1', confidence: 85, bbox: { x0: 10, y0: 10, x1: 20, y1: 25 } }] },
+        {
+          text: 'f (x) dx',
+          confidence: 80,
+          bbox: { x0: 10, y0: 30, x1: 80, y1: 45 },
+          words: [
+            { text: 'f', confidence: 80, bbox: { x0: 10, y0: 30, x1: 20, y1: 45 } }, // height 15px (< 30px, < 1.6x)
+            { text: '(x)', confidence: 80, bbox: { x0: 25, y0: 30, x1: 50, y1: 45 } },
+            { text: 'dx', confidence: 80, bbox: { x0: 55, y0: 30, x1: 80, y1: 45 } },
+          ],
+        },
+        { text: '0', confidence: 90, bbox: { x0: 10, y0: 50, x1: 20, y1: 65 }, words: [{ text: '0', confidence: 90, bbox: { x0: 10, y0: 50, x1: 20, y1: 65 } }] },
+      ];
+      const reconstructed = reconstructStackedIntegrals(ocrLines);
+      assert.equal(reconstructed.length, 3, 'Must reject short f');
+    });
+
+    it('negative: rejects ordinary bracketed expression with differential elsewhere in the line', () => {
+      const ocrLines: OcrLine[] = [
+        { text: '1', confidence: 85, bbox: { x0: 10, y0: 10, x1: 20, y1: 25 }, words: [{ text: '1', confidence: 85, bbox: { x0: 10, y0: 10, x1: 20, y1: 25 } }] },
+        {
+          text: '[ a + b ] dx',
+          confidence: 80,
+          bbox: { x0: 10, y0: 30, x1: 100, y1: 48 },
+          words: [
+            { text: '[', confidence: 80, bbox: { x0: 10, y0: 30, x1: 18, y1: 48 } }, // height 18px (< 30px)
+            { text: 'a', confidence: 80, bbox: { x0: 22, y0: 30, x1: 32, y1: 48 } },
+            { text: '+', confidence: 80, bbox: { x0: 36, y0: 30, x1: 46, y1: 48 } },
+            { text: 'b', confidence: 80, bbox: { x0: 50, y0: 30, x1: 60, y1: 48 } },
+            { text: ']', confidence: 80, bbox: { x0: 64, y0: 30, x1: 72, y1: 48 } },
+            { text: 'dx', confidence: 80, bbox: { x0: 76, y0: 30, x1: 96, y1: 48 } },
+          ],
+        },
+        { text: '0', confidence: 90, bbox: { x0: 10, y0: 52, x1: 20, y1: 67 }, words: [{ text: '0', confidence: 90, bbox: { x0: 10, y0: 52, x1: 20, y1: 67 } }] },
+      ];
+      const reconstructed = reconstructStackedIntegrals(ocrLines);
+      assert.equal(reconstructed.length, 3, 'Must reject ordinary bracketed line');
+    });
+
+    it('negative: rejects 3-line prose with J, I, l, f, V, [, > and realistic bounding boxes', () => {
+      const ocrLines: OcrLine[] = [
+        { text: 'In Physics', confidence: 85, bbox: { x0: 10, y0: 10, x1: 90, y1: 25 }, words: [{ text: 'In', confidence: 85, bbox: { x0: 10, y0: 10, x1: 30, y1: 25 } }, { text: 'Physics', confidence: 85, bbox: { x0: 35, y0: 10, x1: 90, y1: 25 } }] },
+        {
+          text: 'J denotes Joules dx',
+          confidence: 80,
+          bbox: { x0: 10, y0: 30, x1: 150, y1: 48 },
+          words: [
+            { text: 'J', confidence: 80, bbox: { x0: 10, y0: 30, x1: 20, y1: 48 } }, // not an allowed tall op candidate and height 18px
+            { text: 'denotes', confidence: 80, bbox: { x0: 25, y0: 30, x1: 80, y1: 48 } },
+            { text: 'Joules', confidence: 80, bbox: { x0: 85, y0: 30, x1: 125, y1: 48 } },
+            { text: 'dx', confidence: 80, bbox: { x0: 130, y0: 30, x1: 150, y1: 48 } },
+          ],
+        },
+        { text: 'per second', confidence: 90, bbox: { x0: 10, y0: 52, x1: 90, y1: 67 }, words: [{ text: 'per', confidence: 90, bbox: { x0: 10, y0: 52, x1: 35, y1: 67 } }, { text: 'second', confidence: 90, bbox: { x0: 40, y0: 52, x1: 90, y1: 67 } }] },
+      ];
+      const reconstructed = reconstructStackedIntegrals(ocrLines);
+      assert.equal(reconstructed.length, 3, 'Must reject prose with J/I/l/f/V');
+    });
+
+    it('negative: rejects bounds whose horizontal positions do not correspond to the operator', () => {
+      const ocrLines: OcrLine[] = [
+        { text: '1', confidence: 85, bbox: { x0: 150, y0: 10, x1: 160, y1: 25 }, words: [{ text: '1', confidence: 85, bbox: { x0: 150, y0: 10, x1: 160, y1: 25 } }] }, // offset > 60px to right
+        {
+          text: '∫ x dx',
+          confidence: 90,
+          bbox: { x0: 10, y0: 15, x1: 80, y1: 65 },
+          words: [
+            { text: '∫', confidence: 90, bbox: { x0: 10, y0: 15, x1: 25, y1: 65 } }, // tall op
+            { text: 'x', confidence: 90, bbox: { x0: 30, y0: 30, x1: 45, y1: 50 } },
+            { text: 'dx', confidence: 90, bbox: { x0: 50, y0: 30, x1: 75, y1: 50 } },
+          ],
+        },
+        { text: '0', confidence: 90, bbox: { x0: 15, y0: 55, x1: 25, y1: 70 }, words: [{ text: '0', confidence: 90, bbox: { x0: 15, y0: 55, x1: 25, y1: 70 } }] },
+      ];
+      const reconstructed = reconstructStackedIntegrals(ocrLines);
+      assert.equal(reconstructed.length, 3, 'Must reject bounds misaligned horizontally');
+    });
+
+    it('negative: rejects unrelated three-line layout with long sentences that happen to contain dx', () => {
+      const ocrLines: OcrLine[] = [
+        {
+          text: 'Chapter 4 Introduction to Differential Equations',
+          confidence: 85,
+          bbox: { x0: 10, y0: 10, x1: 350, y1: 25 },
+          words: [
+            { text: 'Chapter', confidence: 85, bbox: { x0: 10, y0: 10, x1: 50, y1: 25 } },
+            { text: '4', confidence: 85, bbox: { x0: 55, y0: 10, x1: 65, y1: 25 } },
+            { text: 'Introduction', confidence: 85, bbox: { x0: 70, y0: 10, x1: 150, y1: 25 } },
+            { text: 'to', confidence: 85, bbox: { x0: 155, y0: 10, x1: 170, y1: 25 } },
+            { text: 'Differential', confidence: 85, bbox: { x0: 175, y0: 10, x1: 250, y1: 25 } },
+            { text: 'Equations', confidence: 85, bbox: { x0: 255, y0: 10, x1: 350, y1: 25 } },
+          ],
+        },
+        {
+          text: '∫ x dx',
+          confidence: 90,
+          bbox: { x0: 10, y0: 15, x1: 80, y1: 65 },
+          words: [
+            { text: '∫', confidence: 90, bbox: { x0: 10, y0: 15, x1: 25, y1: 65 } },
+            { text: 'x', confidence: 90, bbox: { x0: 30, y0: 30, x1: 45, y1: 50 } },
+            { text: 'dx', confidence: 90, bbox: { x0: 50, y0: 30, x1: 75, y1: 50 } },
+          ],
+        },
+        {
+          text: 'We now integrate both sides with respect to x',
+          confidence: 90,
+          bbox: { x0: 10, y0: 55, x1: 380, y1: 70 },
+          words: [
+            { text: 'We', confidence: 90, bbox: { x0: 10, y0: 55, x1: 30, y1: 70 } },
+            { text: 'now', confidence: 90, bbox: { x0: 35, y0: 55, x1: 60, y1: 70 } },
+            { text: 'integrate', confidence: 90, bbox: { x0: 65, y0: 55, x1: 120, y1: 70 } },
+            { text: 'both', confidence: 90, bbox: { x0: 125, y0: 55, x1: 155, y1: 70 } },
+            { text: 'sides', confidence: 90, bbox: { x0: 160, y0: 55, x1: 195, y1: 70 } },
+            { text: 'with', confidence: 90, bbox: { x0: 200, y0: 55, x1: 230, y1: 70 } },
+            { text: 'respect', confidence: 90, bbox: { x0: 235, y0: 55, x1: 280, y1: 70 } },
+            { text: 'to', confidence: 90, bbox: { x0: 285, y0: 55, x1: 300, y1: 70 } },
+            { text: 'x', confidence: 90, bbox: { x0: 305, y0: 55, x1: 315, y1: 70 } },
+          ],
+        },
+      ];
+      const reconstructed = reconstructStackedIntegrals(ocrLines);
+      assert.equal(reconstructed.length, 3, 'Must reject long prose paragraphs around operator');
+    });
+
+    it('negative: rejects input with missing bounding boxes', () => {
+      const ocrLines: OcrLine[] = [
+        { text: '1', confidence: 80 },
+        { text: '[ x dx', confidence: 80 },
+        { text: '0', confidence: 80 },
+      ];
+      const reconstructed = reconstructStackedIntegrals(ocrLines);
+      assert.equal(reconstructed.length, 3, 'Must not reconstruct without bounding boxes');
+    });
+
+    it('synthetic geometry (a): real case_04 geometry reconstructs definite integral', () => {
+      const ocrLines: OcrLine[] = [
+        {
+          text: '1',
+          confidence: 85,
+          bbox: { x0: 41, y0: 31, x1: 51, y1: 49 },
+          words: [{ text: '1', confidence: 85, bbox: { x0: 41, y0: 31, x1: 51, y1: 49 } }],
+        },
+        {
+          text: '[ x?dx',
+          confidence: 80,
+          bbox: { x0: 2, y0: 40, x1: 139, y1: 127 },
+          words: [
+            { text: '[', confidence: 80, bbox: { x0: 2, y0: 40, x1: 37, y1: 127 } },
+            { text: 'x?dx', confidence: 80, bbox: { x0: 63, y0: 59, x1: 139, y1: 93 } },
+          ],
+        },
+        {
+          text: '0',
+          confidence: 90,
+          bbox: { x0: 23, y0: 110, x1: 35, y1: 129 },
+          words: [{ text: '0', confidence: 90, bbox: { x0: 23, y0: 110, x1: 35, y1: 129 } }],
+        },
+      ];
+
+      const reconstructed = reconstructStackedIntegrals(ocrLines);
+      assert.equal(reconstructed.length, 1);
+      assert.equal(reconstructed[0].text, '\\int_{0}^{1} x?dx');
+    });
+
+    it('synthetic geometry (b): three prose lines ("de la fonction", "Calculer", "du produit") never reconstruct', () => {
+      const ocrLines: OcrLine[] = [
+        {
+          text: 'de la fonction',
+          confidence: 90,
+          bbox: { x0: 10, y0: 10, x1: 120, y1: 28 },
+          words: [
+            { text: 'de', confidence: 90, bbox: { x0: 10, y0: 10, x1: 30, y1: 28 } },
+            { text: 'la', confidence: 90, bbox: { x0: 35, y0: 10, x1: 55, y1: 28 } },
+            { text: 'fonction', confidence: 90, bbox: { x0: 60, y0: 10, x1: 120, y1: 28 } },
+          ],
+        },
+        {
+          text: 'Calculer',
+          confidence: 88,
+          bbox: { x0: 10, y0: 35, x1: 85, y1: 75 },
+          words: [{ text: 'Calculer', confidence: 88, bbox: { x0: 10, y0: 35, x1: 85, y1: 75 } }],
+        },
+        {
+          text: 'du produit',
+          confidence: 90,
+          bbox: { x0: 10, y0: 80, x1: 100, y1: 98 },
+          words: [
+            { text: 'du', confidence: 90, bbox: { x0: 10, y0: 80, x1: 30, y1: 98 } },
+            { text: 'produit', confidence: 90, bbox: { x0: 35, y0: 80, x1: 100, y1: 98 } },
+          ],
+        },
+      ];
+
+      const reconstructed = reconstructStackedIntegrals(ocrLines);
+      assert.equal(reconstructed.length, 3, 'Must never reconstruct prose lines containing French de/du');
+    });
+
+    it('synthetic geometry (c): tall letter "l" with digit lines above/below and no differential does not reconstruct', () => {
+      const ocrLines: OcrLine[] = [
+        {
+          text: '1',
+          confidence: 90,
+          bbox: { x0: 10, y0: 10, x1: 20, y1: 25 },
+          words: [{ text: '1', confidence: 90, bbox: { x0: 10, y0: 10, x1: 20, y1: 25 } }],
+        },
+        {
+          text: 'l x + 1',
+          confidence: 85,
+          bbox: { x0: 10, y0: 30, x1: 80, y1: 80 },
+          words: [
+            { text: 'l', confidence: 85, bbox: { x0: 10, y0: 30, x1: 20, y1: 80 } },
+            { text: 'x + 1', confidence: 85, bbox: { x0: 25, y0: 45, x1: 80, y1: 65 } },
+          ],
+        },
+        {
+          text: '0',
+          confidence: 90,
+          bbox: { x0: 10, y0: 85, x1: 20, y1: 100 },
+          words: [{ text: '0', confidence: 90, bbox: { x0: 10, y0: 85, x1: 20, y1: 100 } }],
+        },
+      ];
+
+      const reconstructed = reconstructStackedIntegrals(ocrLines);
+      assert.equal(reconstructed.length, 3, 'Must reject tall l without differential anchor');
+    });
+
+    it('synthetic geometry (d): limits far to the right of the operator do not reconstruct', () => {
+      const ocrLines: OcrLine[] = [
+        {
+          text: '1',
+          confidence: 90,
+          bbox: { x0: 70, y0: 10, x1: 85, y1: 25 },
+          words: [{ text: '1', confidence: 90, bbox: { x0: 70, y0: 10, x1: 85, y1: 25 } }],
+        },
+        {
+          text: '∫ x dx',
+          confidence: 90,
+          bbox: { x0: 10, y0: 30, x1: 90, y1: 90 },
+          words: [
+            { text: '∫', confidence: 90, bbox: { x0: 10, y0: 30, x1: 25, y1: 90 } },
+            { text: 'x dx', confidence: 90, bbox: { x0: 30, y0: 45, x1: 90, y1: 75 } },
+          ],
+        },
+        {
+          text: '0',
+          confidence: 90,
+          bbox: { x0: 15, y0: 95, x1: 25, y1: 110 },
+          words: [{ text: '0', confidence: 90, bbox: { x0: 15, y0: 95, x1: 25, y1: 110 } }],
+        },
+      ];
+
+      const reconstructed = reconstructStackedIntegrals(ocrLines);
+      assert.equal(reconstructed.length, 3, 'Must reject limits violating horizontal proximity');
+    });
+
+    it('synthetic geometry (e): differential-less "∫ x" body does not reconstruct', () => {
+      const ocrLines: OcrLine[] = [
+        {
+          text: '1',
+          confidence: 90,
+          bbox: { x0: 25, y0: 10, x1: 35, y1: 25 },
+          words: [{ text: '1', confidence: 90, bbox: { x0: 25, y0: 10, x1: 35, y1: 25 } }],
+        },
+        {
+          text: '∫ x',
+          confidence: 90,
+          bbox: { x0: 10, y0: 30, x1: 50, y1: 90 },
+          words: [
+            { text: '∫', confidence: 90, bbox: { x0: 10, y0: 30, x1: 25, y1: 90 } },
+            { text: 'x', confidence: 90, bbox: { x0: 30, y0: 45, x1: 50, y1: 75 } },
+          ],
+        },
+        {
+          text: '0',
+          confidence: 90,
+          bbox: { x0: 15, y0: 95, x1: 25, y1: 110 },
+          words: [{ text: '0', confidence: 90, bbox: { x0: 15, y0: 95, x1: 25, y1: 110 } }],
+        },
+      ];
+
+      const reconstructed = reconstructStackedIntegrals(ocrLines);
+      assert.equal(reconstructed.length, 3, 'Must reject body lacking differential anchor');
+    });
+
+    it('negative: French prose lines surrounding a tall "[" with limit-like digits but body without differential stay unreconstructed', () => {
+      const ocrLines: OcrLine[] = [
+        {
+          text: 'Soit n = 1',
+          confidence: 90,
+          bbox: { x0: 20, y0: 10, x1: 60, y1: 25 },
+          words: [
+            { text: 'Soit', confidence: 90, bbox: { x0: 20, y0: 10, x1: 35, y1: 25 } },
+            { text: 'n', confidence: 90, bbox: { x0: 38, y0: 10, x1: 45, y1: 25 } },
+            { text: '=', confidence: 90, bbox: { x0: 48, y0: 10, x1: 52, y1: 25 } },
+            { text: '1', confidence: 90, bbox: { x0: 55, y0: 10, x1: 60, y1: 25 } },
+          ],
+        },
+        {
+          text: '[ fonction continue',
+          confidence: 85,
+          bbox: { x0: 10, y0: 30, x1: 150, y1: 90 },
+          words: [
+            { text: '[', confidence: 85, bbox: { x0: 10, y0: 30, x1: 25, y1: 90 } },
+            { text: 'fonction', confidence: 85, bbox: { x0: 30, y0: 45, x1: 90, y1: 75 } },
+            { text: 'continue', confidence: 85, bbox: { x0: 95, y0: 45, x1: 150, y1: 75 } },
+          ],
+        },
+        {
+          text: 'pour k = 0',
+          confidence: 90,
+          bbox: { x0: 20, y0: 95, x1: 60, y1: 110 },
+          words: [
+            { text: 'pour', confidence: 90, bbox: { x0: 20, y0: 95, x1: 40, y1: 110 } },
+            { text: 'k', confidence: 90, bbox: { x0: 43, y0: 95, x1: 48, y1: 110 } },
+            { text: '=', confidence: 90, bbox: { x0: 50, y0: 95, x1: 54, y1: 110 } },
+            { text: '0', confidence: 90, bbox: { x0: 56, y0: 95, x1: 60, y1: 110 } },
+          ],
+        },
+      ];
+
+      const reconstructed = reconstructStackedIntegrals(ocrLines);
+      assert.equal(reconstructed.length, 3, 'Must not reconstruct French prose around tall [');
+    });
+
+    it('negative: matrix-like "[" block with dx-free body stays unreconstructed', () => {
+      const ocrLines: OcrLine[] = [
+        {
+          text: '1 2',
+          confidence: 90,
+          bbox: { x0: 20, y0: 10, x1: 50, y1: 25 },
+          words: [{ text: '1', confidence: 90, bbox: { x0: 20, y0: 10, x1: 30, y1: 25 } }, { text: '2', confidence: 90, bbox: { x0: 35, y0: 10, x1: 50, y1: 25 } }],
+        },
+        {
+          text: '[ 3 4',
+          confidence: 85,
+          bbox: { x0: 10, y0: 30, x1: 70, y1: 90 },
+          words: [
+            { text: '[', confidence: 85, bbox: { x0: 10, y0: 30, x1: 25, y1: 90 } },
+            { text: '3', confidence: 85, bbox: { x0: 30, y0: 45, x1: 45, y1: 75 } },
+            { text: '4', confidence: 85, bbox: { x0: 50, y0: 45, x1: 70, y1: 75 } },
+          ],
+        },
+        {
+          text: '5 6',
+          confidence: 90,
+          bbox: { x0: 20, y0: 95, x1: 50, y1: 110 },
+          words: [{ text: '5', confidence: 90, bbox: { x0: 20, y0: 95, x1: 30, y1: 110 } }, { text: '6', confidence: 90, bbox: { x0: 35, y0: 95, x1: 50, y1: 110 } }],
+        },
+      ];
+
+      const reconstructed = reconstructStackedIntegrals(ocrLines);
+      assert.equal(reconstructed.length, 3, 'Must not reconstruct matrix row block as integral');
+    });
+
+    it('end-to-end: converts case_04_integral.png to \\int_{0}^{1} in production pipeline', async () => {
+      const imgPath = path.join(REAL_FIXTURES_DIR, 'case_04_integral.png');
+      const buffer = fs.readFileSync(imgPath);
+
+      const result = await convertImageToLatex(buffer, { mode: 'fragment' });
+      assert.ok(result.latex.includes('\\int_{0}^{1}'), `Expected \\int_{0}^{1}, got:\n${result.latex}`);
+      assert.ok(result.latex.includes('dx'), `Expected dx in integrand, got:\n${result.latex}`);
+      assert.ok(result.hasMath, 'Must detect mathematical content');
+    });
   });
 });
 

@@ -376,18 +376,26 @@ export function parseMatrix(lines: string[]): { isMatrix: boolean; latex?: strin
 }
 
 /**
- * Detects system of equations (cases environment):
- * Lines grouped together, each containing an equation.
+ * Detects system of equations or piecewise functions (cases environment):
+ * Requires real evidence:
+ * 1. Leading left-brace glyph or symbol: '{', '\{', or '\begin{cases}'
+ * 2. Piecewise condition keywords: 'if', 'si', 'when', 'otherwise', 'sinon', 'for', 'pour', 'quand'
  */
 export function parseCases(lines: string[]): { isCases: boolean; latex?: string } {
   const trimmed = lines.map(l => l.trim()).filter(Boolean);
   if (trimmed.length < 2) return { isCases: false };
 
-  const hasLeadingBrace = trimmed.some(l => l.startsWith('{'));
-  const allAreEquations = trimmed.every(l => /[=<>≤≥]/.test(l));
+  const hasLeadingBrace = trimmed.some(l => /^(\{|\\\{|\\begin\{cases\})/.test(l));
+  const piecewiseRowsCount = trimmed.filter(l => /\b(if|si|when|quand)\b/i.test(l)).length;
+  const hasOtherwise = trimmed.some(l => /\b(otherwise|sinon)\b/i.test(l));
 
-  if (hasLeadingBrace || (allAreEquations && trimmed.length >= 2 && trimmed.length <= 4)) {
-    const cleanedRows = trimmed.map(l => replaceMathSymbols(l.replace(/^\{\s*/, '')));
+  if (hasLeadingBrace || piecewiseRowsCount >= 2 || hasOtherwise) {
+    const cleanedRows = trimmed.map(l => {
+      let r = l.replace(/^\{\s*/, '');
+      r = replaceMathSymbols(r);
+      r = wrapConditionWords(r);
+      return r;
+    });
     return {
       isCases: true,
       latex: `\\[\n\\begin{cases}\n${cleanedRows.join(' \\\\\n')}\n\\end{cases}\n\\]`,
@@ -398,17 +406,32 @@ export function parseCases(lines: string[]): { isCases: boolean; latex?: string 
 }
 
 /**
+ * Wraps standalone English condition words ('for', 'if', 'otherwise', 'where') inside LaTeX math in \text{ ... }.
+ * Adds spaces inside \text{ ... } (e.g. \text{ for }) so the word is visually separated from surrounding math
+ * without running words together in the compiled PDF.
+ * Does NOT touch LaTeX commands (\forall, \iff, \infty) or words already inside an existing \text{...}.
+ */
+export function wrapConditionWords(line: string): string {
+  return line.replace(/(\\text\{[^}]*\})|(?<!\\)\b(for|if|otherwise|where)\b/g, (match, textGroup, wordGroup) => {
+    if (textGroup) return textGroup;
+    return `\\text{ ${wordGroup} }`;
+  });
+}
+
+/**
  * Detects multi-line equation alignment:
- * When multiple lines have equal signs.
+ * Requires alignment evidence: continuation line starting with '=' or '&=' (e.g. '= (x+1)^2') or explicit '&=' in a row
  */
 export function parseAlignedEquations(lines: string[]): { isAlign: boolean; latex?: string } {
   const trimmed = lines.map(l => l.trim()).filter(Boolean);
   if (trimmed.length < 2) return { isAlign: false };
 
-  const eqCount = trimmed.filter(l => l.includes('=')).length;
-  if (eqCount >= 2 && eqCount === trimmed.length) {
+  const hasContinuationEquals = trimmed.slice(1).some(l => l.startsWith('=') || l.startsWith('&='));
+  const hasAmpersandEquals = trimmed.some(l => l.includes('&='));
+
+  if (hasContinuationEquals || hasAmpersandEquals) {
     const alignedRows = trimmed.map(line => {
-      // Replace first = with &=
+      if (line.includes('&=')) return replaceMathSymbols(line);
       return replaceMathSymbols(line).replace(/=/, '&=');
     });
     return {
@@ -477,8 +500,9 @@ export function classifyWordSymbols(word: OcrWord): string {
 
       const isDepressed =
         isPlausibleSubBase &&
-        (sym.bbox.y0 - baseSym.bbox.y0 >= 0.35 * hBase) &&
-        (sym.bbox.y1 - baseSym.bbox.y1 >= 0.20 * hBase);
+        (sym.bbox.y1 - baseSym.bbox.y1 >= 0.25 * hBase) &&
+        (sym.bbox.y0 - baseSym.bbox.y0 >= 0.30 * hBase) &&
+        (hSym <= 0.95 * hBase);
 
       if (isElevated) {
         placements[i] = 'super';
@@ -535,13 +559,186 @@ export function applySpatialSuperSubscripts(line: OcrLine): string {
   return processedWords.join(' ');
 }
 
+function mergeBBoxes(...bboxes: (BoundingBox | undefined)[]): BoundingBox | undefined {
+  const valid = bboxes.filter((b): b is BoundingBox => Boolean(b));
+  if (valid.length === 0) return undefined;
+  return {
+    x0: Math.min(...valid.map(b => b.x0)),
+    y0: Math.min(...valid.map(b => b.y0)),
+    x1: Math.max(...valid.map(b => b.x1)),
+    y1: Math.max(...valid.map(b => b.y1)),
+  };
+}
+
+/**
+ * Checks whether a 3-line sequence (l0=upper, l1=operator+body, l2=lower)
+ * meets strict spatial, geometric, and differential-anchor conditions to be
+ * reconstructed into a definite integral.
+ */
+function checkStackedIntegral(
+  l0: OcrLine,
+  l1: OcrLine,
+  l2: OcrLine
+): { match: boolean; reconstructedText: string } {
+  if (!l0.bbox || !l1.bbox || !l2.bbox) {
+    return { match: false, reconstructedText: '' };
+  }
+
+  if (!l1.words || l1.words.length === 0) {
+    return { match: false, reconstructedText: '' };
+  }
+
+  const opWord = l1.words[0];
+  if (!opWord.bbox) {
+    return { match: false, reconstructedText: '' };
+  }
+
+  const opWidth = Math.max(1, opWord.bbox.x1 - opWord.bbox.x0);
+  const opHeight = opWord.bbox.y1 - opWord.bbox.y0;
+  const l0Height = l0.bbox.y1 - l0.bbox.y0;
+  const l2Height = l2.bbox.y1 - l2.bbox.y0;
+
+  // Tall operator: must be >= 30px tall and at least 1.6x taller than upper & lower limits
+  if (opHeight < 30 || opHeight < 1.6 * l0Height || opHeight < 1.6 * l2Height) {
+    return { match: false, reconstructedText: '' };
+  }
+
+  // Operator candidates:
+  // - Keep "∫" and "[" as primary candidates
+  // - Drop plain "l", "I", "f", "|" unless aspect ratio >= 2.5 (slender tall glyph)
+  const isPrimaryOp = opWord.text.startsWith('∫') || opWord.text.startsWith('[');
+  const isAmbiguousOp = /^[\|lIf]$/.test(opWord.text);
+
+  if (!isPrimaryOp && !isAmbiguousOp) {
+    return { match: false, reconstructedText: '' };
+  }
+
+  if (isAmbiguousOp) {
+    const aspectRatio = opHeight / opWidth;
+    if (aspectRatio < 2.5) {
+      return { match: false, reconstructedText: '' };
+    }
+  }
+
+  // Extract integrand body from l1
+  let bodyText = '';
+  let bodyBBox: BoundingBox | undefined;
+
+  if (l1.words.length > 1) {
+    const bodyWords = l1.words.slice(1);
+    bodyText = bodyWords.map(w => classifyWordSymbols(w)).join(' ').trim();
+    bodyBBox = mergeBBoxes(...bodyWords.map(w => w.bbox));
+  } else if (opWord.text.length > 1 && /^[\[∫]/.test(opWord.text)) {
+    bodyText = opWord.text.slice(1).trim();
+    bodyBBox = opWord.bbox;
+  }
+
+  if (!bodyText) {
+    return { match: false, reconstructedText: '' };
+  }
+
+  // Differential check: standalone differential at the end of the body, no /i flag
+  // Must NOT match French "de", "du", "do" or embedded letters inside words
+  const hasDifferential = /(^|[\s\)\?])d(x|y|z|t|u|v|s|r|\\theta|\\phi)\s*$/.test(bodyText);
+  if (!hasDifferential) {
+    return { match: false, reconstructedText: '' };
+  }
+
+  // Horizontal proximity: both limit lines' x-range must overlap or sit within 1 operator width
+  const minX = opWord.bbox.x0 - opWidth;
+  const maxX = opWord.bbox.x1 + opWidth;
+
+  const l0WithinX = l0.bbox.x0 <= maxX && l0.bbox.x1 >= minX;
+  const l2WithinX = l2.bbox.x0 <= maxX && l2.bbox.x1 >= minX;
+  if (!l0WithinX || !l2WithinX) {
+    return { match: false, reconstructedText: '' };
+  }
+
+  // Vertical positioning:
+  // l0 must be at/above operator top, and not overlap vertically with the body line
+  // l2 must be at/below operator bottom, and not overlap vertically with the body line
+  const bodyTop = bodyBBox ? bodyBBox.y0 : opWord.bbox.y0 + 0.25 * opHeight;
+  const bodyBottom = bodyBBox ? bodyBBox.y1 : opWord.bbox.y1 - 0.25 * opHeight;
+
+  if (l0.bbox.y0 > opWord.bbox.y0 + 0.35 * opHeight || l0.bbox.y1 > bodyTop) {
+    return { match: false, reconstructedText: '' };
+  }
+
+  if (l2.bbox.y1 < opWord.bbox.y1 - 0.35 * opHeight || l2.bbox.y0 < bodyBottom) {
+    return { match: false, reconstructedText: '' };
+  }
+
+  // Concise limits check (<= 3 words)
+  const l0WordCount = Math.max(l0.words?.length || 0, l0.text.trim() ? l0.text.trim().split(/\s+/).length : 0);
+  const l2WordCount = Math.max(l2.words?.length || 0, l2.text.trim() ? l2.text.trim().split(/\s+/).length : 0);
+  if (l0WordCount > 3 || l2WordCount > 3) {
+    return { match: false, reconstructedText: '' };
+  }
+
+  const upper = replaceMathSymbols(applySpatialSuperSubscripts(l0)).trim();
+  const lower = replaceMathSymbols(applySpatialSuperSubscripts(l2)).trim();
+
+  return {
+    match: true,
+    reconstructedText: `\\int_{${lower}}^{${upper}} ${bodyText}`,
+  };
+}
+
+/**
+ * Conservative reconstruction of vertically-stacked definite integrals.
+ */
+export function reconstructStackedIntegrals(lines: OcrLine[]): OcrLine[] {
+  if (lines.length < 3) return lines;
+
+  const result: OcrLine[] = [];
+  let i = 0;
+
+  while (i < lines.length) {
+    if (i + 2 < lines.length) {
+      const l0 = lines[i];     // Upper bound candidate
+      const l1 = lines[i + 1]; // Middle operator + integrand candidate
+      const l2 = lines[i + 2]; // Lower bound candidate
+
+      const isReconstructible = checkStackedIntegral(l0, l1, l2);
+      if (isReconstructible.match) {
+        const mergedBBox = mergeBBoxes(l0.bbox, l1.bbox, l2.bbox);
+        const reconstructedLine: OcrLine = {
+          text: isReconstructible.reconstructedText,
+          confidence: Math.min(l0.confidence, l1.confidence, l2.confidence),
+          bbox: mergedBBox,
+          words: [
+            {
+              text: isReconstructible.reconstructedText,
+              confidence: Math.min(l0.confidence, l1.confidence, l2.confidence),
+              bbox: mergedBBox,
+            },
+          ],
+        };
+        result.push(reconstructedLine);
+        i += 3;
+        continue;
+      }
+    }
+
+    result.push(lines[i]);
+    i++;
+  }
+
+  return result;
+}
+
 /**
  * Full mathematical OCR parser:
  * Takes raw OCR lines and metadata, and produces clean LaTeX code.
  */
 export function parseOcrToLatex(ocrResult: OcrResultData): string {
-  const rawLines = ocrResult.lines?.length
-    ? ocrResult.lines.map(l => applySpatialSuperSubscripts(l))
+  let ocrLines = ocrResult.lines;
+  if (ocrLines && ocrLines.length >= 3) {
+    ocrLines = reconstructStackedIntegrals(ocrLines);
+  }
+
+  const rawLines = ocrLines?.length
+    ? ocrLines.map(l => applySpatialSuperSubscripts(l))
     : ocrResult.text.split('\n');
 
   // Strip empty whitespace lines
@@ -553,6 +750,7 @@ export function parseOcrToLatex(ocrResult: OcrResultData): string {
 
   // 2. Check for matrix environment
   const matrixCheck = parseMatrix(fractionProcessed);
+
   if (matrixCheck.isMatrix && matrixCheck.latex) {
     return matrixCheck.latex;
   }
@@ -587,8 +785,11 @@ export function parseOcrToLatex(ocrResult: OcrResultData): string {
     }
 
     if (isMathExpression(line)) {
+      // Wrap plain English condition words inside math lines in \text{ ... } with surrounding spaces
+      let safeMathLine = wrapConditionWords(line);
+
       // Standalone equation line: wrap unmapped Unicode letter words and symbols in \text{...} to prevent math font glyph dropping
-      let safeMathLine = line.replace(/(?<!\\[a-zA-Z]*)([\p{L}\p{N}]+|[^\x00-\x7F]+)/gu, (match) =>
+      safeMathLine = safeMathLine.replace(/(?<!\\[a-zA-Z]*)([\p{L}\p{N}]+|[^\x00-\x7F]+)/gu, (match) =>
         /[^\x00-\x7F]/.test(match) ? `\\text{${match}}` : match
       );
       // Escape raw unescaped $ inside display math
