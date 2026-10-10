@@ -207,10 +207,40 @@ try {
   );
   await page3.close();
 
-  console.log('✓ All 3 live store screenshots captured successfully with centered framing!');
+  // --- SCREENSHOT 4: Image to LaTeX tab with mathematical OCR conversion ---
+  console.log('Capturing Screenshot 4: Image to LaTeX OCR conversion...');
+  const page4 = await context.newPage();
+  await page4.goto(popupUrl);
+  await page4.waitForLoadState('domcontentloaded');
+
+  // Switch to image tab
+  await page4.click('#tab-image');
+  await page4.waitForTimeout(300);
+
+  // Select math image
+  const imageInput = await page4.$('#image-file');
+  await imageInput.setInputFiles(join(ROOT, 'corpus/seed/math_equation.png'));
+  await page4.waitForTimeout(300);
+
+  // Click convert image button
+  await page4.click('#convert-image-btn');
+
+  // Wait for conversion output
+  await page4.waitForSelector('#output-wrapper:not([hidden])', { timeout: 30000 });
+  await page4.waitForTimeout(800);
+
+  await captureFramedPopup(
+    page4,
+    '4-image-ocr-converted.png',
+    'Image to LaTeX tab with formula OCR converted to clean LaTeX math'
+  );
+  await page4.close();
+
+  console.log('✓ All 4 live store screenshots captured successfully with centered framing!');
 } catch (err) {
   console.error('Screenshot capture failed:', err);
   process.exit(1);
 } finally {
   await context.close();
 }
+

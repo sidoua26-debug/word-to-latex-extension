@@ -1,0 +1,21 @@
+{
+  "version": "1.0.0",
+  "description": "Private local benchmark manifest template for real scanned documents",
+  "samples": [
+    {
+      "id": "real_sample_01",
+      "file": "real/sample_01.png",
+      "set": "dev",
+      "lang": "fr",
+      "tags": ["real", "french", "exam", "math"],
+      "ground_truth": {
+        "expected_text": "Texte ou formule exacte attendue",
+        "expected_latex": "\\[\nE = mc^{2}\n\\]",
+        "line_labels": ["prose", "math"],
+        "expected_latex_contains": ["mc^{2}"],
+        "expected_latex_forbids": [],
+        "status": "supported"
+      }
+    }
+  ]
+}

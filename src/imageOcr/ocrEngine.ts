@@ -94,24 +94,59 @@ export class TesseractRecognitionEngine implements ImageRecognitionEngine {
     const worker = await getTesseractWorker(onProgress);
 
     onProgress?.('Recognizing text and characters...', 0.3);
-    const result = await worker.recognize(imageSource as any);
+    const result = await worker.recognize(imageSource as any, {}, { blocks: true });
 
     onProgress?.('Analyzing structure and equations...', 0.8);
 
     const rawText = result.data.text || '';
+    const lines: any[] = [];
+
+    if (result.data.blocks && result.data.blocks.length > 0) {
+      for (const block of result.data.blocks) {
+        for (const paragraph of block.paragraphs || []) {
+          for (const line of paragraph.lines || []) {
+            lines.push({
+              text: line.text,
+              confidence: line.confidence,
+              bbox: line.bbox,
+              words: line.words?.map((w: any) => ({
+                text: w.text,
+                confidence: w.confidence,
+                bbox: w.bbox,
+                symbols: w.symbols?.map((s: any) => ({
+                  text: s.text,
+                  confidence: s.confidence,
+                  bbox: s.bbox,
+                })),
+              })),
+            });
+          }
+        }
+      }
+    } else if (result.data.lines && result.data.lines.length > 0) {
+      for (const line of result.data.lines) {
+        lines.push({
+          text: line.text,
+          confidence: line.confidence,
+          bbox: line.bbox,
+          words: line.words?.map((w: any) => ({
+            text: w.text,
+            confidence: w.confidence,
+            bbox: w.bbox,
+            symbols: w.symbols?.map((s: any) => ({
+              text: s.text,
+              confidence: s.confidence,
+              bbox: s.bbox,
+            })),
+          })),
+        });
+      }
+    }
+
     const ocrData: OcrResultData = {
       text: rawText,
       confidence: result.data.confidence || 0,
-      lines: result.data.lines?.map(l => ({
-        text: l.text,
-        confidence: l.confidence,
-        bbox: l.bbox,
-        words: l.words?.map(w => ({
-          text: w.text,
-          confidence: w.confidence,
-          bbox: w.bbox,
-        })),
-      })),
+      lines: lines.length > 0 ? lines : undefined,
     };
 
     // 1. Table structure detection

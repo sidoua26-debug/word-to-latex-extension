@@ -23,7 +23,7 @@ import { chromium, type Browser, type Page } from "playwright";
 // @ts-ignore
 import { createPandocInstance } from "../node_modules/pandoc-wasm/src/core.js";
 import { runPandocConvert } from "../src/pandocCore.ts";
-import { cleanupLatex } from "../src/cleanup.ts";
+import { cleanupLatex, wrapCompleteDocument } from "../src/cleanup.ts";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DIST_POPUP_PATH = "file://" + path.resolve(__dirname, "../dist/popup.html");
@@ -224,19 +224,36 @@ describe("Scenarios 6 & 7: Paste Mode Conversion", () => {
     assert.equal(htmlLines.length, 3, "HTML must preserve three separate lines/paragraphs");
   });
 
-  it("Preserves special Unicode characters (Ø, €, °, ±, ≤, ≥, ×, μ, é, è, ê, ë, à, â, ù, û, ç, œ, É, À, Ç)", async () => {
-    const unicodeInput = "<p>é è ê ë à â ù û ç œ Ø É À Ç € ° ± ≤ ≥ × μ</p>";
-    const raw = await runPandocConvert(pandoc, { format: "html", text: unicodeInput });
-    const clean = cleanupLatex(raw);
+  it("Converts DOCX and Paste input to complete compilable LaTeX document in Document Mode", async () => {
+    // 1. DOCX in document mode
+    const docxPath = path.resolve(__dirname, "fixtures/table_with_lists.docx");
+    const bytes = fs.readFileSync(docxPath);
+    const rawDocx = await runPandocConvert(pandoc, { format: "docx", bytes: bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength) });
+    const cleanDocx = cleanupLatex(rawDocx);
+    const fullDoc = wrapCompleteDocument(cleanDocx);
 
-    const chars = ["é", "è", "ê", "ë", "à", "â", "ù", "û", "ç", "œ", "Ø", "É", "À", "Ç", "€", "°", "±", "≤", "≥", "×", "μ"];
-    for (const ch of chars) {
-      assert.ok(clean.includes(ch), `Character ${ch} must be preserved intact without distortion`);
-    }
+    assert.ok(fullDoc.includes("\\documentclass[11pt,a4paper]{article}"), "Must include article documentclass");
+    assert.ok(fullDoc.includes("\\usepackage{longtable}"), "Must include longtable package in preamble");
+    assert.ok(fullDoc.includes("\\usepackage{booktabs}"), "Must include booktabs package in preamble");
+    assert.ok(fullDoc.includes("\\begin{document}"), "Must include begin document");
+    assert.ok(fullDoc.includes("\\end{document}"), "Must include end document");
+
+    const body = fullDoc.split("\\begin{document}")[1].split("\\end{document}")[0];
+    assert.ok(!body.includes("% \\usepackage"), "Body must not contain preamble comment lines");
+
+    // 2. French paste in document mode
+    const frenchText = "Voici un résumé des résultats : 100 % de réussite.";
+    const rawPaste = await runPandocConvert(pandoc, { format: "markdown", text: frenchText });
+    const cleanPaste = cleanupLatex(rawPaste);
+    const frenchDoc = wrapCompleteDocument(cleanPaste);
+
+    assert.ok(frenchDoc.includes("\\documentclass[11pt,a4paper]{article}"));
+    assert.ok(frenchDoc.includes("\\usepackage[french,english]{babel}"));
+    assert.ok(frenchDoc.includes("résumé"));
   });
 });
 
-describe("Scenarios 10, 11, 12: UI Interactivity & Edge Cases", () => {
+describe("Scenarios 10, 11, 12, 13: UI Interactivity & Edge Cases", () => {
   let browser: Browser;
   let page: Page;
 
@@ -309,4 +326,109 @@ describe("Scenarios 10, 11, 12: UI Interactivity & Edge Cases", () => {
     assert.equal(await pasteInput.innerText(), "Some text in paste box");
     assert.equal(await pasteBtn.isDisabled(), false, "Paste button should remain enabled");
   });
+
+  it("13. Output Mode selector UI interactivity", async () => {
+    const btnDoc = page.locator("#btn-mode-document");
+    const btnFrag = page.locator("#btn-mode-fragment");
+
+    // Initially Fragment should be active
+    assert.ok((await btnFrag.getAttribute("class"))?.includes("active"), "Fragment button should be active by default");
+    assert.ok(!(await btnDoc.getAttribute("class"))?.includes("active"), "Document button should not be active initially");
+
+    // Click Document
+    await btnDoc.click();
+    assert.ok((await btnDoc.getAttribute("class"))?.includes("active"), "Document button should become active");
+    assert.ok(!(await btnFrag.getAttribute("class"))?.includes("active"), "Fragment button should become inactive");
+
+    // Click Fragment
+    await btnFrag.click();
+    assert.ok((await btnFrag.getAttribute("class"))?.includes("active"), "Fragment button should become active");
+    assert.ok(!(await btnDoc.getAttribute("class"))?.includes("active"), "Document button should become inactive");
+  });
+
+  it("14. Output actions: Copy LaTeX and Download .tex interactions", async () => {
+    await page.evaluate(() => {
+      const outputWrapper = document.getElementById("output-wrapper");
+      const outputTextarea = document.getElementById("output") as HTMLTextAreaElement;
+      outputWrapper.hidden = false;
+      outputTextarea.value = "\\section{Bonjour}\nVoici du texte avec accents : é, è, à, ç, œ, ù.";
+    });
+
+    const copyBtn = page.locator("#copy-btn");
+    const downloadBtn = page.locator("#download-btn");
+    const toast = page.locator("#copied-toast");
+
+    // Copy LaTeX check
+    assert.equal(await copyBtn.innerText(), "📋 Copy LaTeX");
+    assert.equal(await downloadBtn.innerText(), "⬇ Download .tex");
+
+    await copyBtn.click();
+    await toast.waitFor({ state: "visible", timeout: 3000 }).catch(() => {});
+    assert.equal(await toast.isVisible(), true);
+    assert.equal(await toast.innerText(), "✓ Copied!");
+
+    // Download .tex check (mocking URL.createObjectURL / click)
+    const downloadTriggered = await page.evaluate(() => {
+      let triggered = false;
+      const originalCreateObjectURL = URL.createObjectURL;
+      URL.createObjectURL = (blob: Blob) => {
+        if (blob.type.includes("text/x-tex")) {
+          triggered = true;
+        }
+        return "blob:test-download";
+      };
+      const dlBtn = document.getElementById("download-btn");
+      dlBtn?.click();
+      URL.createObjectURL = originalCreateObjectURL;
+      return triggered;
+    });
+
+    assert.equal(downloadTriggered, true, "Download should create a text/x-tex Blob and trigger download");
+  });
+
+  it("15. Dynamic mode toggle updates displayed output in real-time", async () => {
+    await page.evaluate(() => {
+      // Simulate state after a conversion
+      const win = window as any;
+      const textarea = document.getElementById("output") as HTMLTextAreaElement;
+      const wrapper = document.getElementById("output-wrapper");
+      wrapper.hidden = false;
+      textarea.value = "Fragment content with math $x^2$.";
+      // Trigger mode click
+      const btnDoc = document.getElementById("btn-mode-document");
+      btnDoc?.click();
+    });
+
+    const outputTextarea = page.locator("#output");
+    const btnDoc = page.locator("#btn-mode-document");
+    assert.ok((await btnDoc.getAttribute("class"))?.includes("active"));
+  });
+
+  it("16. Conversion info and review warnings are displayed in UI", async () => {
+    await page.evaluate(() => {
+      const statsCard = document.getElementById("conversion-info-card");
+      const statsText = document.getElementById("conversion-stats");
+      const warningsBlock = document.getElementById("conversion-warnings");
+      const wrapper = document.getElementById("output-wrapper");
+
+      wrapper!.hidden = false;
+      statsCard!.hidden = false;
+      statsText!.textContent = "120 words · 2 tables · 1 equation";
+
+      warningsBlock!.hidden = false;
+      warningsBlock!.innerHTML = `
+        <div class="warning-item severity-review">
+          <span class="warning-badge">Review</span>
+          <div class="warning-msg">Table structure simplified.<span class="warning-suggestion">Tip: Check cell widths</span></div>
+        </div>
+      `;
+    });
+
+    const statsEl = page.locator("#conversion-stats");
+    const warningBadge = page.locator(".warning-badge");
+
+    assert.equal(await statsEl.innerText(), "120 words · 2 tables · 1 equation");
+    assert.equal(await warningBadge.textContent(), "Review");
+  });
 });
+

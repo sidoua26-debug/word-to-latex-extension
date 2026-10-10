@@ -71,10 +71,17 @@ Everything needed for store submission is prepared and automated:
 ## Running Tests
 
 ```bash
+# 1. Run unit and browser scenario tests (100% offline)
 npm test
+
+# 2. Run real LaTeX compilation test suite (validates 100% compilation against local Tectonic engine)
+# Setup pinned v0.17.0 Tectonic binary (dev-only tool, uses network once to download into .bin/):
+npm run setup:tectonic
+
+# Execute compile tests:
+npm run test:compile
 ```
 
-Runs all unit tests (cleanup pipeline, clipboard format detection, pandoc-wasm convert branching).
 
 ## Project Structure
 

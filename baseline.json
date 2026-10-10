@@ -1,0 +1,4848 @@
+{
+  "timestamp": "2026-10-09T19:52:52.636Z",
+  "environment": {
+    "gitCommit": "785e200ee2af6ccdea5f921dd92bb8a2419dea8b",
+    "gitDirty": true,
+    "nodeVersion": "v24.20.0",
+    "tesseractVersion": "^7.0.0",
+    "traineddataHashes": {
+      "eng": "18c1ac52b75e35d44735fb6c2a60acfaf23033524653200738e98f0243edb75b",
+      "fra": "9800c70d1db21689e1ee91b5c81fe4c822120fa92cf5f0dab0d2b81b616fd468"
+    },
+    "preprocessingConfig": {
+      "grayscale": true,
+      "contrastScale": 1.2,
+      "maxDimensionPx": 2200
+    }
+  },
+  "totalSamples": 80,
+  "timings": {
+    "coldStartMs": 3929,
+    "warmMedianMs": 89
+  },
+  "overall": {
+    "count": 80,
+    "cerMean": 0.30445562772369406,
+    "cerMedian": 0.19230769230769232,
+    "cerP90": 0.7333333333333333,
+    "latexCerMean": 5.58371670198892,
+    "latexTokenF1Mean": 0.46038914924211344,
+    "hallucinationsSupported": 1,
+    "hallucinationsLimitations": 0,
+    "hallucinationCount": 1,
+    "containsPassRate": 0.5432098765432098,
+    "forbidsPassRate": 1,
+    "fragCompileRate": 0.975,
+    "docCompileRate": 0.975,
+    "meanTimeMs": 172,
+    "medianTimeMs": 89
+  },
+  "devSlice": {
+    "count": 33,
+    "cerMean": 0.2892179656353268,
+    "cerMedian": 0.25,
+    "cerP90": 0.7333333333333333,
+    "latexCerMean": 7.925007467882788,
+    "latexTokenF1Mean": 0.36617374699700583,
+    "hallucinationsSupported": 1,
+    "hallucinationsLimitations": 0,
+    "hallucinationCount": 1,
+    "containsPassRate": 0.525,
+    "forbidsPassRate": 1,
+    "fragCompileRate": 1,
+    "docCompileRate": 1,
+    "meanTimeMs": 228,
+    "medianTimeMs": 88
+  },
+  "holdoutSlice": {
+    "count": 23,
+    "cerMean": 0.24624037662255194,
+    "cerMedian": 0.14814814814814814,
+    "cerP90": 0.5833333333333334,
+    "latexCerMean": 4.163846929898148,
+    "latexTokenF1Mean": 0.48796012960314816,
+    "hallucinationsSupported": 0,
+    "hallucinationsLimitations": 0,
+    "hallucinationCount": 0,
+    "containsPassRate": 0.48,
+    "forbidsPassRate": 1,
+    "fragCompileRate": 1,
+    "docCompileRate": 1,
+    "meanTimeMs": 100,
+    "medianTimeMs": 88
+  },
+  "stressSlice": {
+    "count": 24,
+    "cerMean": 0.3811970287337934,
+    "cerMedian": 0.25,
+    "cerP90": 0.8,
+    "latexCerMean": 4.74581745948528,
+    "latexTokenF1Mean": 0.5254117487520084,
+    "hallucinationsSupported": 0,
+    "hallucinationsLimitations": 0,
+    "hallucinationCount": 0,
+    "containsPassRate": 0.6875,
+    "forbidsPassRate": 1,
+    "fragCompileRate": 0.9166666666666666,
+    "docCompileRate": 0.9166666666666666,
+    "meanTimeMs": 165,
+    "medianTimeMs": 110
+  },
+  "enSlice": {
+    "count": 63,
+    "cerMean": 0.36125674943865993,
+    "cerMedian": 0.25925925925925924,
+    "cerP90": 0.7333333333333333,
+    "latexCerMean": 5.58371670198892,
+    "latexTokenF1Mean": 0.46038914924211344,
+    "hallucinationsSupported": 1,
+    "hallucinationsLimitations": 0,
+    "hallucinationCount": 1,
+    "containsPassRate": 0.4444444444444444,
+    "forbidsPassRate": 1,
+    "fragCompileRate": 0.9682539682539683,
+    "docCompileRate": 0.9682539682539683,
+    "meanTimeMs": 103,
+    "medianTimeMs": 84
+  },
+  "frSlice": {
+    "count": 17,
+    "cerMean": 0.09395735313293815,
+    "cerMedian": 0.022222222222222223,
+    "cerP90": 0.31521739130434784,
+    "latexCerMean": null,
+    "latexTokenF1Mean": null,
+    "hallucinationsSupported": 0,
+    "hallucinationsLimitations": 0,
+    "hallucinationCount": 0,
+    "containsPassRate": 0.8888888888888888,
+    "forbidsPassRate": 1,
+    "fragCompileRate": 1,
+    "docCompileRate": 1,
+    "meanTimeMs": 428,
+    "medianTimeMs": 204
+  },
+  "tagMetrics": {
+    "accents": {
+      "count": 3,
+      "cerMean": 0.027960526315789474,
+      "cerMedian": 0.03125,
+      "cerP90": 0.05263157894736842,
+      "latexCerMean": null,
+      "latexTokenF1Mean": null,
+      "hallucinationsSupported": 0,
+      "hallucinationsLimitations": 0,
+      "hallucinationCount": 0,
+      "containsPassRate": 1,
+      "forbidsPassRate": 1,
+      "fragCompileRate": 1,
+      "docCompileRate": 1,
+      "meanTimeMs": 1493,
+      "medianTimeMs": 325
+    },
+    "action-verb": {
+      "count": 3,
+      "cerMean": 0.007407407407407408,
+      "cerMedian": 0,
+      "cerP90": 0.022222222222222223,
+      "latexCerMean": null,
+      "latexTokenF1Mean": null,
+      "hallucinationsSupported": 0,
+      "hallucinationsLimitations": 0,
+      "hallucinationCount": 0,
+      "containsPassRate": 1,
+      "forbidsPassRate": 1,
+      "fragCompileRate": 1,
+      "docCompileRate": 1,
+      "meanTimeMs": 134,
+      "medianTimeMs": 126
+    },
+    "algebra": {
+      "count": 3,
+      "cerMean": 0.151010101010101,
+      "cerMedian": 0.13636363636363635,
+      "cerP90": 0.25,
+      "latexCerMean": 3.422592592592593,
+      "latexTokenF1Mean": 0.5017676767676768,
+      "hallucinationsSupported": 1,
+      "hallucinationsLimitations": 0,
+      "hallucinationCount": 1,
+      "containsPassRate": 0.6666666666666666,
+      "forbidsPassRate": 1,
+      "fragCompileRate": 1,
+      "docCompileRate": 1,
+      "meanTimeMs": 78,
+      "medianTimeMs": 81
+    },
+    "baseline-preservation": {
+      "count": 2,
+      "cerMean": 0,
+      "cerMedian": 0,
+      "cerP90": 0,
+      "latexCerMean": null,
+      "latexTokenF1Mean": null,
+      "hallucinationsSupported": 0,
+      "hallucinationsLimitations": 0,
+      "hallucinationCount": 0,
+      "containsPassRate": 1,
+      "forbidsPassRate": 1,
+      "fragCompileRate": 1,
+      "docCompileRate": 1,
+      "meanTimeMs": 145,
+      "medianTimeMs": 193
+    },
+    "booktabs": {
+      "count": 1,
+      "cerMean": 0,
+      "cerMedian": 0,
+      "cerP90": 0,
+      "latexCerMean": null,
+      "latexTokenF1Mean": null,
+      "hallucinationsSupported": 0,
+      "hallucinationsLimitations": 0,
+      "hallucinationCount": 0,
+      "containsPassRate": 1,
+      "forbidsPassRate": 1,
+      "fragCompileRate": 1,
+      "docCompileRate": 1,
+      "meanTimeMs": 126,
+      "medianTimeMs": 126
+    },
+    "calculus": {
+      "count": 3,
+      "cerMean": 0.5679112554112554,
+      "cerMedian": 0.4375,
+      "cerP90": 0.8571428571428571,
+      "latexCerMean": 15.70542578173279,
+      "latexTokenF1Mean": 0.05251995015774544,
+      "hallucinationsSupported": 0,
+      "hallucinationsLimitations": 0,
+      "hallucinationCount": 0,
+      "containsPassRate": 0.3333333333333333,
+      "forbidsPassRate": 1,
+      "fragCompileRate": 1,
+      "docCompileRate": 1,
+      "meanTimeMs": 62,
+      "medianTimeMs": 49
+    },
+    "cases": {
+      "count": 4,
+      "cerMean": 0.39038461538461544,
+      "cerMedian": 0.38461538461538464,
+      "cerP90": 0.6,
+      "latexCerMean": 1.5080392156862745,
+      "latexTokenF1Mean": 0.7960992907801419,
+      "hallucinationsSupported": 0,
+      "hallucinationsLimitations": 0,
+      "hallucinationCount": 0,
+      "containsPassRate": 0.5,
+      "forbidsPassRate": 1,
+      "fragCompileRate": 1,
+      "docCompileRate": 1,
+      "meanTimeMs": 97,
+      "medianTimeMs": 110
+    },
+    "chemistry": {
+      "count": 2,
+      "cerMean": 0.37272727272727274,
+      "cerMedian": 0.7454545454545455,
+      "cerP90": 0.7454545454545455,
+      "latexCerMean": null,
+      "latexTokenF1Mean": null,
+      "hallucinationsSupported": 0,
+      "hallucinationsLimitations": 0,
+      "hallucinationCount": 0,
+      "containsPassRate": 0.6,
+      "forbidsPassRate": 1,
+      "fragCompileRate": 1,
+      "docCompileRate": 1,
+      "meanTimeMs": 154,
+      "medianTimeMs": 193
+    },
+    "complex": {
+      "count": 1,
+      "cerMean": 0.4,
+      "cerMedian": 0.4,
+      "cerP90": 0.4,
+      "latexCerMean": 0.4,
+      "latexTokenF1Mean": 1,
+      "hallucinationsSupported": 0,
+      "hallucinationsLimitations": 0,
+      "hallucinationCount": 0,
+      "containsPassRate": 0,
+      "forbidsPassRate": 1,
+      "fragCompileRate": 1,
+      "docCompileRate": 1,
+      "meanTimeMs": 43,
+      "medianTimeMs": 43
+    },
+    "currency": {
+      "count": 1,
+      "cerMean": 0.8,
+      "cerMedian": 0.8,
+      "cerP90": 0.8,
+      "latexCerMean": null,
+      "latexTokenF1Mean": null,
+      "hallucinationsSupported": 0,
+      "hallucinationsLimitations": 0,
+      "hallucinationCount": 0,
+      "containsPassRate": 0,
+      "forbidsPassRate": 1,
+      "fragCompileRate": 1,
+      "docCompileRate": 1,
+      "meanTimeMs": 45,
+      "medianTimeMs": 45
+    },
+    "degradation:blur": {
+      "count": 1,
+      "cerMean": 0.14814814814814814,
+      "cerMedian": 0.14814814814814814,
+      "cerP90": 0.14814814814814814,
+      "latexCerMean": 0.14814814814814814,
+      "latexTokenF1Mean": 0.9444444444444444,
+      "hallucinationsSupported": 0,
+      "hallucinationsLimitations": 0,
+      "hallucinationCount": 0,
+      "containsPassRate": 1,
+      "forbidsPassRate": 1,
+      "fragCompileRate": 1,
+      "docCompileRate": 1,
+      "meanTimeMs": 112,
+      "medianTimeMs": 112
+    },
+    "degradation:blur_2": {
+      "count": 4,
+      "cerMean": 0.2830777610189375,
+      "cerMedian": 0.19230769230769232,
+      "cerP90": 0.6153846153846154,
+      "latexCerMean": 2.4618901432626923,
+      "latexTokenF1Mean": 0.6775266792215945,
+      "hallucinationsSupported": 0,
+      "hallucinationsLimitations": 0,
+      "hallucinationCount": 0,
+      "containsPassRate": 0.8,
+      "forbidsPassRate": 1,
+      "fragCompileRate": 0.75,
+      "docCompileRate": 0.75,
+      "meanTimeMs": 124,
+      "medianTimeMs": 145
+    },
+    "degradation:clean": {
+      "count": 11,
+      "cerMean": 0.2923083840475145,
+      "cerMedian": 0.23809523809523808,
+      "cerP90": 0.5833333333333334,
+      "latexCerMean": 6.877331808269307,
+      "latexTokenF1Mean": 0.3413624921763328,
+      "hallucinationsSupported": 0,
+      "hallucinationsLimitations": 0,
+      "hallucinationCount": 0,
+      "containsPassRate": 0.38461538461538464,
+      "forbidsPassRate": 1,
+      "fragCompileRate": 1,
+      "docCompileRate": 1,
+      "meanTimeMs": 106,
+      "medianTimeMs": 88
+    },
+    "degradation:combined_noise_contrast": {
+      "count": 1,
+      "cerMean": 1.6296296296296295,
+      "cerMedian": 1.6296296296296295,
+      "cerP90": 1.6296296296296295,
+      "latexCerMean": 19.666666666666668,
+      "latexTokenF1Mean": 0.04017857142857143,
+      "hallucinationsSupported": 0,
+      "hallucinationsLimitations": 0,
+      "hallucinationCount": 0,
+      "containsPassRate": 1,
+      "forbidsPassRate": 1,
+      "fragCompileRate": 1,
+      "docCompileRate": 1,
+      "meanTimeMs": 1048,
+      "medianTimeMs": 1048
+    },
+    "degradation:combined_rot_blur": {
+      "count": 1,
+      "cerMean": 0.18518518518518517,
+      "cerMedian": 0.18518518518518517,
+      "cerP90": 0.18518518518518517,
+      "latexCerMean": 7.7407407407407405,
+      "latexTokenF1Mean": 0.14563106796116504,
+      "hallucinationsSupported": 0,
+      "hallucinationsLimitations": 0,
+      "hallucinationCount": 0,
+      "containsPassRate": 1,
+      "forbidsPassRate": 1,
+      "fragCompileRate": 1,
+      "docCompileRate": 1,
+      "meanTimeMs": 233,
+      "medianTimeMs": 233
+    },
+    "degradation:contrast_squeezed": {
+      "count": 2,
+      "cerMean": 0.48657407407407405,
+      "cerMedian": 0.825,
+      "cerP90": 0.825,
+      "latexCerMean": 0.14814814814814814,
+      "latexTokenF1Mean": 0.9444444444444444,
+      "hallucinationsSupported": 0,
+      "hallucinationsLimitations": 0,
+      "hallucinationCount": 0,
+      "containsPassRate": 0.5,
+      "forbidsPassRate": 1,
+      "fragCompileRate": 1,
+      "docCompileRate": 1,
+      "meanTimeMs": 76,
+      "medianTimeMs": 84
+    },
+    "degradation:downscale_45": {
+      "count": 1,
+      "cerMean": 0.14814814814814814,
+      "cerMedian": 0.14814814814814814,
+      "cerP90": 0.14814814814814814,
+      "latexCerMean": 0.14814814814814814,
+      "latexTokenF1Mean": 0.9444444444444444,
+      "hallucinationsSupported": 0,
+      "hallucinationsLimitations": 0,
+      "hallucinationCount": 0,
+      "containsPassRate": 1,
+      "forbidsPassRate": 1,
+      "fragCompileRate": 1,
+      "docCompileRate": 1,
+      "meanTimeMs": 157,
+      "medianTimeMs": 157
+    },
+    "degradation:extreme": {
+      "count": 1,
+      "cerMean": 0.4444444444444444,
+      "cerMedian": 0.4444444444444444,
+      "cerP90": 0.4444444444444444,
+      "latexCerMean": 18.666666666666668,
+      "latexTokenF1Mean": 0.05909090909090909,
+      "hallucinationsSupported": 0,
+      "hallucinationsLimitations": 0,
+      "hallucinationCount": 0,
+      "containsPassRate": 0,
+      "forbidsPassRate": 1,
+      "fragCompileRate": 1,
+      "docCompileRate": 1,
+      "meanTimeMs": 156,
+      "medianTimeMs": 156
+    },
+    "degradation:low-contrast": {
+      "count": 1,
+      "cerMean": 0.14814814814814814,
+      "cerMedian": 0.14814814814814814,
+      "cerP90": 0.14814814814814814,
+      "latexCerMean": 0.14814814814814814,
+      "latexTokenF1Mean": 0.9444444444444444,
+      "hallucinationsSupported": 0,
+      "hallucinationsLimitations": 0,
+      "hallucinationCount": 0,
+      "containsPassRate": 1,
+      "forbidsPassRate": 1,
+      "fragCompileRate": 1,
+      "docCompileRate": 1,
+      "meanTimeMs": 84,
+      "medianTimeMs": 84
+    },
+    "degradation:low-dpi": {
+      "count": 1,
+      "cerMean": 0.18518518518518517,
+      "cerMedian": 0.18518518518518517,
+      "cerP90": 0.18518518518518517,
+      "latexCerMean": 8.777777777777779,
+      "latexTokenF1Mean": 0.14349775784753363,
+      "hallucinationsSupported": 0,
+      "hallucinationsLimitations": 0,
+      "hallucinationCount": 0,
+      "containsPassRate": 1,
+      "forbidsPassRate": 1,
+      "fragCompileRate": 1,
+      "docCompileRate": 1,
+      "meanTimeMs": 80,
+      "medianTimeMs": 80
+    },
+    "degradation:noise": {
+      "count": 1,
+      "cerMean": 0.14814814814814814,
+      "cerMedian": 0.14814814814814814,
+      "cerP90": 0.14814814814814814,
+      "latexCerMean": 0.14814814814814814,
+      "latexTokenF1Mean": 0.9444444444444444,
+      "hallucinationsSupported": 0,
+      "hallucinationsLimitations": 0,
+      "hallucinationCount": 0,
+      "containsPassRate": 1,
+      "forbidsPassRate": 1,
+      "fragCompileRate": 1,
+      "docCompileRate": 1,
+      "meanTimeMs": 103,
+      "medianTimeMs": 103
+    },
+    "degradation:noise_heavy": {
+      "count": 3,
+      "cerMean": 0.25451092117758783,
+      "cerMedian": 0.14814814814814814,
+      "cerP90": 0.6153846153846154,
+      "latexCerMean": 3.664983164983165,
+      "latexTokenF1Mean": 0.5193602693602694,
+      "hallucinationsSupported": 0,
+      "hallucinationsLimitations": 0,
+      "hallucinationCount": 0,
+      "containsPassRate": 0.6,
+      "forbidsPassRate": 1,
+      "fragCompileRate": 1,
+      "docCompileRate": 1,
+      "meanTimeMs": 151,
+      "medianTimeMs": 102
+    },
+    "degradation:rotation": {
+      "count": 2,
+      "cerMean": 0.14251207729468598,
+      "cerMedian": 0.17391304347826086,
+      "cerP90": 0.17391304347826086,
+      "latexCerMean": 0.2841269841269841,
+      "latexTokenF1Mean": 0.7347670250896057,
+      "hallucinationsSupported": 0,
+      "hallucinationsLimitations": 0,
+      "hallucinationCount": 0,
+      "containsPassRate": 1,
+      "forbidsPassRate": 1,
+      "fragCompileRate": 1,
+      "docCompileRate": 1,
+      "meanTimeMs": 103,
+      "medianTimeMs": 117
+    },
+    "degradation:rotation_4": {
+      "count": 6,
+      "cerMean": 0.3349617339813418,
+      "cerMedian": 0.38461538461538464,
+      "cerP90": 0.65,
+      "latexCerMean": 0.43778470984353335,
+      "latexTokenF1Mean": 0.6440058479532164,
+      "hallucinationsSupported": 0,
+      "hallucinationsLimitations": 0,
+      "hallucinationCount": 0,
+      "containsPassRate": 0.7,
+      "forbidsPassRate": 1,
+      "fragCompileRate": 0.8333333333333334,
+      "docCompileRate": 0.8333333333333334,
+      "meanTimeMs": 98,
+      "medianTimeMs": 92
+    },
+    "degradation:rotation_5": {
+      "count": 2,
+      "cerMean": 0.4496296296296296,
+      "cerMedian": 0.64,
+      "cerP90": 0.64,
+      "latexCerMean": 8.846801346801346,
+      "latexTokenF1Mean": 0.10322093938598792,
+      "hallucinationsSupported": 0,
+      "hallucinationsLimitations": 0,
+      "hallucinationCount": 0,
+      "containsPassRate": 0.5,
+      "forbidsPassRate": 1,
+      "fragCompileRate": 1,
+      "docCompileRate": 1,
+      "meanTimeMs": 130,
+      "medianTimeMs": 178
+    },
+    "degradation:vignette": {
+      "count": 3,
+      "cerMean": 0.32109988776655446,
+      "cerMedian": 0.14814814814814814,
+      "cerP90": 0.8,
+      "latexCerMean": 0.14814814814814814,
+      "latexTokenF1Mean": 0.9444444444444444,
+      "hallucinationsSupported": 0,
+      "hallucinationsLimitations": 0,
+      "hallucinationCount": 0,
+      "containsPassRate": 0.75,
+      "forbidsPassRate": 1,
+      "fragCompileRate": 1,
+      "docCompileRate": 1,
+      "meanTimeMs": 138,
+      "medianTimeMs": 110
+    },
+    "dev": {
+      "count": 18,
+      "cerMean": 0.18753286713558032,
+      "cerMedian": 0.02702702702702703,
+      "cerP90": 0.46153846153846156,
+      "latexCerMean": 1.8633669303498521,
+      "latexTokenF1Mean": 0.5768056504898611,
+      "hallucinationsSupported": 0,
+      "hallucinationsLimitations": 0,
+      "hallucinationCount": 0,
+      "containsPassRate": 0.5,
+      "forbidsPassRate": 1,
+      "fragCompileRate": 1,
+      "docCompileRate": 1,
+      "meanTimeMs": 103,
+      "medianTimeMs": 96
+    },
+    "distinct-source": {
+      "count": 6,
+      "cerMean": 0.2555804422628391,
+      "cerMedian": 0.13636363636363635,
+      "cerP90": 0.7454545454545455,
+      "latexCerMean": 2.535028520384003,
+      "latexTokenF1Mean": 0.40150431352148086,
+      "hallucinationsSupported": 0,
+      "hallucinationsLimitations": 0,
+      "hallucinationCount": 0,
+      "containsPassRate": 0.4444444444444444,
+      "forbidsPassRate": 1,
+      "fragCompileRate": 1,
+      "docCompileRate": 1,
+      "meanTimeMs": 92,
+      "medianTimeMs": 88
+    },
+    "euler": {
+      "count": 1,
+      "cerMean": 0.5833333333333334,
+      "cerMedian": 0.5833333333333334,
+      "cerP90": 0.5833333333333334,
+      "latexCerMean": 20.3125,
+      "latexTokenF1Mean": 0.0425531914893617,
+      "hallucinationsSupported": 0,
+      "hallucinationsLimitations": 0,
+      "hallucinationCount": 0,
+      "containsPassRate": 0,
+      "forbidsPassRate": 1,
+      "fragCompileRate": 1,
+      "docCompileRate": 1,
+      "meanTimeMs": 57,
+      "medianTimeMs": 57
+    },
+    "fraction": {
+      "count": 4,
+      "cerMean": 0.4337967914438503,
+      "cerMedian": 0.6363636363636364,
+      "cerP90": 0.64,
+      "latexCerMean": 4.668181818181818,
+      "latexTokenF1Mean": 0.45630375850964083,
+      "hallucinationsSupported": 0,
+      "hallucinationsLimitations": 0,
+      "hallucinationCount": 0,
+      "containsPassRate": 0.16666666666666666,
+      "forbidsPassRate": 1,
+      "fragCompileRate": 1,
+      "docCompileRate": 1,
+      "meanTimeMs": 120,
+      "medianTimeMs": 120
+    },
+    "french": {
+      "count": 16,
+      "cerMean": 0.053238778612837684,
+      "cerMedian": 0.022222222222222223,
+      "cerP90": 0.17647058823529413,
+      "latexCerMean": null,
+      "latexTokenF1Mean": null,
+      "hallucinationsSupported": 0,
+      "hallucinationsLimitations": 0,
+      "hallucinationCount": 0,
+      "containsPassRate": 0.9393939393939394,
+      "forbidsPassRate": 1,
+      "fragCompileRate": 1,
+      "docCompileRate": 1,
+      "meanTimeMs": 448,
+      "medianTimeMs": 205
+    },
+    "geometry": {
+      "count": 1,
+      "cerMean": 0.7333333333333333,
+      "cerMedian": 0.7333333333333333,
+      "cerP90": 0.7333333333333333,
+      "latexCerMean": 31.4,
+      "latexTokenF1Mean": 0.025252525252525252,
+      "hallucinationsSupported": 0,
+      "hallucinationsLimitations": 0,
+      "hallucinationCount": 0,
+      "containsPassRate": 0,
+      "forbidsPassRate": 1,
+      "fragCompileRate": 1,
+      "docCompileRate": 1,
+      "meanTimeMs": 50,
+      "medianTimeMs": 50
+    },
+    "holdout": {
+      "count": 23,
+      "cerMean": 0.24624037662255194,
+      "cerMedian": 0.14814814814814814,
+      "cerP90": 0.5833333333333334,
+      "latexCerMean": 4.163846929898148,
+      "latexTokenF1Mean": 0.48796012960314816,
+      "hallucinationsSupported": 0,
+      "hallucinationsLimitations": 0,
+      "hallucinationCount": 0,
+      "containsPassRate": 0.48,
+      "forbidsPassRate": 1,
+      "fragCompileRate": 1,
+      "docCompileRate": 1,
+      "meanTimeMs": 100,
+      "medianTimeMs": 88
+    },
+    "integral": {
+      "count": 1,
+      "cerMean": 0.8571428571428571,
+      "cerMedian": 0.8571428571428571,
+      "cerP90": 0.8571428571428571,
+      "latexCerMean": 29.466666666666665,
+      "latexTokenF1Mean": 0.026246719160104987,
+      "hallucinationsSupported": 0,
+      "hallucinationsLimitations": 0,
+      "hallucinationCount": 0,
+      "containsPassRate": 1,
+      "forbidsPassRate": 1,
+      "fragCompileRate": 1,
+      "docCompileRate": 1,
+      "meanTimeMs": 49,
+      "medianTimeMs": 49
+    },
+    "limitation": {
+      "count": 4,
+      "cerMean": 0.6584746774964166,
+      "cerMedian": 0.7692307692307693,
+      "cerP90": 0.8571428571428571,
+      "latexCerMean": 23.06031746031746,
+      "latexTokenF1Mean": 0.033336720006773346,
+      "hallucinationsSupported": 0,
+      "hallucinationsLimitations": 0,
+      "hallucinationCount": 0,
+      "containsPassRate": 1,
+      "forbidsPassRate": 1,
+      "fragCompileRate": 1,
+      "docCompileRate": 1,
+      "meanTimeMs": 120,
+      "medianTimeMs": 49
+    },
+    "math": {
+      "count": 52,
+      "cerMean": 0.36413319164204466,
+      "cerMedian": 0.3125,
+      "cerP90": 0.6666666666666666,
+      "latexCerMean": 5.58371670198892,
+      "latexTokenF1Mean": 0.46038914924211344,
+      "hallucinationsSupported": 1,
+      "hallucinationsLimitations": 0,
+      "hallucinationCount": 1,
+      "containsPassRate": 0.40594059405940597,
+      "forbidsPassRate": 1,
+      "fragCompileRate": 0.9807692307692307,
+      "docCompileRate": 0.9807692307692307,
+      "meanTimeMs": 106,
+      "medianTimeMs": 85
+    },
+    "math-cells": {
+      "count": 1,
+      "cerMean": 0.31521739130434784,
+      "cerMedian": 0.31521739130434784,
+      "cerP90": 0.31521739130434784,
+      "latexCerMean": null,
+      "latexTokenF1Mean": null,
+      "hallucinationsSupported": 0,
+      "hallucinationsLimitations": 0,
+      "hallucinationCount": 0,
+      "containsPassRate": 1,
+      "forbidsPassRate": 1,
+      "fragCompileRate": 1,
+      "docCompileRate": 1,
+      "meanTimeMs": 339,
+      "medianTimeMs": 339
+    },
+    "matrix": {
+      "count": 7,
+      "cerMean": 0.47687998276233573,
+      "cerMedian": 0.46153846153846156,
+      "cerP90": 0.6666666666666666,
+      "latexCerMean": 3.384247774697213,
+      "latexTokenF1Mean": 0.06781264604489991,
+      "hallucinationsSupported": 0,
+      "hallucinationsLimitations": 0,
+      "hallucinationCount": 0,
+      "containsPassRate": 0.25,
+      "forbidsPassRate": 1,
+      "fragCompileRate": 0.8571428571428571,
+      "docCompileRate": 0.8571428571428571,
+      "meanTimeMs": 59,
+      "medianTimeMs": 52
+    },
+    "mixed-math": {
+      "count": 1,
+      "cerMean": 0.1056338028169014,
+      "cerMedian": 0.1056338028169014,
+      "cerP90": 0.1056338028169014,
+      "latexCerMean": null,
+      "latexTokenF1Mean": null,
+      "hallucinationsSupported": 0,
+      "hallucinationsLimitations": 0,
+      "hallucinationCount": 0,
+      "containsPassRate": 1,
+      "forbidsPassRate": 1,
+      "fragCompileRate": 1,
+      "docCompileRate": 1,
+      "meanTimeMs": 346,
+      "medianTimeMs": 346
+    },
+    "negative-table": {
+      "count": 4,
+      "cerMean": 0.09381606765327696,
+      "cerMedian": 0.011627906976744186,
+      "cerP90": 0.36363636363636365,
+      "latexCerMean": 0.36363636363636365,
+      "latexTokenF1Mean": 1,
+      "hallucinationsSupported": 0,
+      "hallucinationsLimitations": 0,
+      "hallucinationCount": 0,
+      "containsPassRate": 0.5714285714285714,
+      "forbidsPassRate": 1,
+      "fragCompileRate": 1,
+      "docCompileRate": 1,
+      "meanTimeMs": 96,
+      "medianTimeMs": 106
+    },
+    "physics": {
+      "count": 2,
+      "cerMean": 0.1339729921819474,
+      "cerMedian": 0.23809523809523808,
+      "cerP90": 0.23809523809523808,
+      "latexCerMean": 8.44,
+      "latexTokenF1Mean": 0.07960199004975124,
+      "hallucinationsSupported": 0,
+      "hallucinationsLimitations": 0,
+      "hallucinationCount": 0,
+      "containsPassRate": 0.5,
+      "forbidsPassRate": 1,
+      "fragCompileRate": 1,
+      "docCompileRate": 1,
+      "meanTimeMs": 116,
+      "medianTimeMs": 153
+    },
+    "polynomial": {
+      "count": 6,
+      "cerMean": 0.14814814814814814,
+      "cerMedian": 0.14814814814814814,
+      "cerP90": 0.18518518518518517,
+      "latexCerMean": 1.580246913580247,
+      "latexTokenF1Mean": 0.8016940707523669,
+      "hallucinationsSupported": 0,
+      "hallucinationsLimitations": 0,
+      "hallucinationCount": 0,
+      "containsPassRate": 0.7142857142857143,
+      "forbidsPassRate": 1,
+      "fragCompileRate": 1,
+      "docCompileRate": 1,
+      "meanTimeMs": 97,
+      "medianTimeMs": 103
+    },
+    "prose": {
+      "count": 15,
+      "cerMean": 0.01957177450615022,
+      "cerMedian": 0.011627906976744186,
+      "cerP90": 0.05263157894736842,
+      "latexCerMean": null,
+      "latexTokenF1Mean": null,
+      "hallucinationsSupported": 0,
+      "hallucinationsLimitations": 0,
+      "hallucinationCount": 0,
+      "containsPassRate": 0.9696969696969697,
+      "forbidsPassRate": 1,
+      "fragCompileRate": 1,
+      "docCompileRate": 1,
+      "meanTimeMs": 419,
+      "medianTimeMs": 160
+    },
+    "pythagoras": {
+      "count": 1,
+      "cerMean": 0.7333333333333333,
+      "cerMedian": 0.7333333333333333,
+      "cerP90": 0.7333333333333333,
+      "latexCerMean": 31.4,
+      "latexTokenF1Mean": 0.025252525252525252,
+      "hallucinationsSupported": 0,
+      "hallucinationsLimitations": 0,
+      "hallucinationCount": 0,
+      "containsPassRate": 0,
+      "forbidsPassRate": 1,
+      "fragCompileRate": 1,
+      "docCompileRate": 1,
+      "meanTimeMs": 50,
+      "medianTimeMs": 50
+    },
+    "radical": {
+      "count": 3,
+      "cerMean": 0.3974358974358974,
+      "cerMedian": 0.25,
+      "cerP90": 0.6923076923076923,
+      "latexCerMean": 8.690476190476192,
+      "latexTokenF1Mean": 0.427719298245614,
+      "hallucinationsSupported": 0,
+      "hallucinationsLimitations": 0,
+      "hallucinationCount": 0,
+      "containsPassRate": 0,
+      "forbidsPassRate": 1,
+      "fragCompileRate": 1,
+      "docCompileRate": 1,
+      "meanTimeMs": 46,
+      "medianTimeMs": 46
+    },
+    "seed": {
+      "count": 15,
+      "cerMean": 0.4112400838350225,
+      "cerMedian": 0.4,
+      "cerP90": 0.7692307692307693,
+      "latexCerMean": 12.168155844155844,
+      "latexTokenF1Mean": 0.21873141455200712,
+      "hallucinationsSupported": 1,
+      "hallucinationsLimitations": 0,
+      "hallucinationCount": 1,
+      "containsPassRate": 0.5526315789473685,
+      "forbidsPassRate": 1,
+      "fragCompileRate": 1,
+      "docCompileRate": 1,
+      "meanTimeMs": 379,
+      "medianTimeMs": 81
+    },
+    "stress": {
+      "count": 24,
+      "cerMean": 0.3811970287337934,
+      "cerMedian": 0.25,
+      "cerP90": 0.8,
+      "latexCerMean": 4.74581745948528,
+      "latexTokenF1Mean": 0.5254117487520084,
+      "hallucinationsSupported": 0,
+      "hallucinationsLimitations": 0,
+      "hallucinationCount": 0,
+      "containsPassRate": 0.6875,
+      "forbidsPassRate": 1,
+      "fragCompileRate": 0.9166666666666666,
+      "docCompileRate": 0.9166666666666666,
+      "meanTimeMs": 165,
+      "medianTimeMs": 110
+    },
+    "subscript": {
+      "count": 1,
+      "cerMean": 0.3333333333333333,
+      "cerMedian": 0.3333333333333333,
+      "cerP90": 0.3333333333333333,
+      "latexCerMean": 0.2,
+      "latexTokenF1Mean": 0.7999999999999999,
+      "hallucinationsSupported": 0,
+      "hallucinationsLimitations": 0,
+      "hallucinationCount": 0,
+      "containsPassRate": 0.3333333333333333,
+      "forbidsPassRate": 1,
+      "fragCompileRate": 1,
+      "docCompileRate": 1,
+      "meanTimeMs": 71,
+      "medianTimeMs": 71
+    },
+    "summation": {
+      "count": 2,
+      "cerMean": 0.4917582417582418,
+      "cerMedian": 0.7692307692307693,
+      "cerP90": 0.7692307692307693,
+      "latexCerMean": 10.902509652509652,
+      "latexTokenF1Mean": 0.09277319329832456,
+      "hallucinationsSupported": 0,
+      "hallucinationsLimitations": 0,
+      "hallucinationCount": 0,
+      "containsPassRate": 0.6666666666666666,
+      "forbidsPassRate": 1,
+      "fragCompileRate": 1,
+      "docCompileRate": 1,
+      "meanTimeMs": 89,
+      "medianTimeMs": 131
+    },
+    "superscript": {
+      "count": 1,
+      "cerMean": 0.3125,
+      "cerMedian": 0.3125,
+      "cerP90": 0.3125,
+      "latexCerMean": 0.3333333333333333,
+      "latexTokenF1Mean": 0.5454545454545455,
+      "hallucinationsSupported": 0,
+      "hallucinationsLimitations": 0,
+      "hallucinationCount": 0,
+      "containsPassRate": 0,
+      "forbidsPassRate": 1,
+      "fragCompileRate": 1,
+      "docCompileRate": 1,
+      "meanTimeMs": 66,
+      "medianTimeMs": 66
+    },
+    "symbols": {
+      "count": 1,
+      "cerMean": 0.02702702702702703,
+      "cerMedian": 0.02702702702702703,
+      "cerP90": 0.02702702702702703,
+      "latexCerMean": null,
+      "latexTokenF1Mean": null,
+      "hallucinationsSupported": 0,
+      "hallucinationsLimitations": 0,
+      "hallucinationCount": 0,
+      "containsPassRate": 1,
+      "forbidsPassRate": 1,
+      "fragCompileRate": 1,
+      "docCompileRate": 1,
+      "meanTimeMs": 76,
+      "medianTimeMs": 76
+    },
+    "system": {
+      "count": 1,
+      "cerMean": 0.6,
+      "cerMedian": 0.6,
+      "cerP90": 0.6,
+      "latexCerMean": 5.64,
+      "latexTokenF1Mean": 0.18439716312056736,
+      "hallucinationsSupported": 0,
+      "hallucinationsLimitations": 0,
+      "hallucinationCount": 0,
+      "containsPassRate": 0.5,
+      "forbidsPassRate": 1,
+      "fragCompileRate": 1,
+      "docCompileRate": 1,
+      "meanTimeMs": 81,
+      "medianTimeMs": 81
+    },
+    "table": {
+      "count": 8,
+      "cerMean": 0.6072367698726394,
+      "cerMedian": 0.7454545454545455,
+      "cerP90": 0.825,
+      "latexCerMean": null,
+      "latexTokenF1Mean": null,
+      "hallucinationsSupported": 0,
+      "hallucinationsLimitations": 0,
+      "hallucinationCount": 0,
+      "containsPassRate": 0.4,
+      "forbidsPassRate": 1,
+      "fragCompileRate": 0.875,
+      "docCompileRate": 0.875,
+      "meanTimeMs": 114,
+      "medianTimeMs": 80
+    },
+    "trigonometry": {
+      "count": 2,
+      "cerMean": 0.2608695652173913,
+      "cerMedian": 0.34782608695652173,
+      "cerP90": 0.34782608695652173,
+      "latexCerMean": 1.1428571428571428,
+      "latexTokenF1Mean": 0.41032258064516125,
+      "hallucinationsSupported": 0,
+      "hallucinationsLimitations": 0,
+      "hallucinationCount": 0,
+      "containsPassRate": 0.75,
+      "forbidsPassRate": 1,
+      "fragCompileRate": 1,
+      "docCompileRate": 1,
+      "meanTimeMs": 88,
+      "medianTimeMs": 88
+    },
+    "typography": {
+      "count": 1,
+      "cerMean": 0,
+      "cerMedian": 0,
+      "cerP90": 0,
+      "latexCerMean": null,
+      "latexTokenF1Mean": null,
+      "hallucinationsSupported": 0,
+      "hallucinationsLimitations": 0,
+      "hallucinationCount": 0,
+      "containsPassRate": 1,
+      "forbidsPassRate": 1,
+      "fragCompileRate": 1,
+      "docCompileRate": 1,
+      "meanTimeMs": 205,
+      "medianTimeMs": 205
+    }
+  },
+  "structureMetrics": {
+    "superscript": {
+      "tp": 8,
+      "fp": 0,
+      "fn": 27,
+      "tn": 45,
+      "precision": 1,
+      "recall": 0.22857142857142856,
+      "f1": 0.3720930232558139
+    },
+    "subscript": {
+      "tp": 2,
+      "fp": 0,
+      "fn": 3,
+      "tn": 75,
+      "precision": 1,
+      "recall": 0.4,
+      "f1": 0.5714285714285715
+    },
+    "fraction": {
+      "tp": 2,
+      "fp": 0,
+      "fn": 6,
+      "tn": 72,
+      "precision": 1,
+      "recall": 0.25,
+      "f1": 0.4
+    },
+    "matrix": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 7,
+      "tn": 73,
+      "precision": 1,
+      "recall": 0,
+      "f1": 0
+    },
+    "cases": {
+      "tp": 4,
+      "fp": 1,
+      "fn": 0,
+      "tn": 75,
+      "precision": 0.8,
+      "recall": 1,
+      "f1": 0.888888888888889
+    },
+    "table": {
+      "tp": 1,
+      "fp": 0,
+      "fn": 7,
+      "tn": 72,
+      "precision": 1,
+      "recall": 0.125,
+      "f1": 0.2222222222222222
+    },
+    "radical": {
+      "tp": 0,
+      "fp": 0,
+      "fn": 5,
+      "tn": 75,
+      "precision": 1,
+      "recall": 0,
+      "f1": 0
+    }
+  },
+  "matrixAnalysis": {
+    "total": 7,
+    "correct": 0,
+    "recall": 0,
+    "samples": [
+      {
+        "id": "seed_math_matrix",
+        "rawText": "[12]\n[34]\n",
+        "emittedLatex": "\\[\n[12]\n\\]\n\n\\[\n[34]\n\\]",
+        "hasMatrix": false
+      },
+      {
+        "id": "seed_case_06_matrix",
+        "rawText": "(3 4)\n",
+        "emittedLatex": "% === Recognition Quality: MEDIUM (65%) ===\n% [Warning] Moderate recognition confidence (65%). Some characters or mathematical symbols may require correction.\n% ==========================================\n\n\\[\n(3 4)\n\\]",
+        "hasMatrix": false
+      },
+      {
+        "id": "synth_dev_matrix_bracket",
+        "rawText": "[57;29]\n",
+        "emittedLatex": "\\[\n[57;29]\n\\]",
+        "hasMatrix": false
+      },
+      {
+        "id": "synth_hold_matrix_rotation",
+        "rawText": "[ cos(@) -sin(8) ; sin(®) cos(8) ]\n",
+        "emittedLatex": "% === Recognition Quality: MEDIUM (73%) ===\n% [Warning] Moderate recognition confidence (73%). Some characters or mathematical symbols may require correction.\n% ==========================================\n\n[ cos(@) -sin(8) ; sin(®) cos(8) ]",
+        "hasMatrix": false
+      },
+      {
+        "id": "synth_stress_matrix_rot4",
+        "rawText": "[57;29]\n",
+        "emittedLatex": "\\[\n[57;29]\n\\]",
+        "hasMatrix": false
+      },
+      {
+        "id": "synth_stress_matrix_blur2",
+        "rawText": "{57;29)\n",
+        "emittedLatex": "% === Recognition Quality: UNCERTAIN (35%) ===\n% [Warning] Low OCR recognition confidence (35%). Image may be blurry, low-resolution, or handwritten.\n%   Suggestion: Please verify the output carefully against your original source.\n% ==========================================\n\n% Note: Low recognition confidence (35%) on line below\n\\[\n{57;29)\n\\]",
+        "hasMatrix": false
+      },
+      {
+        "id": "synth_stress_matrix_noise",
+        "rawText": "Par 2 9]\n",
+        "emittedLatex": "% === Recognition Quality: UNCERTAIN (31%) ===\n% [Warning] Low OCR recognition confidence (31%). Image may be blurry, low-resolution, or handwritten.\n%   Suggestion: Please verify the output carefully against your original source.\n% ==========================================\n\n% Note: Low recognition confidence (31%) on line below\n\\[\nPar 2 9]\n\\]",
+        "hasMatrix": false
+      }
+    ]
+  },
+  "confusionMatrix": {
+    "prose": {
+      "prose": 35,
+      "math": 1,
+      "table": 0,
+      "matrix": 0,
+      "cases": 0
+    },
+    "math": {
+      "prose": 12,
+      "math": 47,
+      "table": 0,
+      "matrix": 0,
+      "cases": 2
+    },
+    "table": {
+      "prose": 19,
+      "math": 2,
+      "table": 3,
+      "matrix": 0,
+      "cases": 0
+    },
+    "matrix": {
+      "prose": 1,
+      "math": 7,
+      "table": 0,
+      "matrix": 0,
+      "cases": 0
+    },
+    "cases": {
+      "prose": 0,
+      "math": 0,
+      "table": 0,
+      "matrix": 0,
+      "cases": 8
+    }
+  },
+  "lineStats": {
+    "totalLines": 137,
+    "matchedLines": 93,
+    "misclassificationRate": 0.32116788321167883
+  },
+  "worstSamples": [
+    {
+      "id": "synth_stress_poly_combined_noise_contrast",
+      "set": "stress",
+      "lang": "en",
+      "tags": [
+        "stress",
+        "math",
+        "degradation:combined_noise_contrast"
+      ],
+      "status": "supported",
+      "cer": 1.6296,
+      "latexCer": 19.6667,
+      "timeMs": 1048,
+      "rawPreview": "DS EG renee CG a nn  . P(x) ee oe 2ae 7 I EN i ae Ns ea ",
+      "missingContains": [],
+      "hallucinations": [],
+      "compileSuccess": true
+    },
+    {
+      "id": "seed_case_04_integral",
+      "set": "dev",
+      "lang": "en",
+      "tags": [
+        "seed",
+        "math",
+        "calculus",
+        "integral",
+        "limitation"
+      ],
+      "status": "known_limitation",
+      "cer": 0.8571,
+      "latexCer": 29.4667,
+      "timeMs": 49,
+      "rawPreview": "1 [ x?dx 0 ",
+      "missingContains": [],
+      "hallucinations": [],
+      "compileSuccess": true
+    },
+    {
+      "id": "synth_stress_table_contrast",
+      "set": "stress",
+      "lang": "en",
+      "tags": [
+        "stress",
+        "table",
+        "degradation:contrast_squeezed"
+      ],
+      "status": "supported",
+      "cer": 0.825,
+      "latexCer": null,
+      "timeMs": 67,
+      "rawPreview": "[item | | cost ",
+      "missingContains": [
+        "Monitor"
+      ],
+      "hallucinations": [],
+      "compileSuccess": true
+    },
+    {
+      "id": "synth_dev_table_currency",
+      "set": "dev",
+      "lang": "en",
+      "tags": [
+        "dev",
+        "table",
+        "currency"
+      ],
+      "status": "supported",
+      "cer": 0.8,
+      "latexCer": null,
+      "timeMs": 45,
+      "rawPreview": "[item | @ty | cost ",
+      "missingContains": [
+        "\\begin{tabular}",
+        "Monitor",
+        "\\$300",
+        "\\$150"
+      ],
+      "hallucinations": [],
+      "compileSuccess": true
+    },
+    {
+      "id": "synth_stress_table_vignette",
+      "set": "stress",
+      "lang": "en",
+      "tags": [
+        "stress",
+        "table",
+        "degradation:vignette"
+      ],
+      "status": "supported",
+      "cer": 0.8,
+      "latexCer": null,
+      "timeMs": 75,
+      "rawPreview": "“item | @ty | cost ",
+      "missingContains": [
+        "Monitor"
+      ],
+      "hallucinations": [],
+      "compileSuccess": true
+    }
+  ],
+  "worstDev": [
+    {
+      "id": "seed_case_04_integral",
+      "set": "dev",
+      "lang": "en",
+      "tags": [
+        "seed",
+        "math",
+        "calculus",
+        "integral",
+        "limitation"
+      ],
+      "status": "known_limitation",
+      "cer": 0.8571,
+      "latexCer": 29.4667,
+      "timeMs": 49,
+      "rawPreview": "1 [ x?dx 0 ",
+      "missingContains": [],
+      "hallucinations": [],
+      "compileSuccess": true
+    },
+    {
+      "id": "synth_dev_table_currency",
+      "set": "dev",
+      "lang": "en",
+      "tags": [
+        "dev",
+        "table",
+        "currency"
+      ],
+      "status": "supported",
+      "cer": 0.8,
+      "latexCer": null,
+      "timeMs": 45,
+      "rawPreview": "[item | @ty | cost ",
+      "missingContains": [
+        "\\begin{tabular}",
+        "Monitor",
+        "\\$300",
+        "\\$150"
+      ],
+      "hallucinations": [],
+      "compileSuccess": true
+    },
+    {
+      "id": "seed_case_05_summation",
+      "set": "dev",
+      "lang": "en",
+      "tags": [
+        "seed",
+        "math",
+        "summation",
+        "limitation"
+      ],
+      "status": "known_limitation",
+      "cer": 0.7692,
+      "latexCer": 14.6429,
+      "timeMs": 47,
+      "rawPreview": "n > i=1 ",
+      "missingContains": [],
+      "hallucinations": [],
+      "compileSuccess": true
+    },
+    {
+      "id": "seed_case_01_pythagoras",
+      "set": "dev",
+      "lang": "en",
+      "tags": [
+        "seed",
+        "math",
+        "pythagoras",
+        "geometry"
+      ],
+      "status": "supported",
+      "cer": 0.7333,
+      "latexCer": 31.4,
+      "timeMs": 50,
+      "rawPreview": "ety? = 2? ",
+      "missingContains": [
+        "x^{2}",
+        "y^{2}",
+        "z^{2}"
+      ],
+      "hallucinations": [],
+      "compileSuccess": true
+    },
+    {
+      "id": "seed_case_03_sqrt",
+      "set": "dev",
+      "lang": "en",
+      "tags": [
+        "seed",
+        "math",
+        "radical",
+        "limitation"
+      ],
+      "status": "known_limitation",
+      "cer": 0.6923,
+      "latexCer": 25.0714,
+      "timeMs": 46,
+      "rawPreview": "Vzæx? +1 ",
+      "missingContains": [],
+      "hallucinations": [],
+      "compileSuccess": true
+    }
+  ],
+  "worstHoldout": [
+    {
+      "id": "synth_hold_table_elements",
+      "set": "holdout",
+      "lang": "fr",
+      "tags": [
+        "holdout",
+        "table",
+        "chemistry",
+        "distinct-source"
+      ],
+      "status": "supported",
+      "cer": 0.7455,
+      "latexCer": null,
+      "timeMs": 115,
+      "rawPreview": "Hydrogene CRE 1.008 ",
+      "missingContains": [
+        "\\begin{tabular}",
+        "Helium"
+      ],
+      "hallucinations": [],
+      "compileSuccess": true
+    },
+    {
+      "id": "synth_hold_table_data",
+      "set": "holdout",
+      "lang": "en",
+      "tags": [
+        "holdout",
+        "table",
+        "degradation:clean"
+      ],
+      "status": "supported",
+      "cer": 0.7222,
+      "latexCer": null,
+      "timeMs": 62,
+      "rawPreview": "[Name | Age | score ",
+      "missingContains": [
+        "\\begin{tabular}",
+        "Alice",
+        "Bob"
+      ],
+      "hallucinations": [],
+      "compileSuccess": true
+    },
+    {
+      "id": "synth_hold_euler_identity",
+      "set": "holdout",
+      "lang": "en",
+      "tags": [
+        "holdout",
+        "math",
+        "euler",
+        "degradation:clean"
+      ],
+      "status": "supported",
+      "cer": 0.5833,
+      "latexCer": 20.3125,
+      "timeMs": 57,
+      "rawPreview": "e™+1=0 ",
+      "missingContains": [
+        "e^{i",
+        "+ 1 = 0"
+      ],
+      "hallucinations": [],
+      "compileSuccess": true
+    },
+    {
+      "id": "synth_hold_gaussian_integral",
+      "set": "holdout",
+      "lang": "en",
+      "tags": [
+        "holdout",
+        "math",
+        "calculus",
+        "distinct-source"
+      ],
+      "status": "supported",
+      "cer": 0.4375,
+      "latexCer": 7.069,
+      "timeMs": 48,
+      "rawPreview": "Jex*2 dx = vn ",
+      "missingContains": [
+        "\\int",
+        "e^{-x^{2}}"
+      ],
+      "hallucinations": [],
+      "compileSuccess": true
+    },
+    {
+      "id": "synth_hold_fraction_division",
+      "set": "holdout",
+      "lang": "en",
+      "tags": [
+        "holdout",
+        "math",
+        "fraction",
+        "degradation:clean"
+      ],
+      "status": "supported",
+      "cer": 0.4,
+      "latexCer": 8.0606,
+      "timeMs": 120,
+      "rawPreview": "(at+b)/(c+d)=x/y ",
+      "missingContains": [
+        "\\frac{a + b}{c + d}"
+      ],
+      "hallucinations": [],
+      "compileSuccess": true
+    }
+  ],
+  "worstStress": [
+    {
+      "id": "synth_stress_poly_combined_noise_contrast",
+      "set": "stress",
+      "lang": "en",
+      "tags": [
+        "stress",
+        "math",
+        "degradation:combined_noise_contrast"
+      ],
+      "status": "supported",
+      "cer": 1.6296,
+      "latexCer": 19.6667,
+      "timeMs": 1048,
+      "rawPreview": "DS EG renee CG a nn  . P(x) ee oe 2ae 7 I EN i ae Ns ea ",
+      "missingContains": [],
+      "hallucinations": [],
+      "compileSuccess": true
+    },
+    {
+      "id": "synth_stress_table_contrast",
+      "set": "stress",
+      "lang": "en",
+      "tags": [
+        "stress",
+        "table",
+        "degradation:contrast_squeezed"
+      ],
+      "status": "supported",
+      "cer": 0.825,
+      "latexCer": null,
+      "timeMs": 67,
+      "rawPreview": "[item | | cost ",
+      "missingContains": [
+        "Monitor"
+      ],
+      "hallucinations": [],
+      "compileSuccess": true
+    },
+    {
+      "id": "synth_stress_table_vignette",
+      "set": "stress",
+      "lang": "en",
+      "tags": [
+        "stress",
+        "table",
+        "degradation:vignette"
+      ],
+      "status": "supported",
+      "cer": 0.8,
+      "latexCer": null,
+      "timeMs": 75,
+      "rawPreview": "“item | @ty | cost ",
+      "missingContains": [
+        "Monitor"
+      ],
+      "hallucinations": [],
+      "compileSuccess": true
+    },
+    {
+      "id": "synth_stress_table_rot4",
+      "set": "stress",
+      "lang": "en",
+      "tags": [
+        "stress",
+        "table",
+        "degradation:rotation_4"
+      ],
+      "status": "supported",
+      "cer": 0.65,
+      "latexCer": null,
+      "timeMs": 80,
+      "rawPreview": "| Monitor | 2 | $300 ",
+      "missingContains": [
+        "Desk"
+      ],
+      "hallucinations": [],
+      "compileSuccess": false
+    },
+    {
+      "id": "synth_stress_fraction_rot5",
+      "set": "stress",
+      "lang": "en",
+      "tags": [
+        "stress",
+        "math",
+        "fraction",
+        "degradation:rotation_5"
+      ],
+      "status": "supported",
+      "cer": 0.64,
+      "latexCer": 9.8788,
+      "timeMs": 178,
+      "rawPreview": "B+b/(c+d ex, ",
+      "missingContains": [
+        "a + b"
+      ],
+      "hallucinations": [],
+      "compileSuccess": true
+    }
+  ],
+  "results": [
+    {
+      "id": "seed_french_sample",
+      "file": "seed/french_sample.png",
+      "set": "dev",
+      "lang": "fr",
+      "tags": [
+        "seed",
+        "french",
+        "accents",
+        "prose"
+      ],
+      "status": "supported",
+      "timeMs": 3929,
+      "rawText": "Théorème fondamental\nVoici des caractères accentués : é, à, à, ç, oe, U.\nCalculer la dérivée de la fonction f sur cet intervalle.\n",
+      "expectedText": "Théorème fondamental\nVoici des caractères accentués : é, è, à, ç, œ, ù.\nCalculer la dérivée de la fonction f sur cet intervalle.",
+      "expectedLatex": null,
+      "fragmentLatex": "Théorème fondamental\n\nVoici des caractères accentués : é, à, à, ç, oe, U.\n\nCalculer la dérivée de la fonction f sur cet intervalle.",
+      "completeLatex": "\\documentclass[11pt,a4paper]{article}\n\\usepackage{iftex}\n\\ifPDFTeX\n  \\usepackage[utf8]{inputenc}\n  \\usepackage[T1]{fontenc}\n\\fi\n\\usepackage[french,english]{babel}\n\\usepackage{amsmath,amssymb,amsfonts}\n\n\\begin{document}\n\nThéorème fondamental\n\nVoici des caractères accentués : é, à, à, ç, oe, U.\n\nCalculer la dérivée de la fonction f sur cet intervalle.\n\n\\end{document}",
+      "cer": 0.03125,
+      "ocrCer": 0.03125,
+      "latexCer": null,
+      "tokenF1": null,
+      "actualLineLabels": [
+        "prose",
+        "prose",
+        "prose"
+      ],
+      "predictedLineLabels": [
+        "prose",
+        "prose",
+        "prose"
+      ],
+      "containsTotal": 3,
+      "containsPassed": 3,
+      "containsFailed": [],
+      "forbidsTotal": 0,
+      "forbidsPassed": 0,
+      "forbidsFailed": [],
+      "hallucinations": [],
+      "fragmentCompileSuccess": true,
+      "documentCompileSuccess": true
+    },
+    {
+      "id": "seed_math_equation",
+      "file": "seed/math_equation.png",
+      "set": "dev",
+      "lang": "en",
+      "tags": [
+        "seed",
+        "math",
+        "algebra"
+      ],
+      "status": "supported",
+      "timeMs": 89,
+      "rawText": "E = mc?\nf(x) = x2+2X +1\n",
+      "expectedText": "E = mc^2\nf(x) = x^2 + 2x + 1",
+      "expectedLatex": "\\[\nE = mc^{2}\n\\]\n\\[\nf(x) = x^{2} + 2x + 1\n\\]",
+      "fragmentLatex": "% === Recognition Quality: MEDIUM (88%) ===\n% [Warning] Unrecognized characters detected as \"?\" in the OCR output.\n%   Suggestion: Check exponents, indices, or special mathematical glyphs.\n% ==========================================\n\n\\[\n\\begin{cases}\nE = mc? \\\\\nf(x) = x^{2}+2X +1\n\\end{cases}\n\\]",
+      "completeLatex": "\\documentclass[11pt,a4paper]{article}\n\\usepackage{iftex}\n\\ifPDFTeX\n  \\usepackage[utf8]{inputenc}\n  \\usepackage[T1]{fontenc}\n\\fi\n\\usepackage[english]{babel}\n\\usepackage{amsmath,amssymb,amsfonts}\n\n\\begin{document}\n\n% === Recognition Quality: MEDIUM (88%) ===\n% [Warning] Unrecognized characters detected as \"?\" in the OCR output.\n%   Suggestion: Check exponents, indices, or special mathematical glyphs.\n% ==========================================\n\n\\[\n\\begin{cases}\nE = mc? \\\\\nf(x) = x^{2}+2X +1\n\\end{cases}\n\\]\n\n\\end{document}",
+      "cer": 0.25,
+      "ocrCer": 0.25,
+      "latexCer": 9.5,
+      "tokenF1": 0.1416666666666667,
+      "actualLineLabels": [
+        "math",
+        "math"
+      ],
+      "predictedLineLabels": [
+        "cases",
+        "cases"
+      ],
+      "containsTotal": 3,
+      "containsPassed": 2,
+      "containsFailed": [
+        "+ 1"
+      ],
+      "forbidsTotal": 0,
+      "forbidsPassed": 0,
+      "forbidsFailed": [],
+      "hallucinations": [
+        {
+          "type": "cases",
+          "symbol": "cases",
+          "details": "hallucinated cases environment"
+        }
+      ],
+      "fragmentCompileSuccess": true,
+      "documentCompileSuccess": true
+    },
+    {
+      "id": "seed_math_fraction",
+      "file": "seed/math_fraction.png",
+      "set": "dev",
+      "lang": "en",
+      "tags": [
+        "seed",
+        "math",
+        "fraction"
+      ],
+      "status": "supported",
+      "timeMs": 114,
+      "rawText": "(x + 1)/ (x - 1)\n",
+      "expectedText": "(x + 1) / (x - 1)",
+      "expectedLatex": "\\[\n\\frac{x + 1}{x - 1}\n\\]",
+      "fragmentLatex": "\\[\n\\frac{x + 1}{x - 1}\n\\]",
+      "completeLatex": "\\documentclass[11pt,a4paper]{article}\n\\usepackage{iftex}\n\\ifPDFTeX\n  \\usepackage[utf8]{inputenc}\n  \\usepackage[T1]{fontenc}\n\\fi\n\\usepackage[english]{babel}\n\\usepackage{amsmath,amssymb,amsfonts}\n\n\\begin{document}\n\n\\[\n\\frac{x + 1}{x - 1}\n\\]\n\n\\end{document}",
+      "cer": 0.058823529411764705,
+      "ocrCer": 0.058823529411764705,
+      "latexCer": 0,
+      "tokenF1": 1,
+      "actualLineLabels": [
+        "math"
+      ],
+      "predictedLineLabels": [
+        "math"
+      ],
+      "containsTotal": 2,
+      "containsPassed": 0,
+      "containsFailed": [
+        "(x + 1)",
+        "(x - 1)"
+      ],
+      "forbidsTotal": 0,
+      "forbidsPassed": 0,
+      "forbidsFailed": [],
+      "hallucinations": [],
+      "fragmentCompileSuccess": true,
+      "documentCompileSuccess": true
+    },
+    {
+      "id": "seed_math_matrix",
+      "file": "seed/math_matrix.png",
+      "set": "dev",
+      "lang": "en",
+      "tags": [
+        "seed",
+        "math",
+        "matrix"
+      ],
+      "status": "supported",
+      "timeMs": 41,
+      "rawText": "[12]\n[34]\n",
+      "expectedText": "[ 1 2 ]\n[ 3 4 ]",
+      "expectedLatex": "\\[\n\\begin{bmatrix}\n1 & 2 \\\\\n3 & 4\n\\end{bmatrix}\n\\]",
+      "fragmentLatex": "\\[\n[12]\n\\]\n\n\\[\n[34]\n\\]",
+      "completeLatex": "\\documentclass[11pt,a4paper]{article}\n\\usepackage{iftex}\n\\ifPDFTeX\n  \\usepackage[utf8]{inputenc}\n  \\usepackage[T1]{fontenc}\n\\fi\n\\usepackage[english]{babel}\n\\usepackage{amsmath,amssymb,amsfonts}\n\n\\begin{document}\n\n\\[\n[12]\n\\]\n\n\\[\n[34]\n\\]\n\n\\end{document}",
+      "cer": 0.4,
+      "ocrCer": 0.4,
+      "latexCer": 0.9090909090909091,
+      "tokenF1": 0,
+      "actualLineLabels": [
+        "matrix"
+      ],
+      "predictedLineLabels": [
+        "math",
+        "math"
+      ],
+      "containsTotal": 4,
+      "containsPassed": 0,
+      "containsFailed": [
+        "\\begin{bmatrix}",
+        "1 & 2",
+        "3 & 4",
+        "\\end{bmatrix}"
+      ],
+      "forbidsTotal": 0,
+      "forbidsPassed": 0,
+      "forbidsFailed": [],
+      "hallucinations": [],
+      "fragmentCompileSuccess": true,
+      "documentCompileSuccess": true
+    },
+    {
+      "id": "seed_table_sample",
+      "file": "seed/table_sample.png",
+      "set": "dev",
+      "lang": "en",
+      "tags": [
+        "seed",
+        "table",
+        "booktabs"
+      ],
+      "status": "supported",
+      "timeMs": 126,
+      "rawText": "Item Quantity Price\nApples 10 $5.00\nOranges 8 $4.50\n",
+      "expectedText": "Item Quantity Price\nApples 10 $5.00\nOranges 8 $4.50",
+      "expectedLatex": null,
+      "fragmentLatex": "\\begin{table}[htbp]\n\\centering\n\\begin{tabular}{lll}\n\\toprule\nItem & Quantity & Price \\\\\n\\midrule\nApples & 10 & \\$5.00 \\\\\nOranges & 8 & \\$4.50 \\\\\n\\bottomrule\n\\end{tabular}\n\\end{table}",
+      "completeLatex": "\\documentclass[11pt,a4paper]{article}\n\\usepackage{iftex}\n\\ifPDFTeX\n  \\usepackage[utf8]{inputenc}\n  \\usepackage[T1]{fontenc}\n\\fi\n\\usepackage[english]{babel}\n\\usepackage{amsmath,amssymb,amsfonts}\n\\usepackage{booktabs}\n\n\\begin{document}\n\n\\begin{table}[htbp]\n\\centering\n\\begin{tabular}{lll}\n\\toprule\nItem & Quantity & Price \\\\\n\\midrule\nApples & 10 & \\$5.00 \\\\\nOranges & 8 & \\$4.50 \\\\\n\\bottomrule\n\\end{tabular}\n\\end{table}\n\n\\end{document}",
+      "cer": 0,
+      "ocrCer": 0,
+      "latexCer": null,
+      "tokenF1": null,
+      "actualLineLabels": [
+        "table",
+        "table",
+        "table"
+      ],
+      "predictedLineLabels": [
+        "table",
+        "table",
+        "table"
+      ],
+      "containsTotal": 5,
+      "containsPassed": 5,
+      "containsFailed": [],
+      "forbidsTotal": 0,
+      "forbidsPassed": 0,
+      "forbidsFailed": [],
+      "hallucinations": [],
+      "fragmentCompileSuccess": true,
+      "documentCompileSuccess": true
+    },
+    {
+      "id": "seed_case_01_pythagoras",
+      "file": "seed/case_01_pythagoras.png",
+      "set": "dev",
+      "lang": "en",
+      "tags": [
+        "seed",
+        "math",
+        "pythagoras",
+        "geometry"
+      ],
+      "status": "supported",
+      "timeMs": 50,
+      "rawText": "ety? = 2?\n",
+      "expectedText": "x^2 + y^2 = z^2",
+      "expectedLatex": "\\[\nx^{2} + y^{2} = z^{2}\n\\]",
+      "fragmentLatex": "% === Recognition Quality: UNCERTAIN (20%) ===\n% [Warning] Low OCR recognition confidence (20%). Image may be blurry, low-resolution, or handwritten.\n%   Suggestion: Please verify the output carefully against your original source.\n% [Warning] Unrecognized characters detected as \"?\" in the OCR output.\n%   Suggestion: Check exponents, indices, or special mathematical glyphs.\n% ==========================================\n\n% Note: Low recognition confidence (4%) on line below\n\\[\nety? = 2?\n\\]",
+      "completeLatex": "\\documentclass[11pt,a4paper]{article}\n\\usepackage{iftex}\n\\ifPDFTeX\n  \\usepackage[utf8]{inputenc}\n  \\usepackage[T1]{fontenc}\n\\fi\n\\usepackage[english]{babel}\n\\usepackage{amsmath,amssymb,amsfonts}\n\n\\begin{document}\n\n% === Recognition Quality: UNCERTAIN (20%) ===\n% [Warning] Low OCR recognition confidence (20%). Image may be blurry, low-resolution, or handwritten.\n%   Suggestion: Please verify the output carefully against your original source.\n% [Warning] Unrecognized characters detected as \"?\" in the OCR output.\n%   Suggestion: Check exponents, indices, or special mathematical glyphs.\n% ==========================================\n\n% Note: Low recognition confidence (4%) on line below\n\\[\nety? = 2?\n\\]\n\n\\end{document}",
+      "cer": 0.7333333333333333,
+      "ocrCer": 0.7333333333333333,
+      "latexCer": 31.4,
+      "tokenF1": 0.025252525252525252,
+      "actualLineLabels": [
+        "math"
+      ],
+      "predictedLineLabels": [
+        "math"
+      ],
+      "containsTotal": 3,
+      "containsPassed": 0,
+      "containsFailed": [
+        "x^{2}",
+        "y^{2}",
+        "z^{2}"
+      ],
+      "forbidsTotal": 0,
+      "forbidsPassed": 0,
+      "forbidsFailed": [],
+      "hallucinations": [],
+      "fragmentCompileSuccess": true,
+      "documentCompileSuccess": true
+    },
+    {
+      "id": "seed_case_02_fraction",
+      "file": "seed/case_02_fraction.png",
+      "set": "dev",
+      "lang": "en",
+      "tags": [
+        "seed",
+        "math",
+        "fraction"
+      ],
+      "status": "supported",
+      "timeMs": 68,
+      "rawText": "a+b\nc\n",
+      "expectedText": "(a + b) / c",
+      "expectedLatex": "\\[\n\\frac{a + b}{c}\n\\]",
+      "fragmentLatex": "\\[\na+b\n\\]\n\nc",
+      "completeLatex": "\\documentclass[11pt,a4paper]{article}\n\\usepackage{iftex}\n\\ifPDFTeX\n  \\usepackage[utf8]{inputenc}\n  \\usepackage[T1]{fontenc}\n\\fi\n\\usepackage[english]{babel}\n\\usepackage{amsmath,amssymb,amsfonts}\n\n\\begin{document}\n\n\\[\na+b\n\\]\n\nc\n\n\\end{document}",
+      "cer": 0.6363636363636364,
+      "ocrCer": 0.6363636363636364,
+      "latexCer": 0.7333333333333333,
+      "tokenF1": 0.6153846153846153,
+      "actualLineLabels": [
+        "math"
+      ],
+      "predictedLineLabels": [
+        "math",
+        "prose"
+      ],
+      "containsTotal": 1,
+      "containsPassed": 0,
+      "containsFailed": [
+        "\\frac{a + b}{c}"
+      ],
+      "forbidsTotal": 0,
+      "forbidsPassed": 0,
+      "forbidsFailed": [],
+      "hallucinations": [],
+      "fragmentCompileSuccess": true,
+      "documentCompileSuccess": true
+    },
+    {
+      "id": "seed_case_03_sqrt",
+      "file": "seed/case_03_sqrt.png",
+      "set": "dev",
+      "lang": "en",
+      "tags": [
+        "seed",
+        "math",
+        "radical",
+        "limitation"
+      ],
+      "status": "known_limitation",
+      "timeMs": 46,
+      "rawText": "Vzæx? +1\n",
+      "expectedText": "sqrt(x^2 + 1)",
+      "expectedLatex": "\\[\n\\sqrt{x^{2} + 1}\n\\]",
+      "fragmentLatex": "% === Recognition Quality: UNCERTAIN (67%) ===\n% [Warning] Moderate recognition confidence (67%). Some characters or mathematical symbols may require correction.\n% [Warning] Unrecognized characters detected as \"?\" in the OCR output.\n%   Suggestion: Check exponents, indices, or special mathematical glyphs.\n% ==========================================\n\n\\[\n\\text{Vzæx}? +1\n\\]",
+      "completeLatex": "\\documentclass[11pt,a4paper]{article}\n\\usepackage{iftex}\n\\ifPDFTeX\n  \\usepackage[utf8]{inputenc}\n  \\usepackage[T1]{fontenc}\n\\fi\n\\usepackage[english]{babel}\n\\usepackage{amsmath,amssymb,amsfonts}\n\n\\begin{document}\n\n% === Recognition Quality: UNCERTAIN (67%) ===\n% [Warning] Moderate recognition confidence (67%). Some characters or mathematical symbols may require correction.\n% [Warning] Unrecognized characters detected as \"?\" in the OCR output.\n%   Suggestion: Check exponents, indices, or special mathematical glyphs.\n% ==========================================\n\n\\[\n\\text{Vzæx}? +1\n\\]\n\n\\end{document}",
+      "cer": 0.6923076923076923,
+      "ocrCer": 0.6923076923076923,
+      "latexCer": 25.071428571428573,
+      "tokenF1": 0.02,
+      "actualLineLabels": [
+        "math"
+      ],
+      "predictedLineLabels": [
+        "math"
+      ],
+      "containsTotal": 0,
+      "containsPassed": 0,
+      "containsFailed": [],
+      "forbidsTotal": 1,
+      "forbidsPassed": 1,
+      "forbidsFailed": [],
+      "hallucinations": [],
+      "fragmentCompileSuccess": true,
+      "documentCompileSuccess": true
+    },
+    {
+      "id": "seed_case_04_integral",
+      "file": "seed/case_04_integral.png",
+      "set": "dev",
+      "lang": "en",
+      "tags": [
+        "seed",
+        "math",
+        "calculus",
+        "integral",
+        "limitation"
+      ],
+      "status": "known_limitation",
+      "timeMs": 49,
+      "rawText": "1\n[ x?dx\n0\n",
+      "expectedText": "int_0^1 x^2 dx",
+      "expectedLatex": "\\[\n\\int_{0}^{1} x^{2} dx\n\\]",
+      "fragmentLatex": "% === Recognition Quality: UNCERTAIN (79%) ===\n% [Warning] Unrecognized characters detected as \"?\" in the OCR output.\n%   Suggestion: Check exponents, indices, or special mathematical glyphs.\n% [Warning] Stacked vertical characters detected. May represent integral/summation limits or matrix elements.\n%   Suggestion: Tesseract line segmentation often splits upper/lower limits onto separate lines.\n% ==========================================\n\n1\n\n\\[\n[ x?dx\n\\]\n\n0",
+      "completeLatex": "\\documentclass[11pt,a4paper]{article}\n\\usepackage{iftex}\n\\ifPDFTeX\n  \\usepackage[utf8]{inputenc}\n  \\usepackage[T1]{fontenc}\n\\fi\n\\usepackage[english]{babel}\n\\usepackage{amsmath,amssymb,amsfonts}\n\n\\begin{document}\n\n% === Recognition Quality: UNCERTAIN (79%) ===\n% [Warning] Unrecognized characters detected as \"?\" in the OCR output.\n%   Suggestion: Check exponents, indices, or special mathematical glyphs.\n% [Warning] Stacked vertical characters detected. May represent integral/summation limits or matrix elements.\n%   Suggestion: Tesseract line segmentation often splits upper/lower limits onto separate lines.\n% ==========================================\n\n1\n\n\\[\n[ x?dx\n\\]\n\n0\n\n\\end{document}",
+      "cer": 0.8571428571428571,
+      "ocrCer": 0.8571428571428571,
+      "latexCer": 29.466666666666665,
+      "tokenF1": 0.026246719160104987,
+      "actualLineLabels": [
+        "math"
+      ],
+      "predictedLineLabels": [
+        "prose",
+        "math",
+        "prose"
+      ],
+      "containsTotal": 1,
+      "containsPassed": 1,
+      "containsFailed": [],
+      "forbidsTotal": 0,
+      "forbidsPassed": 0,
+      "forbidsFailed": [],
+      "hallucinations": [],
+      "fragmentCompileSuccess": true,
+      "documentCompileSuccess": true
+    },
+    {
+      "id": "seed_case_05_summation",
+      "file": "seed/case_05_summation.png",
+      "set": "dev",
+      "lang": "en",
+      "tags": [
+        "seed",
+        "math",
+        "summation",
+        "limitation"
+      ],
+      "status": "known_limitation",
+      "timeMs": 47,
+      "rawText": "n\n>\ni=1\n",
+      "expectedText": "sum_{i=1}^n i",
+      "expectedLatex": "\\[\n\\sum_{i=1}^{n} i\n\\]",
+      "fragmentLatex": "% === Recognition Quality: MEDIUM (60%) ===\n% [Warning] Moderate recognition confidence (60%). Some characters or mathematical symbols may require correction.\n% ==========================================\n\nn\n\n\\[\n>\n\\]\n\n\\[\ni=1\n\\]",
+      "completeLatex": "\\documentclass[11pt,a4paper]{article}\n\\usepackage{iftex}\n\\ifPDFTeX\n  \\usepackage[utf8]{inputenc}\n  \\usepackage[T1]{fontenc}\n\\fi\n\\usepackage[english]{babel}\n\\usepackage{amsmath,amssymb,amsfonts}\n\n\\begin{document}\n\n% === Recognition Quality: MEDIUM (60%) ===\n% [Warning] Moderate recognition confidence (60%). Some characters or mathematical symbols may require correction.\n% ==========================================\n\nn\n\n\\[\n>\n\\]\n\n\\[\ni=1\n\\]\n\n\\end{document}",
+      "cer": 0.7692307692307693,
+      "ocrCer": 0.7692307692307693,
+      "latexCer": 14.642857142857142,
+      "tokenF1": 0.05376344086021505,
+      "actualLineLabels": [
+        "math"
+      ],
+      "predictedLineLabels": [
+        "prose",
+        "math",
+        "math"
+      ],
+      "containsTotal": 1,
+      "containsPassed": 1,
+      "containsFailed": [],
+      "forbidsTotal": 0,
+      "forbidsPassed": 0,
+      "forbidsFailed": [],
+      "hallucinations": [],
+      "fragmentCompileSuccess": true,
+      "documentCompileSuccess": true
+    },
+    {
+      "id": "seed_case_06_matrix",
+      "file": "seed/case_06_matrix.png",
+      "set": "dev",
+      "lang": "en",
+      "tags": [
+        "seed",
+        "math",
+        "matrix"
+      ],
+      "status": "supported",
+      "timeMs": 29,
+      "rawText": "(3 4)\n",
+      "expectedText": "( 1 2 )\n( 3 4 )",
+      "expectedLatex": "\\[\n\\begin{pmatrix}\n1 & 2 \\\\\n3 & 4\n\\end{pmatrix}\n\\]",
+      "fragmentLatex": "% === Recognition Quality: MEDIUM (65%) ===\n% [Warning] Moderate recognition confidence (65%). Some characters or mathematical symbols may require correction.\n% ==========================================\n\n\\[\n(3 4)\n\\]",
+      "completeLatex": "\\documentclass[11pt,a4paper]{article}\n\\usepackage{iftex}\n\\ifPDFTeX\n  \\usepackage[utf8]{inputenc}\n  \\usepackage[T1]{fontenc}\n\\fi\n\\usepackage[english]{babel}\n\\usepackage{amsmath,amssymb,amsfonts}\n\n\\begin{document}\n\n% === Recognition Quality: MEDIUM (65%) ===\n% [Warning] Moderate recognition confidence (65%). Some characters or mathematical symbols may require correction.\n% ==========================================\n\n\\[\n(3 4)\n\\]\n\n\\end{document}",
+      "cer": 0.6666666666666666,
+      "ocrCer": 0.6666666666666666,
+      "latexCer": 4.318181818181818,
+      "tokenF1": 0.12060301507537688,
+      "actualLineLabels": [
+        "matrix"
+      ],
+      "predictedLineLabels": [
+        "math"
+      ],
+      "containsTotal": 4,
+      "containsPassed": 0,
+      "containsFailed": [
+        "\\begin{",
+        "matrix",
+        "1",
+        "2"
+      ],
+      "forbidsTotal": 0,
+      "forbidsPassed": 0,
+      "forbidsFailed": [],
+      "hallucinations": [],
+      "fragmentCompileSuccess": true,
+      "documentCompileSuccess": true
+    },
+    {
+      "id": "seed_case_07_system",
+      "file": "seed/case_07_system.png",
+      "set": "dev",
+      "lang": "en",
+      "tags": [
+        "seed",
+        "math",
+        "cases",
+        "system"
+      ],
+      "status": "supported",
+      "timeMs": 81,
+      "rawText": "2ez+y=5\nz—3y=2\n",
+      "expectedText": "{ 2x + y = 5\n{ x - 3y = 2",
+      "expectedLatex": "\\[\n\\begin{cases}\n2x + y = 5 \\\\\nx - 3y = 2\n\\end{cases}\n\\]",
+      "fragmentLatex": "% === Recognition Quality: UNCERTAIN (22%) ===\n% [Warning] Low OCR recognition confidence (22%). Image may be blurry, low-resolution, or handwritten.\n%   Suggestion: Please verify the output carefully against your original source.\n% ==========================================\n\n\\[\n\\begin{cases}\n2ez+y=5 \\\\\nz - 3y=2\n\\end{cases}\n\\]",
+      "completeLatex": "\\documentclass[11pt,a4paper]{article}\n\\usepackage{iftex}\n\\ifPDFTeX\n  \\usepackage[utf8]{inputenc}\n  \\usepackage[T1]{fontenc}\n\\fi\n\\usepackage[english]{babel}\n\\usepackage{amsmath,amssymb,amsfonts}\n\n\\begin{document}\n\n% === Recognition Quality: UNCERTAIN (22%) ===\n% [Warning] Low OCR recognition confidence (22%). Image may be blurry, low-resolution, or handwritten.\n%   Suggestion: Please verify the output carefully against your original source.\n% ==========================================\n\n\\[\n\\begin{cases}\n2ez+y=5 \\\\\nz - 3y=2\n\\end{cases}\n\\]\n\n\\end{document}",
+      "cer": 0.6,
+      "ocrCer": 0.6,
+      "latexCer": 5.64,
+      "tokenF1": 0.18439716312056736,
+      "actualLineLabels": [
+        "cases",
+        "cases"
+      ],
+      "predictedLineLabels": [
+        "cases",
+        "cases"
+      ],
+      "containsTotal": 4,
+      "containsPassed": 2,
+      "containsFailed": [
+        "2x + y = 5",
+        "x - 3y = 2"
+      ],
+      "forbidsTotal": 0,
+      "forbidsPassed": 0,
+      "forbidsFailed": [],
+      "hallucinations": [],
+      "fragmentCompileSuccess": true,
+      "documentCompileSuccess": true
+    },
+    {
+      "id": "seed_case_08_french_math",
+      "file": "seed/case_08_french_math.png",
+      "set": "dev",
+      "lang": "fr",
+      "tags": [
+        "seed",
+        "french",
+        "mixed-math",
+        "prose"
+      ],
+      "status": "supported",
+      "timeMs": 346,
+      "rawText": "Soit f une fonction continue sur l'intervalle [0, 1]. On considère\nl'intégrale suivante :\n1\nI= Î f(æ)dx\n0\nCalculer la valeur moyenne de f.\n",
+      "expectedText": "Soit f une fonction continue sur l'intervalle [0, 1]. On considère l'intégrale suivante :\nI = int_0^1 f(x) dx\nCalculer la valeur moyenne de f.",
+      "expectedLatex": null,
+      "fragmentLatex": "% === Recognition Quality: UNCERTAIN (88%) ===\n% [Warning] Complex mathematical operators (integrals, summations, or radicals) detected.\n%   Suggestion: Tesseract 1D OCR cannot reliably reconstruct 2D limits or radical scopes; please check equation boundaries.\n% [Warning] Stacked vertical characters detected. May represent integral/summation limits or matrix elements.\n%   Suggestion: Tesseract line segmentation often splits upper/lower limits onto separate lines.\n% ==========================================\n\nSoit f une fonction continue sur l'intervalle [0, 1]. On considère\n\nl'intégrale suivante :\n\n1\n\n\\[\nI= \\text{Î} f(\\text{æ})dx\n\\]\n\n0\n\nCalculer la valeur moyenne de f.",
+      "completeLatex": "\\documentclass[11pt,a4paper]{article}\n\\usepackage{iftex}\n\\ifPDFTeX\n  \\usepackage[utf8]{inputenc}\n  \\usepackage[T1]{fontenc}\n\\fi\n\\usepackage[french,english]{babel}\n\\usepackage{amsmath,amssymb,amsfonts}\n\n\\begin{document}\n\n% === Recognition Quality: UNCERTAIN (88%) ===\n% [Warning] Complex mathematical operators (integrals, summations, or radicals) detected.\n%   Suggestion: Tesseract 1D OCR cannot reliably reconstruct 2D limits or radical scopes; please check equation boundaries.\n% [Warning] Stacked vertical characters detected. May represent integral/summation limits or matrix elements.\n%   Suggestion: Tesseract line segmentation often splits upper/lower limits onto separate lines.\n% ==========================================\n\nSoit f une fonction continue sur l'intervalle [0, 1]. On considère\n\nl'intégrale suivante :\n\n1\n\n\\[\nI= \\text{Î} f(\\text{æ})dx\n\\]\n\n0\n\nCalculer la valeur moyenne de f.\n\n\\end{document}",
+      "cer": 0.1056338028169014,
+      "ocrCer": 0.1056338028169014,
+      "latexCer": null,
+      "tokenF1": null,
+      "actualLineLabels": [
+        "prose",
+        "prose",
+        "math",
+        "prose"
+      ],
+      "predictedLineLabels": [
+        "prose",
+        "prose",
+        "prose",
+        "math",
+        "prose",
+        "prose"
+      ],
+      "containsTotal": 3,
+      "containsPassed": 3,
+      "containsFailed": [],
+      "forbidsTotal": 0,
+      "forbidsPassed": 0,
+      "forbidsFailed": [],
+      "hallucinations": [],
+      "fragmentCompileSuccess": true,
+      "documentCompileSuccess": true
+    },
+    {
+      "id": "seed_case_09_french_accents",
+      "file": "seed/case_09_french_accents.png",
+      "set": "dev",
+      "lang": "fr",
+      "tags": [
+        "seed",
+        "french",
+        "accents",
+        "prose"
+      ],
+      "status": "supported",
+      "timeMs": 325,
+      "rawText": "Documentation Frangais\n\nVoici des caractères accentués : é, à, a, ¢, ce, U.\n\nL'élève étudie attentivement le théorème où apparaît le paramètre\ndéjà défini.\n",
+      "expectedText": "Documentation Français\nVoici des caractères accentués : é, è, à, ç, œ, ù.\nL'élève étudie attentivement le théorème où apparaît le paramètre déjà défini.",
+      "expectedLatex": null,
+      "fragmentLatex": "Documentation Frangais\n\nVoici des caractères accentués : é, à, a, ¢, ce, U.\n\nL'élève étudie attentivement le théorème où apparaît le paramètre\n\ndéjà défini.",
+      "completeLatex": "\\documentclass[11pt,a4paper]{article}\n\\usepackage{iftex}\n\\ifPDFTeX\n  \\usepackage[utf8]{inputenc}\n  \\usepackage[T1]{fontenc}\n\\fi\n\\usepackage[french,english]{babel}\n\\usepackage{amsmath,amssymb,amsfonts}\n\n\\begin{document}\n\nDocumentation Frangais\n\nVoici des caractères accentués : é, à, a, ¢, ce, U.\n\nL'élève étudie attentivement le théorème où apparaît le paramètre\n\ndéjà défini.\n\n\\end{document}",
+      "cer": 0.05263157894736842,
+      "ocrCer": 0.05263157894736842,
+      "latexCer": null,
+      "tokenF1": null,
+      "actualLineLabels": [
+        "prose",
+        "prose",
+        "prose",
+        "prose"
+      ],
+      "predictedLineLabels": [
+        "prose",
+        "prose",
+        "prose",
+        "prose"
+      ],
+      "containsTotal": 3,
+      "containsPassed": 3,
+      "containsFailed": [],
+      "forbidsTotal": 0,
+      "forbidsPassed": 0,
+      "forbidsFailed": [],
+      "hallucinations": [],
+      "fragmentCompileSuccess": true,
+      "documentCompileSuccess": true
+    },
+    {
+      "id": "seed_case_10_table_math",
+      "file": "seed/case_10_table_math.png",
+      "set": "dev",
+      "lang": "fr",
+      "tags": [
+        "seed",
+        "table",
+        "math-cells",
+        "french",
+        "limitation"
+      ],
+      "status": "known_limitation",
+      "timeMs": 339,
+      "rawText": "Fonction Dérivée Primitive\nf@=e J@=2 Fla) =\ng(x) =sin(e) g(x) =cos(a) G(x) = — cos(a)\n",
+      "expectedText": "Fonction Dérivée Primitive\nf(x)=e^x f'(x)=e^x F(x)=e^x\ng(x)=sin(x) g'(x)=cos(x) G(x)=-cos(x)",
+      "expectedLatex": null,
+      "fragmentLatex": "% === Recognition Quality: UNCERTAIN (50%) ===\n% [Warning] Moderate recognition confidence (50%). Some characters or mathematical symbols may require correction.\n% ==========================================\n\nFonction Dérivée Primitive\n\n% Note: Low recognition confidence (35%) on line below\n\\[\nf@=e J@=2 Fla) =\n\\]\n\n% Note: Low recognition confidence (42%) on line below\n\\[\ng(x) =sin(e) g(x) =cos(a) G(x) =  -  cos(a)\n\\]",
+      "completeLatex": "\\documentclass[11pt,a4paper]{article}\n\\usepackage{iftex}\n\\ifPDFTeX\n  \\usepackage[utf8]{inputenc}\n  \\usepackage[T1]{fontenc}\n\\fi\n\\usepackage[french,english]{babel}\n\\usepackage{amsmath,amssymb,amsfonts}\n\n\\begin{document}\n\n% === Recognition Quality: UNCERTAIN (50%) ===\n% [Warning] Moderate recognition confidence (50%). Some characters or mathematical symbols may require correction.\n% ==========================================\n\nFonction Dérivée Primitive\n\n% Note: Low recognition confidence (35%) on line below\n\\[\nf@=e J@=2 Fla) =\n\\]\n\n% Note: Low recognition confidence (42%) on line below\n\\[\ng(x) =sin(e) g(x) =cos(a) G(x) =  -  cos(a)\n\\]\n\n\\end{document}",
+      "cer": 0.31521739130434784,
+      "ocrCer": 0.31521739130434784,
+      "latexCer": null,
+      "tokenF1": null,
+      "actualLineLabels": [
+        "table",
+        "table",
+        "table"
+      ],
+      "predictedLineLabels": [
+        "prose",
+        "math",
+        "math"
+      ],
+      "containsTotal": 1,
+      "containsPassed": 1,
+      "containsFailed": [],
+      "forbidsTotal": 0,
+      "forbidsPassed": 0,
+      "forbidsFailed": [],
+      "hallucinations": [],
+      "fragmentCompileSuccess": true,
+      "documentCompileSuccess": true
+    },
+    {
+      "id": "synth_dev_superscript",
+      "file": "synthetic/synth_dev_superscript.png",
+      "set": "dev",
+      "lang": "en",
+      "tags": [
+        "dev",
+        "math",
+        "superscript"
+      ],
+      "status": "supported",
+      "timeMs": 66,
+      "rawText": "x2 + yl0 = 73\n",
+      "expectedText": "x^2 + y^10 = z^3",
+      "expectedLatex": "\\[\nx^{2} + y^{10} = z^{3}\n\\]",
+      "fragmentLatex": "\\[\nx2 + y^{l}0 = 73\n\\]",
+      "completeLatex": "\\documentclass[11pt,a4paper]{article}\n\\usepackage{iftex}\n\\ifPDFTeX\n  \\usepackage[utf8]{inputenc}\n  \\usepackage[T1]{fontenc}\n\\fi\n\\usepackage[english]{babel}\n\\usepackage{amsmath,amssymb,amsfonts}\n\n\\begin{document}\n\n\\[\nx2 + y^{l}0 = 73\n\\]\n\n\\end{document}",
+      "cer": 0.3125,
+      "ocrCer": 0.3125,
+      "latexCer": 0.3333333333333333,
+      "tokenF1": 0.5454545454545455,
+      "actualLineLabels": [
+        "math"
+      ],
+      "predictedLineLabels": [
+        "math"
+      ],
+      "containsTotal": 3,
+      "containsPassed": 0,
+      "containsFailed": [
+        "x^{2}",
+        "y^{10}",
+        "z^{3}"
+      ],
+      "forbidsTotal": 0,
+      "forbidsPassed": 0,
+      "forbidsFailed": [],
+      "hallucinations": [],
+      "fragmentCompileSuccess": true,
+      "documentCompileSuccess": true
+    },
+    {
+      "id": "synth_dev_subscript",
+      "file": "synthetic/synth_dev_subscript.png",
+      "set": "dev",
+      "lang": "en",
+      "tags": [
+        "dev",
+        "math",
+        "subscript"
+      ],
+      "status": "supported",
+      "timeMs": 71,
+      "rawText": "a, + az = a3\n",
+      "expectedText": "a_1 + a_2 = a_3",
+      "expectedLatex": "\\[\na_{1} + a_{2} = a_{3}\n\\]",
+      "fragmentLatex": "\\[\na, + a_{z} = a_{3}\n\\]",
+      "completeLatex": "\\documentclass[11pt,a4paper]{article}\n\\usepackage{iftex}\n\\ifPDFTeX\n  \\usepackage[utf8]{inputenc}\n  \\usepackage[T1]{fontenc}\n\\fi\n\\usepackage[english]{babel}\n\\usepackage{amsmath,amssymb,amsfonts}\n\n\\begin{document}\n\n\\[\na, + a_{z} = a_{3}\n\\]\n\n\\end{document}",
+      "cer": 0.3333333333333333,
+      "ocrCer": 0.3333333333333333,
+      "latexCer": 0.2,
+      "tokenF1": 0.7999999999999999,
+      "actualLineLabels": [
+        "math"
+      ],
+      "predictedLineLabels": [
+        "math"
+      ],
+      "containsTotal": 3,
+      "containsPassed": 1,
+      "containsFailed": [
+        "a_{1}",
+        "a_{2}"
+      ],
+      "forbidsTotal": 0,
+      "forbidsPassed": 0,
+      "forbidsFailed": [],
+      "hallucinations": [],
+      "fragmentCompileSuccess": true,
+      "documentCompileSuccess": true
+    },
+    {
+      "id": "synth_dev_baseline_id",
+      "file": "synthetic/synth_dev_baseline_id.png",
+      "set": "dev",
+      "lang": "en",
+      "tags": [
+        "dev",
+        "prose",
+        "baseline-preservation"
+      ],
+      "status": "supported",
+      "timeMs": 96,
+      "rawText": "Release version2 is ready for item1 testing.\n",
+      "expectedText": "Release version2 is ready for item1 testing.",
+      "expectedLatex": null,
+      "fragmentLatex": "Release version2 is ready for item1 testing.",
+      "completeLatex": "\\documentclass[11pt,a4paper]{article}\n\\usepackage{iftex}\n\\ifPDFTeX\n  \\usepackage[utf8]{inputenc}\n  \\usepackage[T1]{fontenc}\n\\fi\n\\usepackage[english]{babel}\n\\usepackage{amsmath,amssymb,amsfonts}\n\n\\begin{document}\n\nRelease version2 is ready for item1 testing.\n\n\\end{document}",
+      "cer": 0,
+      "ocrCer": 0,
+      "latexCer": null,
+      "tokenF1": null,
+      "actualLineLabels": [
+        "prose"
+      ],
+      "predictedLineLabels": [
+        "prose"
+      ],
+      "containsTotal": 2,
+      "containsPassed": 2,
+      "containsFailed": [],
+      "forbidsTotal": 2,
+      "forbidsPassed": 2,
+      "forbidsFailed": [],
+      "hallucinations": [],
+      "fragmentCompileSuccess": true,
+      "documentCompileSuccess": true
+    },
+    {
+      "id": "synth_dev_chemical",
+      "file": "synthetic/synth_dev_chemical.png",
+      "set": "dev",
+      "lang": "en",
+      "tags": [
+        "dev",
+        "prose",
+        "chemistry",
+        "baseline-preservation"
+      ],
+      "status": "supported",
+      "timeMs": 193,
+      "rawText": "Water consists of H2O and releases CO2 during reaction.\n",
+      "expectedText": "Water consists of H2O and releases CO2 during reaction.",
+      "expectedLatex": null,
+      "fragmentLatex": "Water consists of H2O and releases CO2 during reaction.",
+      "completeLatex": "\\documentclass[11pt,a4paper]{article}\n\\usepackage{iftex}\n\\ifPDFTeX\n  \\usepackage[utf8]{inputenc}\n  \\usepackage[T1]{fontenc}\n\\fi\n\\usepackage[english]{babel}\n\\usepackage{amsmath,amssymb,amsfonts}\n\n\\begin{document}\n\nWater consists of H2O and releases CO2 during reaction.\n\n\\end{document}",
+      "cer": 0,
+      "ocrCer": 0,
+      "latexCer": null,
+      "tokenF1": null,
+      "actualLineLabels": [
+        "prose"
+      ],
+      "predictedLineLabels": [
+        "prose"
+      ],
+      "containsTotal": 2,
+      "containsPassed": 2,
+      "containsFailed": [],
+      "forbidsTotal": 2,
+      "forbidsPassed": 2,
+      "forbidsFailed": [],
+      "hallucinations": [],
+      "fragmentCompileSuccess": true,
+      "documentCompileSuccess": true
+    },
+    {
+      "id": "synth_dev_calculus_dx",
+      "file": "synthetic/synth_dev_calculus_dx.png",
+      "set": "dev",
+      "lang": "en",
+      "tags": [
+        "dev",
+        "math",
+        "calculus"
+      ],
+      "status": "supported",
+      "timeMs": 88,
+      "rawText": "J x2dx =x3/34+C\n",
+      "expectedText": "∫ x^2 dx = x^3 / 3 + C",
+      "expectedLatex": "\\[\n\\int x^{2} dx = \\frac{x^{3}}{3} + C\n\\]",
+      "fragmentLatex": "% === Recognition Quality: UNCERTAIN (30%) ===\n% [Warning] Low OCR recognition confidence (30%). Image may be blurry, low-resolution, or handwritten.\n%   Suggestion: Please verify the output carefully against your original source.\n% ==========================================\n\n% Note: Low recognition confidence (31%) on line below\n\\[\nJ x2dx =x3/34+C\n\\]",
+      "completeLatex": "\\documentclass[11pt,a4paper]{article}\n\\usepackage{iftex}\n\\ifPDFTeX\n  \\usepackage[utf8]{inputenc}\n  \\usepackage[T1]{fontenc}\n\\fi\n\\usepackage[english]{babel}\n\\usepackage{amsmath,amssymb,amsfonts}\n\n\\begin{document}\n\n% === Recognition Quality: UNCERTAIN (30%) ===\n% [Warning] Low OCR recognition confidence (30%). Image may be blurry, low-resolution, or handwritten.\n%   Suggestion: Please verify the output carefully against your original source.\n% ==========================================\n\n% Note: Low recognition confidence (31%) on line below\n\\[\nJ x2dx =x3/34+C\n\\]\n\n\\end{document}",
+      "cer": 0.4090909090909091,
+      "ocrCer": 0.4090909090909091,
+      "latexCer": 10.580645161290322,
+      "tokenF1": 0.06060606060606061,
+      "actualLineLabels": [
+        "math"
+      ],
+      "predictedLineLabels": [
+        "math"
+      ],
+      "containsTotal": 3,
+      "containsPassed": 1,
+      "containsFailed": [
+        "\\int",
+        "x^{2}"
+      ],
+      "forbidsTotal": 0,
+      "forbidsPassed": 0,
+      "forbidsFailed": [],
+      "hallucinations": [],
+      "fragmentCompileSuccess": true,
+      "documentCompileSuccess": true
+    },
+    {
+      "id": "synth_dev_matrix_bracket",
+      "file": "synthetic/synth_dev_matrix_bracket.png",
+      "set": "dev",
+      "lang": "en",
+      "tags": [
+        "dev",
+        "math",
+        "matrix"
+      ],
+      "status": "supported",
+      "timeMs": 52,
+      "rawText": "[57;29]\n",
+      "expectedText": "[ 5 7 ; 2 9 ]",
+      "expectedLatex": "\\[\n\\begin{bmatrix}\n5 & 7 \\\\\n2 & 9\n\\end{bmatrix}\n\\]",
+      "fragmentLatex": "\\[\n[57;29]\n\\]",
+      "completeLatex": "\\documentclass[11pt,a4paper]{article}\n\\usepackage{iftex}\n\\ifPDFTeX\n  \\usepackage[utf8]{inputenc}\n  \\usepackage[T1]{fontenc}\n\\fi\n\\usepackage[english]{babel}\n\\usepackage{amsmath,amssymb,amsfonts}\n\n\\begin{document}\n\n\\[\n[57;29]\n\\]\n\n\\end{document}",
+      "cer": 0.46153846153846156,
+      "ocrCer": 0.46153846153846156,
+      "latexCer": 0.9090909090909091,
+      "tokenF1": 0,
+      "actualLineLabels": [
+        "matrix"
+      ],
+      "predictedLineLabels": [
+        "math"
+      ],
+      "containsTotal": 4,
+      "containsPassed": 0,
+      "containsFailed": [
+        "\\begin{bmatrix}",
+        "5 & 7",
+        "2 & 9",
+        "\\end{bmatrix}"
+      ],
+      "forbidsTotal": 0,
+      "forbidsPassed": 0,
+      "forbidsFailed": [],
+      "hallucinations": [],
+      "fragmentCompileSuccess": true,
+      "documentCompileSuccess": true
+    },
+    {
+      "id": "synth_dev_system_cases",
+      "file": "synthetic/synth_dev_system_cases.png",
+      "set": "dev",
+      "lang": "en",
+      "tags": [
+        "dev",
+        "math",
+        "cases"
+      ],
+      "status": "supported",
+      "timeMs": 110,
+      "rawText": "{3x+2y=12\n{x-y=1\n",
+      "expectedText": "{ 3x + 2y = 12\n{ x - y = 1",
+      "expectedLatex": "\\[\n\\begin{cases}\n3x + 2y = 12 \\\\\nx - y = 1\n\\end{cases}\n\\]",
+      "fragmentLatex": "\\[\n\\begin{cases}\n3x+2y=12 \\\\\nx-y=1\n\\end{cases}\n\\]",
+      "completeLatex": "\\documentclass[11pt,a4paper]{article}\n\\usepackage{iftex}\n\\ifPDFTeX\n  \\usepackage[utf8]{inputenc}\n  \\usepackage[T1]{fontenc}\n\\fi\n\\usepackage[english]{babel}\n\\usepackage{amsmath,amssymb,amsfonts}\n\n\\begin{document}\n\n\\[\n\\begin{cases}\n3x+2y=12 \\\\\nx-y=1\n\\end{cases}\n\\]\n\n\\end{document}",
+      "cer": 0.38461538461538464,
+      "ocrCer": 0.38461538461538464,
+      "latexCer": 0.1568627450980392,
+      "tokenF1": 1,
+      "actualLineLabels": [
+        "cases",
+        "cases"
+      ],
+      "predictedLineLabels": [
+        "cases",
+        "cases"
+      ],
+      "containsTotal": 4,
+      "containsPassed": 2,
+      "containsFailed": [
+        "3x + 2y = 12",
+        "x - y = 1"
+      ],
+      "forbidsTotal": 0,
+      "forbidsPassed": 0,
+      "forbidsFailed": [],
+      "hallucinations": [],
+      "fragmentCompileSuccess": true,
+      "documentCompileSuccess": true
+    },
+    {
+      "id": "synth_dev_sqrt_scoping",
+      "file": "synthetic/synth_dev_sqrt_scoping.png",
+      "set": "dev",
+      "lang": "en",
+      "tags": [
+        "dev",
+        "math",
+        "radical"
+      ],
+      "status": "supported",
+      "timeMs": 40,
+      "rawText": "v(x2 + y2)\n",
+      "expectedText": "√(x^2 + y^2)",
+      "expectedLatex": "\\[\n\\sqrt{x^{2} + y^{2}}\n\\]",
+      "fragmentLatex": "\\[\nv(x2 + y^{2})\n\\]",
+      "completeLatex": "\\documentclass[11pt,a4paper]{article}\n\\usepackage{iftex}\n\\ifPDFTeX\n  \\usepackage[utf8]{inputenc}\n  \\usepackage[T1]{fontenc}\n\\fi\n\\usepackage[english]{babel}\n\\usepackage{amsmath,amssymb,amsfonts}\n\n\\begin{document}\n\n\\[\nv(x2 + y^{2})\n\\]\n\n\\end{document}",
+      "cer": 0.25,
+      "ocrCer": 0.25,
+      "latexCer": 0.5,
+      "tokenF1": 0.631578947368421,
+      "actualLineLabels": [
+        "math"
+      ],
+      "predictedLineLabels": [
+        "math"
+      ],
+      "containsTotal": 1,
+      "containsPassed": 0,
+      "containsFailed": [
+        "\\sqrt{x^{2} + y^{2}}"
+      ],
+      "forbidsTotal": 0,
+      "forbidsPassed": 0,
+      "forbidsFailed": [],
+      "hallucinations": [],
+      "fragmentCompileSuccess": true,
+      "documentCompileSuccess": true
+    },
+    {
+      "id": "synth_dev_french_action_calc",
+      "file": "synthetic/synth_dev_french_action_calc.png",
+      "set": "dev",
+      "lang": "fr",
+      "tags": [
+        "dev",
+        "french",
+        "action-verb",
+        "prose"
+      ],
+      "status": "supported",
+      "timeMs": 177,
+      "rawText": "Calculer la valeur exacte de l'expression suivante.\n",
+      "expectedText": "Calculer la valeur exacte de l'expression suivante.",
+      "expectedLatex": null,
+      "fragmentLatex": "Calculer la valeur exacte de l'expression suivante.",
+      "completeLatex": "\\documentclass[11pt,a4paper]{article}\n\\usepackage{iftex}\n\\ifPDFTeX\n  \\usepackage[utf8]{inputenc}\n  \\usepackage[T1]{fontenc}\n\\fi\n\\usepackage[french,english]{babel}\n\\usepackage{amsmath,amssymb,amsfonts}\n\n\\begin{document}\n\nCalculer la valeur exacte de l'expression suivante.\n\n\\end{document}",
+      "cer": 0,
+      "ocrCer": 0,
+      "latexCer": null,
+      "tokenF1": null,
+      "actualLineLabels": [
+        "prose"
+      ],
+      "predictedLineLabels": [
+        "prose"
+      ],
+      "containsTotal": 1,
+      "containsPassed": 1,
+      "containsFailed": [],
+      "forbidsTotal": 2,
+      "forbidsPassed": 2,
+      "forbidsFailed": [],
+      "hallucinations": [],
+      "fragmentCompileSuccess": true,
+      "documentCompileSuccess": true
+    },
+    {
+      "id": "synth_dev_french_action_montrer",
+      "file": "synthetic/synth_dev_french_action_montrer.png",
+      "set": "dev",
+      "lang": "fr",
+      "tags": [
+        "dev",
+        "french",
+        "action-verb",
+        "prose"
+      ],
+      "status": "supported",
+      "timeMs": 126,
+      "rawText": "Montrer que la limite en zéro est égale a un.\n",
+      "expectedText": "Montrer que la limite en zéro est égale à un.",
+      "expectedLatex": null,
+      "fragmentLatex": "Montrer que la limite en zéro est égale a un.",
+      "completeLatex": "\\documentclass[11pt,a4paper]{article}\n\\usepackage{iftex}\n\\ifPDFTeX\n  \\usepackage[utf8]{inputenc}\n  \\usepackage[T1]{fontenc}\n\\fi\n\\usepackage[french,english]{babel}\n\\usepackage{amsmath,amssymb,amsfonts}\n\n\\begin{document}\n\nMontrer que la limite en zéro est égale a un.\n\n\\end{document}",
+      "cer": 0.022222222222222223,
+      "ocrCer": 0.022222222222222223,
+      "latexCer": null,
+      "tokenF1": null,
+      "actualLineLabels": [
+        "prose"
+      ],
+      "predictedLineLabels": [
+        "prose"
+      ],
+      "containsTotal": 1,
+      "containsPassed": 1,
+      "containsFailed": [],
+      "forbidsTotal": 2,
+      "forbidsPassed": 2,
+      "forbidsFailed": [],
+      "hallucinations": [],
+      "fragmentCompileSuccess": true,
+      "documentCompileSuccess": true
+    },
+    {
+      "id": "synth_dev_french_action_soit",
+      "file": "synthetic/synth_dev_french_action_soit.png",
+      "set": "dev",
+      "lang": "fr",
+      "tags": [
+        "dev",
+        "french",
+        "action-verb",
+        "prose"
+      ],
+      "status": "supported",
+      "timeMs": 98,
+      "rawText": "Soit n un entier naturel non nul donné.\n",
+      "expectedText": "Soit n un entier naturel non nul donné.",
+      "expectedLatex": null,
+      "fragmentLatex": "Soit n un entier naturel non nul donné.",
+      "completeLatex": "\\documentclass[11pt,a4paper]{article}\n\\usepackage{iftex}\n\\ifPDFTeX\n  \\usepackage[utf8]{inputenc}\n  \\usepackage[T1]{fontenc}\n\\fi\n\\usepackage[french,english]{babel}\n\\usepackage{amsmath,amssymb,amsfonts}\n\n\\begin{document}\n\nSoit n un entier naturel non nul donné.\n\n\\end{document}",
+      "cer": 0,
+      "ocrCer": 0,
+      "latexCer": null,
+      "tokenF1": null,
+      "actualLineLabels": [
+        "prose"
+      ],
+      "predictedLineLabels": [
+        "prose"
+      ],
+      "containsTotal": 1,
+      "containsPassed": 1,
+      "containsFailed": [],
+      "forbidsTotal": 2,
+      "forbidsPassed": 2,
+      "forbidsFailed": [],
+      "hallucinations": [],
+      "fragmentCompileSuccess": true,
+      "documentCompileSuccess": true
+    },
+    {
+      "id": "synth_dev_french_accents",
+      "file": "synthetic/synth_dev_french_accents.png",
+      "set": "dev",
+      "lang": "fr",
+      "tags": [
+        "dev",
+        "french",
+        "accents",
+        "prose"
+      ],
+      "status": "supported",
+      "timeMs": 225,
+      "rawText": "L'ingénieur vérifie l'équation déjà résolue avec succès.\n",
+      "expectedText": "L'ingénieur vérifie l'équation déjà résolue avec succès.",
+      "expectedLatex": null,
+      "fragmentLatex": "L'ingénieur vérifie l'équation déjà résolue avec succès.",
+      "completeLatex": "\\documentclass[11pt,a4paper]{article}\n\\usepackage{iftex}\n\\ifPDFTeX\n  \\usepackage[utf8]{inputenc}\n  \\usepackage[T1]{fontenc}\n\\fi\n\\usepackage[french,english]{babel}\n\\usepackage{amsmath,amssymb,amsfonts}\n\n\\begin{document}\n\nL'ingénieur vérifie l'équation déjà résolue avec succès.\n\n\\end{document}",
+      "cer": 0,
+      "ocrCer": 0,
+      "latexCer": null,
+      "tokenF1": null,
+      "actualLineLabels": [
+        "prose"
+      ],
+      "predictedLineLabels": [
+        "prose"
+      ],
+      "containsTotal": 4,
+      "containsPassed": 4,
+      "containsFailed": [],
+      "forbidsTotal": 0,
+      "forbidsPassed": 0,
+      "forbidsFailed": [],
+      "hallucinations": [],
+      "fragmentCompileSuccess": true,
+      "documentCompileSuccess": true
+    },
+    {
+      "id": "synth_dev_diameter_spec",
+      "file": "synthetic/synth_dev_diameter_spec.png",
+      "set": "dev",
+      "lang": "en",
+      "tags": [
+        "dev",
+        "prose",
+        "symbols"
+      ],
+      "status": "supported",
+      "timeMs": 76,
+      "rawText": "The pipe diameter is @ 40 mm nominal.\n",
+      "expectedText": "The pipe diameter is Ø 40 mm nominal.",
+      "expectedLatex": null,
+      "fragmentLatex": "The pipe diameter is @ 40 mm nominal.",
+      "completeLatex": "\\documentclass[11pt,a4paper]{article}\n\\usepackage{iftex}\n\\ifPDFTeX\n  \\usepackage[utf8]{inputenc}\n  \\usepackage[T1]{fontenc}\n\\fi\n\\usepackage[english]{babel}\n\\usepackage{amsmath,amssymb,amsfonts}\n\n\\begin{document}\n\nThe pipe diameter is @ 40 mm nominal.\n\n\\end{document}",
+      "cer": 0.02702702702702703,
+      "ocrCer": 0.02702702702702703,
+      "latexCer": null,
+      "tokenF1": null,
+      "actualLineLabels": [
+        "prose"
+      ],
+      "predictedLineLabels": [
+        "prose"
+      ],
+      "containsTotal": 2,
+      "containsPassed": 2,
+      "containsFailed": [],
+      "forbidsTotal": 0,
+      "forbidsPassed": 0,
+      "forbidsFailed": [],
+      "hallucinations": [],
+      "fragmentCompileSuccess": true,
+      "documentCompileSuccess": true
+    },
+    {
+      "id": "synth_dev_table_currency",
+      "file": "synthetic/synth_dev_table_currency.png",
+      "set": "dev",
+      "lang": "en",
+      "tags": [
+        "dev",
+        "table",
+        "currency"
+      ],
+      "status": "supported",
+      "timeMs": 45,
+      "rawText": "[item | @ty | cost\n",
+      "expectedText": "Item Qty Cost\nMonitor 2 $300\nDesk 1 $150",
+      "expectedLatex": null,
+      "fragmentLatex": "% === Recognition Quality: MEDIUM (63%) ===\n% [Warning] Moderate recognition confidence (63%). Some characters or mathematical symbols may require correction.\n% ==========================================\n\n[item | @ty | cost",
+      "completeLatex": "\\documentclass[11pt,a4paper]{article}\n\\usepackage{iftex}\n\\ifPDFTeX\n  \\usepackage[utf8]{inputenc}\n  \\usepackage[T1]{fontenc}\n\\fi\n\\usepackage[english]{babel}\n\\usepackage{amsmath,amssymb,amsfonts}\n\n\\begin{document}\n\n% === Recognition Quality: MEDIUM (63%) ===\n% [Warning] Moderate recognition confidence (63%). Some characters or mathematical symbols may require correction.\n% ==========================================\n\n[item | @ty | cost\n\n\\end{document}",
+      "cer": 0.8,
+      "ocrCer": 0.8,
+      "latexCer": null,
+      "tokenF1": null,
+      "actualLineLabels": [
+        "table",
+        "table",
+        "table"
+      ],
+      "predictedLineLabels": [
+        "prose"
+      ],
+      "containsTotal": 4,
+      "containsPassed": 0,
+      "containsFailed": [
+        "\\begin{tabular}",
+        "Monitor",
+        "\\$300",
+        "\\$150"
+      ],
+      "forbidsTotal": 0,
+      "forbidsPassed": 0,
+      "forbidsFailed": [],
+      "hallucinations": [],
+      "fragmentCompileSuccess": true,
+      "documentCompileSuccess": true
+    },
+    {
+      "id": "synth_dev_prose_uniform_words",
+      "file": "synthetic/synth_dev_prose_uniform_words.png",
+      "set": "dev",
+      "lang": "en",
+      "tags": [
+        "dev",
+        "prose",
+        "negative-table"
+      ],
+      "status": "supported",
+      "timeMs": 106,
+      "rawText": "Alpha bravo charlie\nDelta echo foxtrot\nGolf hotel india\n",
+      "expectedText": "Alpha bravo charlie\nDelta echo foxtrot\nGolf hotel india",
+      "expectedLatex": null,
+      "fragmentLatex": "Alpha bravo charlie\n\nDelta echo foxtrot\n\nGolf hotel india",
+      "completeLatex": "\\documentclass[11pt,a4paper]{article}\n\\usepackage{iftex}\n\\ifPDFTeX\n  \\usepackage[utf8]{inputenc}\n  \\usepackage[T1]{fontenc}\n\\fi\n\\usepackage[english]{babel}\n\\usepackage{amsmath,amssymb,amsfonts}\n\n\\begin{document}\n\nAlpha bravo charlie\n\nDelta echo foxtrot\n\nGolf hotel india\n\n\\end{document}",
+      "cer": 0,
+      "ocrCer": 0,
+      "latexCer": null,
+      "tokenF1": null,
+      "actualLineLabels": [
+        "prose",
+        "prose",
+        "prose"
+      ],
+      "predictedLineLabels": [
+        "prose",
+        "prose",
+        "prose"
+      ],
+      "containsTotal": 1,
+      "containsPassed": 1,
+      "containsFailed": [],
+      "forbidsTotal": 2,
+      "forbidsPassed": 2,
+      "forbidsFailed": [],
+      "hallucinations": [],
+      "fragmentCompileSuccess": true,
+      "documentCompileSuccess": true
+    },
+    {
+      "id": "synth_dev_french_prose_uniform_numbers",
+      "file": "synthetic/synth_dev_french_prose_uniform_numbers.png",
+      "set": "dev",
+      "lang": "fr",
+      "tags": [
+        "dev",
+        "french",
+        "negative-table",
+        "prose"
+      ],
+      "status": "supported",
+      "timeMs": 160,
+      "rawText": "Le fichier contient 12 données importantes.\nLe serveur traite 14 requétes par seconde.\n",
+      "expectedText": "Le fichier contient 12 données importantes.\nLe serveur traite 14 requêtes par seconde.",
+      "expectedLatex": null,
+      "fragmentLatex": "Le fichier contient 12 données importantes.\n\nLe serveur traite 14 requétes par seconde.",
+      "completeLatex": "\\documentclass[11pt,a4paper]{article}\n\\usepackage{iftex}\n\\ifPDFTeX\n  \\usepackage[utf8]{inputenc}\n  \\usepackage[T1]{fontenc}\n\\fi\n\\usepackage[french,english]{babel}\n\\usepackage{amsmath,amssymb,amsfonts}\n\n\\begin{document}\n\nLe fichier contient 12 données importantes.\n\nLe serveur traite 14 requétes par seconde.\n\n\\end{document}",
+      "cer": 0.011627906976744186,
+      "ocrCer": 0.011627906976744186,
+      "latexCer": null,
+      "tokenF1": null,
+      "actualLineLabels": [
+        "prose",
+        "prose"
+      ],
+      "predictedLineLabels": [
+        "prose",
+        "prose"
+      ],
+      "containsTotal": 2,
+      "containsPassed": 1,
+      "containsFailed": [
+        "requêtes"
+      ],
+      "forbidsTotal": 1,
+      "forbidsPassed": 1,
+      "forbidsFailed": [],
+      "hallucinations": [],
+      "fragmentCompileSuccess": true,
+      "documentCompileSuccess": true
+    },
+    {
+      "id": "synth_dev_numbered_list",
+      "file": "synthetic/synth_dev_numbered_list.png",
+      "set": "dev",
+      "lang": "en",
+      "tags": [
+        "dev",
+        "prose",
+        "negative-table"
+      ],
+      "status": "supported",
+      "timeMs": 81,
+      "rawText": "1. Step one preparation\n2. Step two execution\n",
+      "expectedText": "1. Step one preparation\n2. Step two execution",
+      "expectedLatex": null,
+      "fragmentLatex": "1. Step one preparation\n\n2. Step two execution",
+      "completeLatex": "\\documentclass[11pt,a4paper]{article}\n\\usepackage{iftex}\n\\ifPDFTeX\n  \\usepackage[utf8]{inputenc}\n  \\usepackage[T1]{fontenc}\n\\fi\n\\usepackage[english]{babel}\n\\usepackage{amsmath,amssymb,amsfonts}\n\n\\begin{document}\n\n1. Step one preparation\n\n2. Step two execution\n\n\\end{document}",
+      "cer": 0,
+      "ocrCer": 0,
+      "latexCer": null,
+      "tokenF1": null,
+      "actualLineLabels": [
+        "prose",
+        "prose"
+      ],
+      "predictedLineLabels": [
+        "prose",
+        "prose"
+      ],
+      "containsTotal": 2,
+      "containsPassed": 2,
+      "containsFailed": [],
+      "forbidsTotal": 1,
+      "forbidsPassed": 1,
+      "forbidsFailed": [],
+      "hallucinations": [],
+      "fragmentCompileSuccess": true,
+      "documentCompileSuccess": true
+    },
+    {
+      "id": "synth_dev_short_expr_no_eq",
+      "file": "synthetic/synth_dev_short_expr_no_eq.png",
+      "set": "dev",
+      "lang": "en",
+      "tags": [
+        "dev",
+        "math",
+        "negative-table"
+      ],
+      "status": "supported",
+      "timeMs": 37,
+      "rawText": "x+y\na+b\n",
+      "expectedText": "x + y\na + b",
+      "expectedLatex": "\\[\nx + y\n\\]\n\\[\na + b\n\\]",
+      "fragmentLatex": "\\[\nx+y\n\\]\n\n\\[\na+b\n\\]",
+      "completeLatex": "\\documentclass[11pt,a4paper]{article}\n\\usepackage{iftex}\n\\ifPDFTeX\n  \\usepackage[utf8]{inputenc}\n  \\usepackage[T1]{fontenc}\n\\fi\n\\usepackage[english]{babel}\n\\usepackage{amsmath,amssymb,amsfonts}\n\n\\begin{document}\n\n\\[\nx+y\n\\]\n\n\\[\na+b\n\\]\n\n\\end{document}",
+      "cer": 0.36363636363636365,
+      "ocrCer": 0.36363636363636365,
+      "latexCer": 0.36363636363636365,
+      "tokenF1": 1,
+      "actualLineLabels": [
+        "math",
+        "math"
+      ],
+      "predictedLineLabels": [
+        "math",
+        "math"
+      ],
+      "containsTotal": 2,
+      "containsPassed": 0,
+      "containsFailed": [
+        "x + y",
+        "a + b"
+      ],
+      "forbidsTotal": 1,
+      "forbidsPassed": 1,
+      "forbidsFailed": [],
+      "hallucinations": [],
+      "fragmentCompileSuccess": true,
+      "documentCompileSuccess": true
+    },
+    {
+      "id": "synth_hold_poly_clean",
+      "file": "synthetic/synth_hold_poly_clean.png",
+      "set": "holdout",
+      "lang": "en",
+      "tags": [
+        "holdout",
+        "math",
+        "polynomial",
+        "degradation:clean"
+      ],
+      "status": "supported",
+      "timeMs": 85,
+      "rawText": "P(x) = 2x3 - 5x2 + 3x-7\n",
+      "expectedText": "P(x) = 2x^3 - 5x^2 + 3x - 7",
+      "expectedLatex": "\\[\nP(x) = 2x^{3} - 5x^{2} + 3x - 7\n\\]",
+      "fragmentLatex": "\\[\nP(x) = 2x3 - 5x2 + 3x-7\n\\]",
+      "completeLatex": "\\documentclass[11pt,a4paper]{article}\n\\usepackage{iftex}\n\\ifPDFTeX\n  \\usepackage[utf8]{inputenc}\n  \\usepackage[T1]{fontenc}\n\\fi\n\\usepackage[english]{babel}\n\\usepackage{amsmath,amssymb,amsfonts}\n\n\\begin{document}\n\n\\[\nP(x) = 2x3 - 5x2 + 3x-7\n\\]\n\n\\end{document}",
+      "cer": 0.14814814814814814,
+      "ocrCer": 0.14814814814814814,
+      "latexCer": 0.14814814814814814,
+      "tokenF1": 0.9444444444444444,
+      "actualLineLabels": [
+        "math"
+      ],
+      "predictedLineLabels": [
+        "math"
+      ],
+      "containsTotal": 2,
+      "containsPassed": 0,
+      "containsFailed": [
+        "2x^{3}",
+        "5x^{2}"
+      ],
+      "forbidsTotal": 0,
+      "forbidsPassed": 0,
+      "forbidsFailed": [],
+      "hallucinations": [],
+      "fragmentCompileSuccess": true,
+      "documentCompileSuccess": true
+    },
+    {
+      "id": "synth_hold_poly_rot2",
+      "file": "synthetic/synth_hold_poly_rot2.png",
+      "set": "holdout",
+      "lang": "en",
+      "tags": [
+        "holdout",
+        "math",
+        "polynomial",
+        "degradation:rotation"
+      ],
+      "status": "supported",
+      "timeMs": 117,
+      "rawText": "P(x) = 2x3 - 5x2 4 3x - 7\n",
+      "expectedText": "P(x) = 2x^3 - 5x^2 + 3x - 7",
+      "expectedLatex": "\\[\nP(x) = 2x^{3} - 5x^{2} + 3x - 7\n\\]",
+      "fragmentLatex": "\\[\nP(x) = 2x3 - 5x2 4 3x - 7\n\\]",
+      "completeLatex": "\\documentclass[11pt,a4paper]{article}\n\\usepackage{iftex}\n\\ifPDFTeX\n  \\usepackage[utf8]{inputenc}\n  \\usepackage[T1]{fontenc}\n\\fi\n\\usepackage[english]{babel}\n\\usepackage{amsmath,amssymb,amsfonts}\n\n\\begin{document}\n\n\\[\nP(x) = 2x3 - 5x2 4 3x - 7\n\\]\n\n\\end{document}",
+      "cer": 0.1111111111111111,
+      "ocrCer": 0.1111111111111111,
+      "latexCer": 0.1111111111111111,
+      "tokenF1": 0.8888888888888888,
+      "actualLineLabels": [
+        "math"
+      ],
+      "predictedLineLabels": [
+        "math"
+      ],
+      "containsTotal": 1,
+      "containsPassed": 1,
+      "containsFailed": [],
+      "forbidsTotal": 0,
+      "forbidsPassed": 0,
+      "forbidsFailed": [],
+      "hallucinations": [],
+      "fragmentCompileSuccess": true,
+      "documentCompileSuccess": true
+    },
+    {
+      "id": "synth_hold_poly_blur",
+      "file": "synthetic/synth_hold_poly_blur.png",
+      "set": "holdout",
+      "lang": "en",
+      "tags": [
+        "holdout",
+        "math",
+        "polynomial",
+        "degradation:blur"
+      ],
+      "status": "supported",
+      "timeMs": 112,
+      "rawText": "P(x) = 2x3 - 5x2 + 3x-7\n",
+      "expectedText": "P(x) = 2x^3 - 5x^2 + 3x - 7",
+      "expectedLatex": "\\[\nP(x) = 2x^{3} - 5x^{2} + 3x - 7\n\\]",
+      "fragmentLatex": "\\[\nP(x) = 2x3 - 5x2 + 3x-7\n\\]",
+      "completeLatex": "\\documentclass[11pt,a4paper]{article}\n\\usepackage{iftex}\n\\ifPDFTeX\n  \\usepackage[utf8]{inputenc}\n  \\usepackage[T1]{fontenc}\n\\fi\n\\usepackage[english]{babel}\n\\usepackage{amsmath,amssymb,amsfonts}\n\n\\begin{document}\n\n\\[\nP(x) = 2x3 - 5x2 + 3x-7\n\\]\n\n\\end{document}",
+      "cer": 0.14814814814814814,
+      "ocrCer": 0.14814814814814814,
+      "latexCer": 0.14814814814814814,
+      "tokenF1": 0.9444444444444444,
+      "actualLineLabels": [
+        "math"
+      ],
+      "predictedLineLabels": [
+        "math"
+      ],
+      "containsTotal": 1,
+      "containsPassed": 1,
+      "containsFailed": [],
+      "forbidsTotal": 0,
+      "forbidsPassed": 0,
+      "forbidsFailed": [],
+      "hallucinations": [],
+      "fragmentCompileSuccess": true,
+      "documentCompileSuccess": true
+    },
+    {
+      "id": "synth_hold_poly_noise",
+      "file": "synthetic/synth_hold_poly_noise.png",
+      "set": "holdout",
+      "lang": "en",
+      "tags": [
+        "holdout",
+        "math",
+        "polynomial",
+        "degradation:noise"
+      ],
+      "status": "supported",
+      "timeMs": 103,
+      "rawText": "P(x) = 2x3 - 5x2 + 3x-7\n",
+      "expectedText": "P(x) = 2x^3 - 5x^2 + 3x - 7",
+      "expectedLatex": "\\[\nP(x) = 2x^{3} - 5x^{2} + 3x - 7\n\\]",
+      "fragmentLatex": "\\[\nP(x) = 2x3 - 5x2 + 3x-7\n\\]",
+      "completeLatex": "\\documentclass[11pt,a4paper]{article}\n\\usepackage{iftex}\n\\ifPDFTeX\n  \\usepackage[utf8]{inputenc}\n  \\usepackage[T1]{fontenc}\n\\fi\n\\usepackage[english]{babel}\n\\usepackage{amsmath,amssymb,amsfonts}\n\n\\begin{document}\n\n\\[\nP(x) = 2x3 - 5x2 + 3x-7\n\\]\n\n\\end{document}",
+      "cer": 0.14814814814814814,
+      "ocrCer": 0.14814814814814814,
+      "latexCer": 0.14814814814814814,
+      "tokenF1": 0.9444444444444444,
+      "actualLineLabels": [
+        "math"
+      ],
+      "predictedLineLabels": [
+        "math"
+      ],
+      "containsTotal": 1,
+      "containsPassed": 1,
+      "containsFailed": [],
+      "forbidsTotal": 0,
+      "forbidsPassed": 0,
+      "forbidsFailed": [],
+      "hallucinations": [],
+      "fragmentCompileSuccess": true,
+      "documentCompileSuccess": true
+    },
+    {
+      "id": "synth_hold_poly_low_contrast",
+      "file": "synthetic/synth_hold_poly_low_contrast.png",
+      "set": "holdout",
+      "lang": "en",
+      "tags": [
+        "holdout",
+        "math",
+        "polynomial",
+        "degradation:low-contrast"
+      ],
+      "status": "supported",
+      "timeMs": 84,
+      "rawText": "P(x) = 2x3 - 5x2 + 3x-7\n",
+      "expectedText": "P(x) = 2x^3 - 5x^2 + 3x - 7",
+      "expectedLatex": "\\[\nP(x) = 2x^{3} - 5x^{2} + 3x - 7\n\\]",
+      "fragmentLatex": "\\[\nP(x) = 2x3 - 5x2 + 3x-7\n\\]",
+      "completeLatex": "\\documentclass[11pt,a4paper]{article}\n\\usepackage{iftex}\n\\ifPDFTeX\n  \\usepackage[utf8]{inputenc}\n  \\usepackage[T1]{fontenc}\n\\fi\n\\usepackage[english]{babel}\n\\usepackage{amsmath,amssymb,amsfonts}\n\n\\begin{document}\n\n\\[\nP(x) = 2x3 - 5x2 + 3x-7\n\\]\n\n\\end{document}",
+      "cer": 0.14814814814814814,
+      "ocrCer": 0.14814814814814814,
+      "latexCer": 0.14814814814814814,
+      "tokenF1": 0.9444444444444444,
+      "actualLineLabels": [
+        "math"
+      ],
+      "predictedLineLabels": [
+        "math"
+      ],
+      "containsTotal": 1,
+      "containsPassed": 1,
+      "containsFailed": [],
+      "forbidsTotal": 0,
+      "forbidsPassed": 0,
+      "forbidsFailed": [],
+      "hallucinations": [],
+      "fragmentCompileSuccess": true,
+      "documentCompileSuccess": true
+    },
+    {
+      "id": "synth_hold_poly_low_dpi",
+      "file": "synthetic/synth_hold_poly_low_dpi.png",
+      "set": "holdout",
+      "lang": "en",
+      "tags": [
+        "holdout",
+        "math",
+        "polynomial",
+        "degradation:low-dpi"
+      ],
+      "status": "supported",
+      "timeMs": 80,
+      "rawText": "P(x) = 2x3 - 5x? + 3x-7\n",
+      "expectedText": "P(x) = 2x^3 - 5x^2 + 3x - 7",
+      "expectedLatex": "\\[\nP(x) = 2x^{3} - 5x^{2} + 3x - 7\n\\]",
+      "fragmentLatex": "% === Recognition Quality: MEDIUM (88%) ===\n% [Warning] Unrecognized characters detected as \"?\" in the OCR output.\n%   Suggestion: Check exponents, indices, or special mathematical glyphs.\n% ==========================================\n\n\\[\nP(x) = 2x3 - 5x? + 3x-7\n\\]",
+      "completeLatex": "\\documentclass[11pt,a4paper]{article}\n\\usepackage{iftex}\n\\ifPDFTeX\n  \\usepackage[utf8]{inputenc}\n  \\usepackage[T1]{fontenc}\n\\fi\n\\usepackage[english]{babel}\n\\usepackage{amsmath,amssymb,amsfonts}\n\n\\begin{document}\n\n% === Recognition Quality: MEDIUM (88%) ===\n% [Warning] Unrecognized characters detected as \"?\" in the OCR output.\n%   Suggestion: Check exponents, indices, or special mathematical glyphs.\n% ==========================================\n\n\\[\nP(x) = 2x3 - 5x? + 3x-7\n\\]\n\n\\end{document}",
+      "cer": 0.18518518518518517,
+      "ocrCer": 0.18518518518518517,
+      "latexCer": 8.777777777777779,
+      "tokenF1": 0.14349775784753363,
+      "actualLineLabels": [
+        "math"
+      ],
+      "predictedLineLabels": [
+        "math"
+      ],
+      "containsTotal": 1,
+      "containsPassed": 1,
+      "containsFailed": [],
+      "forbidsTotal": 0,
+      "forbidsPassed": 0,
+      "forbidsFailed": [],
+      "hallucinations": [],
+      "fragmentCompileSuccess": true,
+      "documentCompileSuccess": true
+    },
+    {
+      "id": "synth_hold_trig_identity",
+      "file": "synthetic/synth_hold_trig_identity.png",
+      "set": "holdout",
+      "lang": "en",
+      "tags": [
+        "holdout",
+        "math",
+        "trigonometry",
+        "degradation:clean"
+      ],
+      "status": "supported",
+      "timeMs": 88,
+      "rawText": "sin2(0)\n+ cos2\n(8) =\n=1\n",
+      "expectedText": "sin^2(θ) + cos^2(θ) = 1",
+      "expectedLatex": "\\[\n\\sin^{2}(\\theta) + \\cos^{2}(\\theta) = 1\n\\]",
+      "fragmentLatex": "% Note: Low recognition confidence (55%) on line below\n\\[\nsin2(0)\n\\]\n\n\\[\n+ cos2\n\\]\n\n\\[\n(8) =\n\\]\n\n\\[\n=1\n\\]",
+      "completeLatex": "\\documentclass[11pt,a4paper]{article}\n\\usepackage{iftex}\n\\ifPDFTeX\n  \\usepackage[utf8]{inputenc}\n  \\usepackage[T1]{fontenc}\n\\fi\n\\usepackage[english]{babel}\n\\usepackage{amsmath,amssymb,amsfonts}\n\n\\begin{document}\n\n% Note: Low recognition confidence (55%) on line below\n\\[\nsin2(0)\n\\]\n\n\\[\n+ cos2\n\\]\n\n\\[\n(8) =\n\\]\n\n\\[\n=1\n\\]\n\n\\end{document}",
+      "cer": 0.34782608695652173,
+      "ocrCer": 0.34782608695652173,
+      "latexCer": 1.8285714285714285,
+      "tokenF1": 0.24,
+      "actualLineLabels": [
+        "math"
+      ],
+      "predictedLineLabels": [
+        "math",
+        "math",
+        "math",
+        "math"
+      ],
+      "containsTotal": 3,
+      "containsPassed": 2,
+      "containsFailed": [
+        "= 1"
+      ],
+      "forbidsTotal": 0,
+      "forbidsPassed": 0,
+      "forbidsFailed": [],
+      "hallucinations": [],
+      "fragmentCompileSuccess": true,
+      "documentCompileSuccess": true
+    },
+    {
+      "id": "synth_hold_trig_rot3",
+      "file": "synthetic/synth_hold_trig_rot3.png",
+      "set": "holdout",
+      "lang": "en",
+      "tags": [
+        "holdout",
+        "math",
+        "trigonometry",
+        "degradation:rotation"
+      ],
+      "status": "supported",
+      "timeMs": 88,
+      "rawText": "sin2(8) + cos2(@) = 1\n",
+      "expectedText": "sin^2(θ) + cos^2(θ) = 1",
+      "expectedLatex": "\\[\n\\sin^{2}(\\theta) + \\cos^{2}(\\theta) = 1\n\\]",
+      "fragmentLatex": "\\[\nsin2(8) + cos2(@) = 1\n\\]",
+      "completeLatex": "\\documentclass[11pt,a4paper]{article}\n\\usepackage{iftex}\n\\ifPDFTeX\n  \\usepackage[utf8]{inputenc}\n  \\usepackage[T1]{fontenc}\n\\fi\n\\usepackage[english]{babel}\n\\usepackage{amsmath,amssymb,amsfonts}\n\n\\begin{document}\n\n\\[\nsin2(8) + cos2(@) = 1\n\\]\n\n\\end{document}",
+      "cer": 0.17391304347826086,
+      "ocrCer": 0.17391304347826086,
+      "latexCer": 0.45714285714285713,
+      "tokenF1": 0.5806451612903225,
+      "actualLineLabels": [
+        "math"
+      ],
+      "predictedLineLabels": [
+        "math"
+      ],
+      "containsTotal": 1,
+      "containsPassed": 1,
+      "containsFailed": [],
+      "forbidsTotal": 0,
+      "forbidsPassed": 0,
+      "forbidsFailed": [],
+      "hallucinations": [],
+      "fragmentCompileSuccess": true,
+      "documentCompileSuccess": true
+    },
+    {
+      "id": "synth_hold_euler_identity",
+      "file": "synthetic/synth_hold_euler_identity.png",
+      "set": "holdout",
+      "lang": "en",
+      "tags": [
+        "holdout",
+        "math",
+        "euler",
+        "degradation:clean"
+      ],
+      "status": "supported",
+      "timeMs": 57,
+      "rawText": "e™+1=0\n",
+      "expectedText": "e^iπ + 1 = 0",
+      "expectedLatex": "\\[\ne^{i\\pi} + 1 = 0\n\\]",
+      "fragmentLatex": "% === Recognition Quality: UNCERTAIN (49%) ===\n% [Warning] Low OCR recognition confidence (49%). Image may be blurry, low-resolution, or handwritten.\n%   Suggestion: Please verify the output carefully against your original source.\n% ==========================================\n\n% Note: Low recognition confidence (49%) on line below\n\\[\ne\\text{™}+1=0\n\\]",
+      "completeLatex": "\\documentclass[11pt,a4paper]{article}\n\\usepackage{iftex}\n\\ifPDFTeX\n  \\usepackage[utf8]{inputenc}\n  \\usepackage[T1]{fontenc}\n\\fi\n\\usepackage[english]{babel}\n\\usepackage{amsmath,amssymb,amsfonts}\n\n\\begin{document}\n\n% === Recognition Quality: UNCERTAIN (49%) ===\n% [Warning] Low OCR recognition confidence (49%). Image may be blurry, low-resolution, or handwritten.\n%   Suggestion: Please verify the output carefully against your original source.\n% ==========================================\n\n% Note: Low recognition confidence (49%) on line below\n\\[\ne\\text{™}+1=0\n\\]\n\n\\end{document}",
+      "cer": 0.5833333333333334,
+      "ocrCer": 0.5833333333333334,
+      "latexCer": 20.3125,
+      "tokenF1": 0.0425531914893617,
+      "actualLineLabels": [
+        "math"
+      ],
+      "predictedLineLabels": [
+        "math"
+      ],
+      "containsTotal": 2,
+      "containsPassed": 0,
+      "containsFailed": [
+        "e^{i",
+        "+ 1 = 0"
+      ],
+      "forbidsTotal": 0,
+      "forbidsPassed": 0,
+      "forbidsFailed": [],
+      "hallucinations": [],
+      "fragmentCompileSuccess": true,
+      "documentCompileSuccess": true
+    },
+    {
+      "id": "synth_hold_fraction_division",
+      "file": "synthetic/synth_hold_fraction_division.png",
+      "set": "holdout",
+      "lang": "en",
+      "tags": [
+        "holdout",
+        "math",
+        "fraction",
+        "degradation:clean"
+      ],
+      "status": "supported",
+      "timeMs": 120,
+      "rawText": "(at+b)/(c+d)=x/y\n",
+      "expectedText": "(a + b) / (c + d) = x / y",
+      "expectedLatex": "\\[\n\\frac{a + b}{c + d} = \\frac{x}{y}\n\\]",
+      "fragmentLatex": "% === Recognition Quality: UNCERTAIN (52%) ===\n% [Warning] Moderate recognition confidence (52%). Some characters or mathematical symbols may require correction.\n% ==========================================\n\n% Note: Low recognition confidence (52%) on line below\n\\[\n\\frac{at+b}{c+d}=\\frac{x}{y}\n\\]",
+      "completeLatex": "\\documentclass[11pt,a4paper]{article}\n\\usepackage{iftex}\n\\ifPDFTeX\n  \\usepackage[utf8]{inputenc}\n  \\usepackage[T1]{fontenc}\n\\fi\n\\usepackage[english]{babel}\n\\usepackage{amsmath,amssymb,amsfonts}\n\n\\begin{document}\n\n% === Recognition Quality: UNCERTAIN (52%) ===\n% [Warning] Moderate recognition confidence (52%). Some characters or mathematical symbols may require correction.\n% ==========================================\n\n% Note: Low recognition confidence (52%) on line below\n\\[\n\\frac{at+b}{c+d}=\\frac{x}{y}\n\\]\n\n\\end{document}",
+      "cer": 0.4,
+      "ocrCer": 0.4,
+      "latexCer": 8.06060606060606,
+      "tokenF1": 0.14901960784313725,
+      "actualLineLabels": [
+        "math"
+      ],
+      "predictedLineLabels": [
+        "math"
+      ],
+      "containsTotal": 2,
+      "containsPassed": 1,
+      "containsFailed": [
+        "\\frac{a + b}{c + d}"
+      ],
+      "forbidsTotal": 0,
+      "forbidsPassed": 0,
+      "forbidsFailed": [],
+      "hallucinations": [],
+      "fragmentCompileSuccess": true,
+      "documentCompileSuccess": true
+    },
+    {
+      "id": "synth_hold_summation_limit",
+      "file": "synthetic/synth_hold_summation_limit.png",
+      "set": "holdout",
+      "lang": "en",
+      "tags": [
+        "holdout",
+        "math",
+        "summation",
+        "degradation:clean"
+      ],
+      "status": "supported",
+      "timeMs": 131,
+      "rawText": "y k2 = n(n + 1)(2n+1)/6\n",
+      "expectedText": "∑ k^2 = n(n + 1)(2n + 1) / 6",
+      "expectedLatex": "\\[\n\\sum k^{2} = \\frac{n(n + 1)(2n + 1)}{6}\n\\]",
+      "fragmentLatex": "% === Recognition Quality: UNCERTAIN (53%) ===\n% [Warning] Moderate recognition confidence (53%). Some characters or mathematical symbols may require correction.\n% ==========================================\n\n% Note: Low recognition confidence (53%) on line below\n\\[\ny k^{2} = n(n + 1)(2n+1)/6\n\\]",
+      "completeLatex": "\\documentclass[11pt,a4paper]{article}\n\\usepackage{iftex}\n\\ifPDFTeX\n  \\usepackage[utf8]{inputenc}\n  \\usepackage[T1]{fontenc}\n\\fi\n\\usepackage[english]{babel}\n\\usepackage{amsmath,amssymb,amsfonts}\n\n\\begin{document}\n\n% === Recognition Quality: UNCERTAIN (53%) ===\n% [Warning] Moderate recognition confidence (53%). Some characters or mathematical symbols may require correction.\n% ==========================================\n\n% Note: Low recognition confidence (53%) on line below\n\\[\ny k^{2} = n(n + 1)(2n+1)/6\n\\]\n\n\\end{document}",
+      "cer": 0.21428571428571427,
+      "ocrCer": 0.21428571428571427,
+      "latexCer": 7.162162162162162,
+      "tokenF1": 0.1317829457364341,
+      "actualLineLabels": [
+        "math"
+      ],
+      "predictedLineLabels": [
+        "math"
+      ],
+      "containsTotal": 2,
+      "containsPassed": 1,
+      "containsFailed": [
+        "(2n + 1)"
+      ],
+      "forbidsTotal": 0,
+      "forbidsPassed": 0,
+      "forbidsFailed": [],
+      "hallucinations": [],
+      "fragmentCompileSuccess": true,
+      "documentCompileSuccess": true
+    },
+    {
+      "id": "synth_hold_french_paragraph",
+      "file": "synthetic/synth_hold_french_paragraph.png",
+      "set": "holdout",
+      "lang": "fr",
+      "tags": [
+        "holdout",
+        "french",
+        "prose",
+        "degradation:clean"
+      ],
+      "status": "supported",
+      "timeMs": 188,
+      "rawText": "En mathématiques, la continuité est une propriété topologique\nfondamentale.\n",
+      "expectedText": "En mathématiques, la continuité est une propriété topologique fondamentale.",
+      "expectedLatex": null,
+      "fragmentLatex": "En mathématiques, la continuité est une propriété topologique\n\nfondamentale.",
+      "completeLatex": "\\documentclass[11pt,a4paper]{article}\n\\usepackage{iftex}\n\\ifPDFTeX\n  \\usepackage[utf8]{inputenc}\n  \\usepackage[T1]{fontenc}\n\\fi\n\\usepackage[french,english]{babel}\n\\usepackage{amsmath,amssymb,amsfonts}\n\n\\begin{document}\n\nEn mathématiques, la continuité est une propriété topologique\n\nfondamentale.\n\n\\end{document}",
+      "cer": 0.013333333333333334,
+      "ocrCer": 0.013333333333333334,
+      "latexCer": null,
+      "tokenF1": null,
+      "actualLineLabels": [
+        "prose"
+      ],
+      "predictedLineLabels": [
+        "prose",
+        "prose"
+      ],
+      "containsTotal": 3,
+      "containsPassed": 3,
+      "containsFailed": [],
+      "forbidsTotal": 0,
+      "forbidsPassed": 0,
+      "forbidsFailed": [],
+      "hallucinations": [],
+      "fragmentCompileSuccess": true,
+      "documentCompileSuccess": true
+    },
+    {
+      "id": "synth_hold_french_quote",
+      "file": "synthetic/synth_hold_french_quote.png",
+      "set": "holdout",
+      "lang": "fr",
+      "tags": [
+        "holdout",
+        "french",
+        "typography",
+        "degradation:clean"
+      ],
+      "status": "supported",
+      "timeMs": 205,
+      "rawText": "Le professeur a dit : « Voici l'énoncé du problème ».\n",
+      "expectedText": "Le professeur a dit : « Voici l'énoncé du problème ».",
+      "expectedLatex": null,
+      "fragmentLatex": "Le professeur a dit : « Voici l'énoncé du problème ».",
+      "completeLatex": "\\documentclass[11pt,a4paper]{article}\n\\usepackage{iftex}\n\\ifPDFTeX\n  \\usepackage[utf8]{inputenc}\n  \\usepackage[T1]{fontenc}\n\\fi\n\\usepackage[french,english]{babel}\n\\usepackage{amsmath,amssymb,amsfonts}\n\n\\begin{document}\n\nLe professeur a dit : « Voici l'énoncé du problème ».\n\n\\end{document}",
+      "cer": 0,
+      "ocrCer": 0,
+      "latexCer": null,
+      "tokenF1": null,
+      "actualLineLabels": [
+        "prose"
+      ],
+      "predictedLineLabels": [
+        "prose"
+      ],
+      "containsTotal": 2,
+      "containsPassed": 2,
+      "containsFailed": [],
+      "forbidsTotal": 0,
+      "forbidsPassed": 0,
+      "forbidsFailed": [],
+      "hallucinations": [],
+      "fragmentCompileSuccess": true,
+      "documentCompileSuccess": true
+    },
+    {
+      "id": "synth_hold_table_data",
+      "file": "synthetic/synth_hold_table_data.png",
+      "set": "holdout",
+      "lang": "en",
+      "tags": [
+        "holdout",
+        "table",
+        "degradation:clean"
+      ],
+      "status": "supported",
+      "timeMs": 62,
+      "rawText": "[Name | Age | score\n",
+      "expectedText": "Name Age Score\nAlice 24 95\nBob 28 88",
+      "expectedLatex": null,
+      "fragmentLatex": "% === Recognition Quality: MEDIUM (73%) ===\n% [Warning] Moderate recognition confidence (73%). Some characters or mathematical symbols may require correction.\n% ==========================================\n\n[Name | Age | score",
+      "completeLatex": "\\documentclass[11pt,a4paper]{article}\n\\usepackage{iftex}\n\\ifPDFTeX\n  \\usepackage[utf8]{inputenc}\n  \\usepackage[T1]{fontenc}\n\\fi\n\\usepackage[english]{babel}\n\\usepackage{amsmath,amssymb,amsfonts}\n\n\\begin{document}\n\n% === Recognition Quality: MEDIUM (73%) ===\n% [Warning] Moderate recognition confidence (73%). Some characters or mathematical symbols may require correction.\n% ==========================================\n\n[Name | Age | score\n\n\\end{document}",
+      "cer": 0.7222222222222222,
+      "ocrCer": 0.7222222222222222,
+      "latexCer": null,
+      "tokenF1": null,
+      "actualLineLabels": [
+        "table",
+        "table",
+        "table"
+      ],
+      "predictedLineLabels": [
+        "prose"
+      ],
+      "containsTotal": 3,
+      "containsPassed": 0,
+      "containsFailed": [
+        "\\begin{tabular}",
+        "Alice",
+        "Bob"
+      ],
+      "forbidsTotal": 0,
+      "forbidsPassed": 0,
+      "forbidsFailed": [],
+      "hallucinations": [],
+      "fragmentCompileSuccess": true,
+      "documentCompileSuccess": true
+    },
+    {
+      "id": "synth_hold_physics_formula",
+      "file": "synthetic/synth_hold_physics_formula.png",
+      "set": "holdout",
+      "lang": "en",
+      "tags": [
+        "holdout",
+        "math",
+        "physics",
+        "degradation:clean"
+      ],
+      "status": "supported",
+      "timeMs": 79,
+      "rawText": "F = G (mq mp) / r2\n",
+      "expectedText": "F = G (m_1 m_2) / r^2",
+      "expectedLatex": "\\[\nF = G \\frac{m_{1} m_{2}}{r^{2}}\n\\]",
+      "fragmentLatex": "% === Recognition Quality: MEDIUM (68%) ===\n% [Warning] Moderate recognition confidence (68%). Some characters or mathematical symbols may require correction.\n% ==========================================\n\n\\[\nF = G (m_{q} mp) / r2\n\\]",
+      "completeLatex": "\\documentclass[11pt,a4paper]{article}\n\\usepackage{iftex}\n\\ifPDFTeX\n  \\usepackage[utf8]{inputenc}\n  \\usepackage[T1]{fontenc}\n\\fi\n\\usepackage[english]{babel}\n\\usepackage{amsmath,amssymb,amsfonts}\n\n\\begin{document}\n\n% === Recognition Quality: MEDIUM (68%) ===\n% [Warning] Moderate recognition confidence (68%). Some characters or mathematical symbols may require correction.\n% ==========================================\n\n\\[\nF = G (m_{q} mp) / r2\n\\]\n\n\\end{document}",
+      "cer": 0.23809523809523808,
+      "ocrCer": 0.23809523809523808,
+      "latexCer": 8.44,
+      "tokenF1": 0.07960199004975124,
+      "actualLineLabels": [
+        "math"
+      ],
+      "predictedLineLabels": [
+        "math"
+      ],
+      "containsTotal": 3,
+      "containsPassed": 0,
+      "containsFailed": [
+        "m_{1}",
+        "m_{2}",
+        "r^{2}"
+      ],
+      "forbidsTotal": 0,
+      "forbidsPassed": 0,
+      "forbidsFailed": [],
+      "hallucinations": [],
+      "fragmentCompileSuccess": true,
+      "documentCompileSuccess": true
+    },
+    {
+      "id": "synth_hold_mixed_font_math",
+      "file": "synthetic/synth_hold_mixed_font_math.png",
+      "set": "holdout",
+      "lang": "en",
+      "tags": [
+        "holdout",
+        "math",
+        "degradation:clean"
+      ],
+      "status": "supported",
+      "timeMs": 105,
+      "rawText": "x2 + 2xy + y2 = (x + y)?\n",
+      "expectedText": "x^2 + 2xy + y^2 = (x + y)^2",
+      "expectedLatex": "\\[\nx^{2} + 2xy + y^{2} = (x + y)^{2}\n\\]",
+      "fragmentLatex": "% === Recognition Quality: MEDIUM (89%) ===\n% [Warning] Unrecognized characters detected as \"?\" in the OCR output.\n%   Suggestion: Check exponents, indices, or special mathematical glyphs.\n% ==========================================\n\n\\[\nx2 + 2xy + y^{2} = (x + y)?\n\\]",
+      "completeLatex": "\\documentclass[11pt,a4paper]{article}\n\\usepackage{iftex}\n\\ifPDFTeX\n  \\usepackage[utf8]{inputenc}\n  \\usepackage[T1]{fontenc}\n\\fi\n\\usepackage[english]{babel}\n\\usepackage{amsmath,amssymb,amsfonts}\n\n\\begin{document}\n\n% === Recognition Quality: MEDIUM (89%) ===\n% [Warning] Unrecognized characters detected as \"?\" in the OCR output.\n%   Suggestion: Check exponents, indices, or special mathematical glyphs.\n% ==========================================\n\n\\[\nx2 + 2xy + y^{2} = (x + y)?\n\\]\n\n\\end{document}",
+      "cer": 0.14814814814814814,
+      "ocrCer": 0.14814814814814814,
+      "latexCer": 8.666666666666666,
+      "tokenF1": 0.14349775784753363,
+      "actualLineLabels": [
+        "math"
+      ],
+      "predictedLineLabels": [
+        "math"
+      ],
+      "containsTotal": 3,
+      "containsPassed": 1,
+      "containsFailed": [
+        "x^{2}",
+        "(x + y)^{2}"
+      ],
+      "forbidsTotal": 0,
+      "forbidsPassed": 0,
+      "forbidsFailed": [],
+      "hallucinations": [],
+      "fragmentCompileSuccess": true,
+      "documentCompileSuccess": true
+    },
+    {
+      "id": "synth_hold_complex_equation",
+      "file": "synthetic/synth_hold_complex_equation.png",
+      "set": "holdout",
+      "lang": "en",
+      "tags": [
+        "holdout",
+        "math",
+        "complex",
+        "degradation:clean"
+      ],
+      "status": "supported",
+      "timeMs": 43,
+      "rawText": "z=a+bi\n",
+      "expectedText": "z = a + bi",
+      "expectedLatex": "\\[\nz = a + bi\n\\]",
+      "fragmentLatex": "\\[\nz=a+bi\n\\]",
+      "completeLatex": "\\documentclass[11pt,a4paper]{article}\n\\usepackage{iftex}\n\\ifPDFTeX\n  \\usepackage[utf8]{inputenc}\n  \\usepackage[T1]{fontenc}\n\\fi\n\\usepackage[english]{babel}\n\\usepackage{amsmath,amssymb,amsfonts}\n\n\\begin{document}\n\n\\[\nz=a+bi\n\\]\n\n\\end{document}",
+      "cer": 0.4,
+      "ocrCer": 0.4,
+      "latexCer": 0.4,
+      "tokenF1": 1,
+      "actualLineLabels": [
+        "math"
+      ],
+      "predictedLineLabels": [
+        "math"
+      ],
+      "containsTotal": 1,
+      "containsPassed": 0,
+      "containsFailed": [
+        "z = a + bi"
+      ],
+      "forbidsTotal": 0,
+      "forbidsPassed": 0,
+      "forbidsFailed": [],
+      "hallucinations": [],
+      "fragmentCompileSuccess": true,
+      "documentCompileSuccess": true
+    },
+    {
+      "id": "synth_hold_gaussian_integral",
+      "file": "synthetic/synth_hold_gaussian_integral.png",
+      "set": "holdout",
+      "lang": "en",
+      "tags": [
+        "holdout",
+        "math",
+        "calculus",
+        "distinct-source"
+      ],
+      "status": "supported",
+      "timeMs": 48,
+      "rawText": "Jex*2 dx = vn\n",
+      "expectedText": "∫ e^-x^2 dx = √π",
+      "expectedLatex": "\\[\n\\int e^{-x^{2}} dx = \\sqrt{\\pi}\n\\]",
+      "fragmentLatex": "% === Recognition Quality: MEDIUM (71%) ===\n% [Warning] Moderate recognition confidence (71%). Some characters or mathematical symbols may require correction.\n% ==========================================\n\n\\[\nJe^{x}*2 dx = vn\n\\]",
+      "completeLatex": "\\documentclass[11pt,a4paper]{article}\n\\usepackage{iftex}\n\\ifPDFTeX\n  \\usepackage[utf8]{inputenc}\n  \\usepackage[T1]{fontenc}\n\\fi\n\\usepackage[english]{babel}\n\\usepackage{amsmath,amssymb,amsfonts}\n\n\\begin{document}\n\n% === Recognition Quality: MEDIUM (71%) ===\n% [Warning] Moderate recognition confidence (71%). Some characters or mathematical symbols may require correction.\n% ==========================================\n\n\\[\nJe^{x}*2 dx = vn\n\\]\n\n\\end{document}",
+      "cer": 0.4375,
+      "ocrCer": 0.4375,
+      "latexCer": 7.068965517241379,
+      "tokenF1": 0.07070707070707072,
+      "actualLineLabels": [
+        "math"
+      ],
+      "predictedLineLabels": [
+        "math"
+      ],
+      "containsTotal": 2,
+      "containsPassed": 0,
+      "containsFailed": [
+        "\\int",
+        "e^{-x^{2}}"
+      ],
+      "forbidsTotal": 0,
+      "forbidsPassed": 0,
+      "forbidsFailed": [],
+      "hallucinations": [],
+      "fragmentCompileSuccess": true,
+      "documentCompileSuccess": true
+    },
+    {
+      "id": "synth_hold_matrix_rotation",
+      "file": "synthetic/synth_hold_matrix_rotation.png",
+      "set": "holdout",
+      "lang": "en",
+      "tags": [
+        "holdout",
+        "math",
+        "matrix",
+        "distinct-source"
+      ],
+      "status": "supported",
+      "timeMs": 88,
+      "rawText": "[ cos(@) -sin(8) ; sin(®) cos(8) ]\n",
+      "expectedText": "[ cos(θ) -sin(θ) ; sin(θ) cos(θ) ]",
+      "expectedLatex": "\\[\n\\begin{bmatrix}\n\\cos(\\theta) & -\\sin(\\theta) \\\\\n\\sin(\\theta) & \\cos(\\theta)\n\\end{bmatrix}\n\\]",
+      "fragmentLatex": "% === Recognition Quality: MEDIUM (73%) ===\n% [Warning] Moderate recognition confidence (73%). Some characters or mathematical symbols may require correction.\n% ==========================================\n\n[ cos(@) -sin(8) ; sin(®) cos(8) ]",
+      "completeLatex": "\\documentclass[11pt,a4paper]{article}\n\\usepackage{iftex}\n\\ifPDFTeX\n  \\usepackage[utf8]{inputenc}\n  \\usepackage[T1]{fontenc}\n\\fi\n\\usepackage[english]{babel}\n\\usepackage{amsmath,amssymb,amsfonts}\n\n\\begin{document}\n\n% === Recognition Quality: MEDIUM (73%) ===\n% [Warning] Moderate recognition confidence (73%). Some characters or mathematical symbols may require correction.\n% ==========================================\n\n[ cos(@) -sin(8) ; sin(®) cos(8) ]\n\n\\end{document}",
+      "cer": 0.11764705882352941,
+      "ocrCer": 0.11764705882352941,
+      "latexCer": 2.303370786516854,
+      "tokenF1": 0.17167381974248927,
+      "actualLineLabels": [
+        "matrix"
+      ],
+      "predictedLineLabels": [
+        "prose"
+      ],
+      "containsTotal": 4,
+      "containsPassed": 0,
+      "containsFailed": [
+        "\\begin{bmatrix}",
+        "\\cos",
+        "\\sin",
+        "\\end{bmatrix}"
+      ],
+      "forbidsTotal": 0,
+      "forbidsPassed": 0,
+      "forbidsFailed": [],
+      "hallucinations": [],
+      "fragmentCompileSuccess": true,
+      "documentCompileSuccess": true
+    },
+    {
+      "id": "synth_hold_french_cinematics",
+      "file": "synthetic/synth_hold_french_cinematics.png",
+      "set": "holdout",
+      "lang": "fr",
+      "tags": [
+        "holdout",
+        "french",
+        "prose",
+        "physics",
+        "distinct-source"
+      ],
+      "status": "supported",
+      "timeMs": 153,
+      "rawText": "Le vecteur vitesse est tangent a la trajectoire au point\nconsidéré.\n",
+      "expectedText": "Le vecteur vitesse est tangent à la trajectoire au point considéré.",
+      "expectedLatex": null,
+      "fragmentLatex": "Le vecteur vitesse est tangent a la trajectoire au point\n\nconsidéré.",
+      "completeLatex": "\\documentclass[11pt,a4paper]{article}\n\\usepackage{iftex}\n\\ifPDFTeX\n  \\usepackage[utf8]{inputenc}\n  \\usepackage[T1]{fontenc}\n\\fi\n\\usepackage[french,english]{babel}\n\\usepackage{amsmath,amssymb,amsfonts}\n\n\\begin{document}\n\nLe vecteur vitesse est tangent a la trajectoire au point\n\nconsidéré.\n\n\\end{document}",
+      "cer": 0.029850746268656716,
+      "ocrCer": 0.029850746268656716,
+      "latexCer": null,
+      "tokenF1": null,
+      "actualLineLabels": [
+        "prose"
+      ],
+      "predictedLineLabels": [
+        "prose",
+        "prose"
+      ],
+      "containsTotal": 3,
+      "containsPassed": 3,
+      "containsFailed": [],
+      "forbidsTotal": 1,
+      "forbidsPassed": 1,
+      "forbidsFailed": [],
+      "hallucinations": [],
+      "fragmentCompileSuccess": true,
+      "documentCompileSuccess": true
+    },
+    {
+      "id": "synth_hold_table_elements",
+      "file": "synthetic/synth_hold_table_elements.png",
+      "set": "holdout",
+      "lang": "fr",
+      "tags": [
+        "holdout",
+        "table",
+        "chemistry",
+        "distinct-source"
+      ],
+      "status": "supported",
+      "timeMs": 115,
+      "rawText": "Hydrogene CRE 1.008\n",
+      "expectedText": "Element Symbole Masse\nHydrogene H 1.008\nHelium He 4.002",
+      "expectedLatex": null,
+      "fragmentLatex": "Hydrogene CRE 1.008",
+      "completeLatex": "\\documentclass[11pt,a4paper]{article}\n\\usepackage{iftex}\n\\ifPDFTeX\n  \\usepackage[utf8]{inputenc}\n  \\usepackage[T1]{fontenc}\n\\fi\n\\usepackage[french,english]{babel}\n\\usepackage{amsmath,amssymb,amsfonts}\n\n\\begin{document}\n\nHydrogene CRE 1.008\n\n\\end{document}",
+      "cer": 0.7454545454545455,
+      "ocrCer": 0.7454545454545455,
+      "latexCer": null,
+      "tokenF1": null,
+      "actualLineLabels": [
+        "table",
+        "table",
+        "table"
+      ],
+      "predictedLineLabels": [
+        "prose"
+      ],
+      "containsTotal": 3,
+      "containsPassed": 1,
+      "containsFailed": [
+        "\\begin{tabular}",
+        "Helium"
+      ],
+      "forbidsTotal": 0,
+      "forbidsPassed": 0,
+      "forbidsFailed": [],
+      "hallucinations": [],
+      "fragmentCompileSuccess": true,
+      "documentCompileSuccess": true
+    },
+    {
+      "id": "synth_hold_logarithm_identity",
+      "file": "synthetic/synth_hold_logarithm_identity.png",
+      "set": "holdout",
+      "lang": "en",
+      "tags": [
+        "holdout",
+        "math",
+        "algebra",
+        "distinct-source"
+      ],
+      "status": "supported",
+      "timeMs": 65,
+      "rawText": "In(xy) = In(x) + In(y)\n",
+      "expectedText": "ln(xy) = ln(x) + ln(y)",
+      "expectedLatex": "\\[\n\\ln(xy) = \\ln(x) + \\ln(y)\n\\]",
+      "fragmentLatex": "In(xy) = In(x) + In(y)",
+      "completeLatex": "\\documentclass[11pt,a4paper]{article}\n\\usepackage{iftex}\n\\ifPDFTeX\n  \\usepackage[utf8]{inputenc}\n  \\usepackage[T1]{fontenc}\n\\fi\n\\usepackage[english]{babel}\n\\usepackage{amsmath,amssymb,amsfonts}\n\n\\begin{document}\n\nIn(xy) = In(x) + In(y)\n\n\\end{document}",
+      "cer": 0.13636363636363635,
+      "ocrCer": 0.13636363636363635,
+      "latexCer": 0.24,
+      "tokenF1": 0.7272727272727272,
+      "actualLineLabels": [
+        "math"
+      ],
+      "predictedLineLabels": [
+        "prose"
+      ],
+      "containsTotal": 2,
+      "containsPassed": 0,
+      "containsFailed": [
+        "ln(xy)",
+        "ln(x) + ln(y)"
+      ],
+      "forbidsTotal": 0,
+      "forbidsPassed": 0,
+      "forbidsFailed": [],
+      "hallucinations": [],
+      "fragmentCompileSuccess": true,
+      "documentCompileSuccess": true
+    },
+    {
+      "id": "synth_hold_quadratic_formula",
+      "file": "synthetic/synth_hold_quadratic_formula.png",
+      "set": "holdout",
+      "lang": "en",
+      "tags": [
+        "holdout",
+        "math",
+        "algebra",
+        "distinct-source"
+      ],
+      "status": "supported",
+      "timeMs": 81,
+      "rawText": "x = (-b + V(b2 - 4ac)) / (2a)\n",
+      "expectedText": "x = (-b + √(b^2 - 4ac)) / (2a)",
+      "expectedLatex": "\\[\nx = \\frac{-b + \\sqrt{b^{2} - 4ac}}{2a}\n\\]",
+      "fragmentLatex": "\\[\nx = (-b + V(b^{2} - 4ac)) / (2a)\n\\]",
+      "completeLatex": "\\documentclass[11pt,a4paper]{article}\n\\usepackage{iftex}\n\\ifPDFTeX\n  \\usepackage[utf8]{inputenc}\n  \\usepackage[T1]{fontenc}\n\\fi\n\\usepackage[english]{babel}\n\\usepackage{amsmath,amssymb,amsfonts}\n\n\\begin{document}\n\n\\[\nx = (-b + V(b^{2} - 4ac)) / (2a)\n\\]\n\n\\end{document}",
+      "cer": 0.06666666666666667,
+      "ocrCer": 0.06666666666666667,
+      "latexCer": 0.5277777777777778,
+      "tokenF1": 0.6363636363636364,
+      "actualLineLabels": [
+        "math"
+      ],
+      "predictedLineLabels": [
+        "math"
+      ],
+      "containsTotal": 4,
+      "containsPassed": 4,
+      "containsFailed": [],
+      "forbidsTotal": 0,
+      "forbidsPassed": 0,
+      "forbidsFailed": [],
+      "hallucinations": [],
+      "fragmentCompileSuccess": true,
+      "documentCompileSuccess": true
+    },
+    {
+      "id": "synth_stress_poly_rot4",
+      "file": "synthetic/synth_stress_poly_rot4.png",
+      "set": "stress",
+      "lang": "en",
+      "tags": [
+        "stress",
+        "math",
+        "degradation:rotation_4"
+      ],
+      "status": "supported",
+      "timeMs": 92,
+      "rawText": "P(x) = 2x3- 5x2 + 3x-7\n",
+      "expectedText": "P(x) = 2x^3 - 5x^2 + 3x - 7",
+      "expectedLatex": "\\[\nP(x) = 2x^{3} - 5x^{2} + 3x - 7\n\\]",
+      "fragmentLatex": "\\[\nP(x) = 2x3- 5x2 + 3x-7\n\\]",
+      "completeLatex": "\\documentclass[11pt,a4paper]{article}\n\\usepackage{iftex}\n\\ifPDFTeX\n  \\usepackage[utf8]{inputenc}\n  \\usepackage[T1]{fontenc}\n\\fi\n\\usepackage[english]{babel}\n\\usepackage{amsmath,amssymb,amsfonts}\n\n\\begin{document}\n\n\\[\nP(x) = 2x3- 5x2 + 3x-7\n\\]\n\n\\end{document}",
+      "cer": 0.18518518518518517,
+      "ocrCer": 0.18518518518518517,
+      "latexCer": 0.18518518518518517,
+      "tokenF1": 0.9444444444444444,
+      "actualLineLabels": [
+        "math"
+      ],
+      "predictedLineLabels": [
+        "math"
+      ],
+      "containsTotal": 1,
+      "containsPassed": 1,
+      "containsFailed": [],
+      "forbidsTotal": 0,
+      "forbidsPassed": 0,
+      "forbidsFailed": [],
+      "hallucinations": [],
+      "fragmentCompileSuccess": true,
+      "documentCompileSuccess": true
+    },
+    {
+      "id": "synth_stress_poly_rot5",
+      "file": "synthetic/synth_stress_poly_rot5.png",
+      "set": "stress",
+      "lang": "en",
+      "tags": [
+        "stress",
+        "math",
+        "degradation:rotation_5"
+      ],
+      "status": "supported",
+      "timeMs": 81,
+      "rawText": "P(x) = 2x3. 5y2 + 3x-7\n",
+      "expectedText": "P(x) = 2x^3 - 5x^2 + 3x - 7",
+      "expectedLatex": "\\[\nP(x) = 2x^{3} - 5x^{2} + 3x - 7\n\\]",
+      "fragmentLatex": "% === Recognition Quality: MEDIUM (69%) ===\n% [Warning] Moderate recognition confidence (69%). Some characters or mathematical symbols may require correction.\n% ==========================================\n\n\\[\nP(x) = 2x3. 5y2 + 3x-7\n\\]",
+      "completeLatex": "\\documentclass[11pt,a4paper]{article}\n\\usepackage{iftex}\n\\ifPDFTeX\n  \\usepackage[utf8]{inputenc}\n  \\usepackage[T1]{fontenc}\n\\fi\n\\usepackage[english]{babel}\n\\usepackage{amsmath,amssymb,amsfonts}\n\n\\begin{document}\n\n% === Recognition Quality: MEDIUM (69%) ===\n% [Warning] Moderate recognition confidence (69%). Some characters or mathematical symbols may require correction.\n% ==========================================\n\n\\[\nP(x) = 2x3. 5y2 + 3x-7\n\\]\n\n\\end{document}",
+      "cer": 0.25925925925925924,
+      "ocrCer": 0.25925925925925924,
+      "latexCer": 7.814814814814815,
+      "tokenF1": 0.14563106796116504,
+      "actualLineLabels": [
+        "math"
+      ],
+      "predictedLineLabels": [
+        "math"
+      ],
+      "containsTotal": 1,
+      "containsPassed": 1,
+      "containsFailed": [],
+      "forbidsTotal": 0,
+      "forbidsPassed": 0,
+      "forbidsFailed": [],
+      "hallucinations": [],
+      "fragmentCompileSuccess": true,
+      "documentCompileSuccess": true
+    },
+    {
+      "id": "synth_stress_poly_blur2",
+      "file": "synthetic/synth_stress_poly_blur2.png",
+      "set": "stress",
+      "lang": "en",
+      "tags": [
+        "stress",
+        "math",
+        "degradation:blur_2"
+      ],
+      "status": "supported",
+      "timeMs": 145,
+      "rawText": "P(x) = 2x3 - 5x2 + 3x-7\n",
+      "expectedText": "P(x) = 2x^3 - 5x^2 + 3x - 7",
+      "expectedLatex": "\\[\nP(x) = 2x^{3} - 5x^{2} + 3x - 7\n\\]",
+      "fragmentLatex": "\\[\nP(x) = 2x3 - 5x2 + 3x-7\n\\]",
+      "completeLatex": "\\documentclass[11pt,a4paper]{article}\n\\usepackage{iftex}\n\\ifPDFTeX\n  \\usepackage[utf8]{inputenc}\n  \\usepackage[T1]{fontenc}\n\\fi\n\\usepackage[english]{babel}\n\\usepackage{amsmath,amssymb,amsfonts}\n\n\\begin{document}\n\n\\[\nP(x) = 2x3 - 5x2 + 3x-7\n\\]\n\n\\end{document}",
+      "cer": 0.14814814814814814,
+      "ocrCer": 0.14814814814814814,
+      "latexCer": 0.14814814814814814,
+      "tokenF1": 0.9444444444444444,
+      "actualLineLabels": [
+        "math"
+      ],
+      "predictedLineLabels": [
+        "math"
+      ],
+      "containsTotal": 1,
+      "containsPassed": 1,
+      "containsFailed": [],
+      "forbidsTotal": 0,
+      "forbidsPassed": 0,
+      "forbidsFailed": [],
+      "hallucinations": [],
+      "fragmentCompileSuccess": true,
+      "documentCompileSuccess": true
+    },
+    {
+      "id": "synth_stress_poly_heavy_noise",
+      "file": "synthetic/synth_stress_poly_heavy_noise.png",
+      "set": "stress",
+      "lang": "en",
+      "tags": [
+        "stress",
+        "math",
+        "degradation:noise_heavy"
+      ],
+      "status": "supported",
+      "timeMs": 102,
+      "rawText": "P(x) = 2x3 - 5x2 + 3x-7\n",
+      "expectedText": "P(x) = 2x^3 - 5x^2 + 3x - 7",
+      "expectedLatex": "\\[\nP(x) = 2x^{3} - 5x^{2} + 3x - 7\n\\]",
+      "fragmentLatex": "\\[\nP(x) = 2x3 - 5x2 + 3x-7\n\\]",
+      "completeLatex": "\\documentclass[11pt,a4paper]{article}\n\\usepackage{iftex}\n\\ifPDFTeX\n  \\usepackage[utf8]{inputenc}\n  \\usepackage[T1]{fontenc}\n\\fi\n\\usepackage[english]{babel}\n\\usepackage{amsmath,amssymb,amsfonts}\n\n\\begin{document}\n\n\\[\nP(x) = 2x3 - 5x2 + 3x-7\n\\]\n\n\\end{document}",
+      "cer": 0.14814814814814814,
+      "ocrCer": 0.14814814814814814,
+      "latexCer": 0.14814814814814814,
+      "tokenF1": 0.9444444444444444,
+      "actualLineLabels": [
+        "math"
+      ],
+      "predictedLineLabels": [
+        "math"
+      ],
+      "containsTotal": 1,
+      "containsPassed": 1,
+      "containsFailed": [],
+      "forbidsTotal": 0,
+      "forbidsPassed": 0,
+      "forbidsFailed": [],
+      "hallucinations": [],
+      "fragmentCompileSuccess": true,
+      "documentCompileSuccess": true
+    },
+    {
+      "id": "synth_stress_poly_contrast_squeezed",
+      "file": "synthetic/synth_stress_poly_contrast_squeezed.png",
+      "set": "stress",
+      "lang": "en",
+      "tags": [
+        "stress",
+        "math",
+        "degradation:contrast_squeezed"
+      ],
+      "status": "supported",
+      "timeMs": 84,
+      "rawText": "P(x) = 2x3 - 5x2 + 3x-7\n",
+      "expectedText": "P(x) = 2x^3 - 5x^2 + 3x - 7",
+      "expectedLatex": "\\[\nP(x) = 2x^{3} - 5x^{2} + 3x - 7\n\\]",
+      "fragmentLatex": "\\[\nP(x) = 2x3 - 5x2 + 3x-7\n\\]",
+      "completeLatex": "\\documentclass[11pt,a4paper]{article}\n\\usepackage{iftex}\n\\ifPDFTeX\n  \\usepackage[utf8]{inputenc}\n  \\usepackage[T1]{fontenc}\n\\fi\n\\usepackage[english]{babel}\n\\usepackage{amsmath,amssymb,amsfonts}\n\n\\begin{document}\n\n\\[\nP(x) = 2x3 - 5x2 + 3x-7\n\\]\n\n\\end{document}",
+      "cer": 0.14814814814814814,
+      "ocrCer": 0.14814814814814814,
+      "latexCer": 0.14814814814814814,
+      "tokenF1": 0.9444444444444444,
+      "actualLineLabels": [
+        "math"
+      ],
+      "predictedLineLabels": [
+        "math"
+      ],
+      "containsTotal": 1,
+      "containsPassed": 1,
+      "containsFailed": [],
+      "forbidsTotal": 0,
+      "forbidsPassed": 0,
+      "forbidsFailed": [],
+      "hallucinations": [],
+      "fragmentCompileSuccess": true,
+      "documentCompileSuccess": true
+    },
+    {
+      "id": "synth_stress_poly_downscale45",
+      "file": "synthetic/synth_stress_poly_downscale45.png",
+      "set": "stress",
+      "lang": "en",
+      "tags": [
+        "stress",
+        "math",
+        "degradation:downscale_45"
+      ],
+      "status": "supported",
+      "timeMs": 157,
+      "rawText": "P(x) = 2x3 - 5x2 + 3x-7\n",
+      "expectedText": "P(x) = 2x^3 - 5x^2 + 3x - 7",
+      "expectedLatex": "\\[\nP(x) = 2x^{3} - 5x^{2} + 3x - 7\n\\]",
+      "fragmentLatex": "\\[\nP(x) = 2x3 - 5x2 + 3x-7\n\\]",
+      "completeLatex": "\\documentclass[11pt,a4paper]{article}\n\\usepackage{iftex}\n\\ifPDFTeX\n  \\usepackage[utf8]{inputenc}\n  \\usepackage[T1]{fontenc}\n\\fi\n\\usepackage[english]{babel}\n\\usepackage{amsmath,amssymb,amsfonts}\n\n\\begin{document}\n\n\\[\nP(x) = 2x3 - 5x2 + 3x-7\n\\]\n\n\\end{document}",
+      "cer": 0.14814814814814814,
+      "ocrCer": 0.14814814814814814,
+      "latexCer": 0.14814814814814814,
+      "tokenF1": 0.9444444444444444,
+      "actualLineLabels": [
+        "math"
+      ],
+      "predictedLineLabels": [
+        "math"
+      ],
+      "containsTotal": 1,
+      "containsPassed": 1,
+      "containsFailed": [],
+      "forbidsTotal": 0,
+      "forbidsPassed": 0,
+      "forbidsFailed": [],
+      "hallucinations": [],
+      "fragmentCompileSuccess": true,
+      "documentCompileSuccess": true
+    },
+    {
+      "id": "synth_stress_poly_vignette",
+      "file": "synthetic/synth_stress_poly_vignette.png",
+      "set": "stress",
+      "lang": "en",
+      "tags": [
+        "stress",
+        "math",
+        "degradation:vignette"
+      ],
+      "status": "supported",
+      "timeMs": 110,
+      "rawText": "P(x) = 2x3 - 5x2 + 3x-7\n",
+      "expectedText": "P(x) = 2x^3 - 5x^2 + 3x - 7",
+      "expectedLatex": "\\[\nP(x) = 2x^{3} - 5x^{2} + 3x - 7\n\\]",
+      "fragmentLatex": "\\[\nP(x) = 2x3 - 5x2 + 3x-7\n\\]",
+      "completeLatex": "\\documentclass[11pt,a4paper]{article}\n\\usepackage{iftex}\n\\ifPDFTeX\n  \\usepackage[utf8]{inputenc}\n  \\usepackage[T1]{fontenc}\n\\fi\n\\usepackage[english]{babel}\n\\usepackage{amsmath,amssymb,amsfonts}\n\n\\begin{document}\n\n\\[\nP(x) = 2x3 - 5x2 + 3x-7\n\\]\n\n\\end{document}",
+      "cer": 0.14814814814814814,
+      "ocrCer": 0.14814814814814814,
+      "latexCer": 0.14814814814814814,
+      "tokenF1": 0.9444444444444444,
+      "actualLineLabels": [
+        "math"
+      ],
+      "predictedLineLabels": [
+        "math"
+      ],
+      "containsTotal": 1,
+      "containsPassed": 1,
+      "containsFailed": [],
+      "forbidsTotal": 0,
+      "forbidsPassed": 0,
+      "forbidsFailed": [],
+      "hallucinations": [],
+      "fragmentCompileSuccess": true,
+      "documentCompileSuccess": true
+    },
+    {
+      "id": "synth_stress_poly_combined_rot_blur",
+      "file": "synthetic/synth_stress_poly_combined_rot_blur.png",
+      "set": "stress",
+      "lang": "en",
+      "tags": [
+        "stress",
+        "math",
+        "degradation:combined_rot_blur"
+      ],
+      "status": "supported",
+      "timeMs": 233,
+      "rawText": "P(x) = 2x3 - 5x2 4 3x. 7\n",
+      "expectedText": "P(x) = 2x^3 - 5x^2 + 3x - 7",
+      "expectedLatex": "\\[\nP(x) = 2x^{3} - 5x^{2} + 3x - 7\n\\]",
+      "fragmentLatex": "% === Recognition Quality: MEDIUM (67%) ===\n% [Warning] Moderate recognition confidence (67%). Some characters or mathematical symbols may require correction.\n% ==========================================\n\n\\[\nP(x) = 2x3 - 5x2 4 3x. 7\n\\]",
+      "completeLatex": "\\documentclass[11pt,a4paper]{article}\n\\usepackage{iftex}\n\\ifPDFTeX\n  \\usepackage[utf8]{inputenc}\n  \\usepackage[T1]{fontenc}\n\\fi\n\\usepackage[english]{babel}\n\\usepackage{amsmath,amssymb,amsfonts}\n\n\\begin{document}\n\n% === Recognition Quality: MEDIUM (67%) ===\n% [Warning] Moderate recognition confidence (67%). Some characters or mathematical symbols may require correction.\n% ==========================================\n\n\\[\nP(x) = 2x3 - 5x2 4 3x. 7\n\\]\n\n\\end{document}",
+      "cer": 0.18518518518518517,
+      "ocrCer": 0.18518518518518517,
+      "latexCer": 7.7407407407407405,
+      "tokenF1": 0.14563106796116504,
+      "actualLineLabels": [
+        "math"
+      ],
+      "predictedLineLabels": [
+        "math"
+      ],
+      "containsTotal": 1,
+      "containsPassed": 1,
+      "containsFailed": [],
+      "forbidsTotal": 0,
+      "forbidsPassed": 0,
+      "forbidsFailed": [],
+      "hallucinations": [],
+      "fragmentCompileSuccess": true,
+      "documentCompileSuccess": true
+    },
+    {
+      "id": "synth_stress_poly_combined_noise_contrast",
+      "file": "synthetic/synth_stress_poly_combined_noise_contrast.png",
+      "set": "stress",
+      "lang": "en",
+      "tags": [
+        "stress",
+        "math",
+        "degradation:combined_noise_contrast"
+      ],
+      "status": "supported",
+      "timeMs": 1048,
+      "rawText": "DS EG renee CG a nn\n\n. P(x) ee oe 2ae 7\nI EN i ae\nNs ea\n",
+      "expectedText": "P(x) = 2x^3 - 5x^2 + 3x - 7",
+      "expectedLatex": "\\[\nP(x) = 2x^{3} - 5x^{2} + 3x - 7\n\\]",
+      "fragmentLatex": "% === Recognition Quality: UNCERTAIN (18%) ===\n% [Warning] Low OCR recognition confidence (18%). Image may be blurry, low-resolution, or handwritten.\n%   Suggestion: Please verify the output carefully against your original source.\n% ==========================================\n\n% Note: Low recognition confidence (8%) on line below\nDS EG renee CG a nn\n\n% Note: Low recognition confidence (2%) on line below\n\\[\n. P(x) ee oe 2ae 7\n\\]\n\n% Note: Low recognition confidence (21%) on line below\nI EN i ae\n\n% Note: Low recognition confidence (25%) on line below\nNs ea",
+      "completeLatex": "\\documentclass[11pt,a4paper]{article}\n\\usepackage{iftex}\n\\ifPDFTeX\n  \\usepackage[utf8]{inputenc}\n  \\usepackage[T1]{fontenc}\n\\fi\n\\usepackage[english]{babel}\n\\usepackage{amsmath,amssymb,amsfonts}\n\n\\begin{document}\n\n% === Recognition Quality: UNCERTAIN (18%) ===\n% [Warning] Low OCR recognition confidence (18%). Image may be blurry, low-resolution, or handwritten.\n%   Suggestion: Please verify the output carefully against your original source.\n% ==========================================\n\n% Note: Low recognition confidence (8%) on line below\nDS EG renee CG a nn\n\n% Note: Low recognition confidence (2%) on line below\n\\[\n. P(x) ee oe 2ae 7\n\\]\n\n% Note: Low recognition confidence (21%) on line below\nI EN i ae\n\n% Note: Low recognition confidence (25%) on line below\nNs ea\n\n\\end{document}",
+      "cer": 1.6296296296296295,
+      "ocrCer": 1.6296296296296295,
+      "latexCer": 19.666666666666668,
+      "tokenF1": 0.04017857142857143,
+      "actualLineLabels": [
+        "math"
+      ],
+      "predictedLineLabels": [
+        "prose",
+        "math",
+        "prose",
+        "prose"
+      ],
+      "containsTotal": 1,
+      "containsPassed": 1,
+      "containsFailed": [],
+      "forbidsTotal": 0,
+      "forbidsPassed": 0,
+      "forbidsFailed": [],
+      "hallucinations": [],
+      "fragmentCompileSuccess": true,
+      "documentCompileSuccess": true
+    },
+    {
+      "id": "synth_stress_french_rot4",
+      "file": "synthetic/synth_stress_french_rot4.png",
+      "set": "stress",
+      "lang": "fr",
+      "tags": [
+        "stress",
+        "french",
+        "degradation:rotation_4"
+      ],
+      "status": "supported",
+      "timeMs": 204,
+      "rawText": "Calculer la valeur exacte de \"expression Suivante,\n",
+      "expectedText": "Calculer la valeur exacte de l'expression suivante.",
+      "expectedLatex": null,
+      "fragmentLatex": "Calculer la valeur exacte de \"expression Suivante,",
+      "completeLatex": "\\documentclass[11pt,a4paper]{article}\n\\usepackage{iftex}\n\\ifPDFTeX\n  \\usepackage[utf8]{inputenc}\n  \\usepackage[T1]{fontenc}\n\\fi\n\\usepackage[french,english]{babel}\n\\usepackage{amsmath,amssymb,amsfonts}\n\n\\begin{document}\n\nCalculer la valeur exacte de \"expression Suivante,\n\n\\end{document}",
+      "cer": 0.0784313725490196,
+      "ocrCer": 0.0784313725490196,
+      "latexCer": null,
+      "tokenF1": null,
+      "actualLineLabels": [
+        "prose"
+      ],
+      "predictedLineLabels": [
+        "prose"
+      ],
+      "containsTotal": 1,
+      "containsPassed": 1,
+      "containsFailed": [],
+      "forbidsTotal": 0,
+      "forbidsPassed": 0,
+      "forbidsFailed": [],
+      "hallucinations": [],
+      "fragmentCompileSuccess": true,
+      "documentCompileSuccess": true
+    },
+    {
+      "id": "synth_stress_french_blur2",
+      "file": "synthetic/synth_stress_french_blur2.png",
+      "set": "stress",
+      "lang": "fr",
+      "tags": [
+        "stress",
+        "french",
+        "degradation:blur_2"
+      ],
+      "status": "supported",
+      "timeMs": 197,
+      "rawText": "Cakuler là valeur enacte de l'enpresson suvente\n",
+      "expectedText": "Calculer la valeur exacte de l'expression suivante.",
+      "expectedLatex": null,
+      "fragmentLatex": "% === Recognition Quality: UNCERTAIN (52%) ===\n% [Warning] Moderate recognition confidence (52%). Some characters or mathematical symbols may require correction.\n% ==========================================\n\n% Note: Low recognition confidence (49%) on line below\nCakuler là valeur enacte de l'enpresson suvente",
+      "completeLatex": "\\documentclass[11pt,a4paper]{article}\n\\usepackage{iftex}\n\\ifPDFTeX\n  \\usepackage[utf8]{inputenc}\n  \\usepackage[T1]{fontenc}\n\\fi\n\\usepackage[french,english]{babel}\n\\usepackage{amsmath,amssymb,amsfonts}\n\n\\begin{document}\n\n% === Recognition Quality: UNCERTAIN (52%) ===\n% [Warning] Moderate recognition confidence (52%). Some characters or mathematical symbols may require correction.\n% ==========================================\n\n% Note: Low recognition confidence (49%) on line below\nCakuler là valeur enacte de l'enpresson suvente\n\n\\end{document}",
+      "cer": 0.17647058823529413,
+      "ocrCer": 0.17647058823529413,
+      "latexCer": null,
+      "tokenF1": null,
+      "actualLineLabels": [
+        "prose"
+      ],
+      "predictedLineLabels": [
+        "prose"
+      ],
+      "containsTotal": 1,
+      "containsPassed": 0,
+      "containsFailed": [
+        "valeur exacte"
+      ],
+      "forbidsTotal": 0,
+      "forbidsPassed": 0,
+      "forbidsFailed": [],
+      "hallucinations": [],
+      "fragmentCompileSuccess": true,
+      "documentCompileSuccess": true
+    },
+    {
+      "id": "synth_stress_french_noise",
+      "file": "synthetic/synth_stress_french_noise.png",
+      "set": "stress",
+      "lang": "fr",
+      "tags": [
+        "stress",
+        "french",
+        "degradation:noise_heavy"
+      ],
+      "status": "supported",
+      "timeMs": 266,
+      "rawText": "L'ingénieur vérifie l'équation déjà résolue avec succès.\n",
+      "expectedText": "L'ingénieur vérifie l'équation déjà résolue avec succès.",
+      "expectedLatex": null,
+      "fragmentLatex": "L'ingénieur vérifie l'équation déjà résolue avec succès.",
+      "completeLatex": "\\documentclass[11pt,a4paper]{article}\n\\usepackage{iftex}\n\\ifPDFTeX\n  \\usepackage[utf8]{inputenc}\n  \\usepackage[T1]{fontenc}\n\\fi\n\\usepackage[french,english]{babel}\n\\usepackage{amsmath,amssymb,amsfonts}\n\n\\begin{document}\n\nL'ingénieur vérifie l'équation déjà résolue avec succès.\n\n\\end{document}",
+      "cer": 0,
+      "ocrCer": 0,
+      "latexCer": null,
+      "tokenF1": null,
+      "actualLineLabels": [
+        "prose"
+      ],
+      "predictedLineLabels": [
+        "prose"
+      ],
+      "containsTotal": 2,
+      "containsPassed": 2,
+      "containsFailed": [],
+      "forbidsTotal": 0,
+      "forbidsPassed": 0,
+      "forbidsFailed": [],
+      "hallucinations": [],
+      "fragmentCompileSuccess": true,
+      "documentCompileSuccess": true
+    },
+    {
+      "id": "synth_stress_french_vignette",
+      "file": "synthetic/synth_stress_french_vignette.png",
+      "set": "stress",
+      "lang": "fr",
+      "tags": [
+        "stress",
+        "french",
+        "degradation:vignette"
+      ],
+      "status": "supported",
+      "timeMs": 229,
+      "rawText": "L'élève étudie attentivement le théorème où apparaît le\nparamètre.\n",
+      "expectedText": "L'élève étudie attentivement le théorème où apparaît le paramètre.",
+      "expectedLatex": null,
+      "fragmentLatex": "L'élève étudie attentivement le théorème où apparaît le\n\nparamètre.",
+      "completeLatex": "\\documentclass[11pt,a4paper]{article}\n\\usepackage{iftex}\n\\ifPDFTeX\n  \\usepackage[utf8]{inputenc}\n  \\usepackage[T1]{fontenc}\n\\fi\n\\usepackage[french,english]{babel}\n\\usepackage{amsmath,amssymb,amsfonts}\n\n\\begin{document}\n\nL'élève étudie attentivement le théorème où apparaît le\n\nparamètre.\n\n\\end{document}",
+      "cer": 0.015151515151515152,
+      "ocrCer": 0.015151515151515152,
+      "latexCer": null,
+      "tokenF1": null,
+      "actualLineLabels": [
+        "prose"
+      ],
+      "predictedLineLabels": [
+        "prose",
+        "prose"
+      ],
+      "containsTotal": 2,
+      "containsPassed": 2,
+      "containsFailed": [],
+      "forbidsTotal": 0,
+      "forbidsPassed": 0,
+      "forbidsFailed": [],
+      "hallucinations": [],
+      "fragmentCompileSuccess": true,
+      "documentCompileSuccess": true
+    },
+    {
+      "id": "synth_stress_matrix_rot4",
+      "file": "synthetic/synth_stress_matrix_rot4.png",
+      "set": "stress",
+      "lang": "en",
+      "tags": [
+        "stress",
+        "math",
+        "matrix",
+        "degradation:rotation_4"
+      ],
+      "status": "supported",
+      "timeMs": 28,
+      "rawText": "[57;29]\n",
+      "expectedText": "[ 5 7 ; 2 9 ]",
+      "expectedLatex": "\\[\n\\begin{bmatrix}\n5 & 7 \\\\\n2 & 9\n\\end{bmatrix}\n\\]",
+      "fragmentLatex": "\\[\n[57;29]\n\\]",
+      "completeLatex": "\\documentclass[11pt,a4paper]{article}\n\\usepackage{iftex}\n\\ifPDFTeX\n  \\usepackage[utf8]{inputenc}\n  \\usepackage[T1]{fontenc}\n\\fi\n\\usepackage[english]{babel}\n\\usepackage{amsmath,amssymb,amsfonts}\n\n\\begin{document}\n\n\\[\n[57;29]\n\\]\n\n\\end{document}",
+      "cer": 0.46153846153846156,
+      "ocrCer": 0.46153846153846156,
+      "latexCer": 0.9090909090909091,
+      "tokenF1": 0,
+      "actualLineLabels": [
+        "matrix"
+      ],
+      "predictedLineLabels": [
+        "math"
+      ],
+      "containsTotal": 4,
+      "containsPassed": 4,
+      "containsFailed": [],
+      "forbidsTotal": 0,
+      "forbidsPassed": 0,
+      "forbidsFailed": [],
+      "hallucinations": [],
+      "fragmentCompileSuccess": true,
+      "documentCompileSuccess": true
+    },
+    {
+      "id": "synth_stress_matrix_blur2",
+      "file": "synthetic/synth_stress_matrix_blur2.png",
+      "set": "stress",
+      "lang": "en",
+      "tags": [
+        "stress",
+        "math",
+        "matrix",
+        "degradation:blur_2"
+      ],
+      "status": "supported",
+      "timeMs": 89,
+      "rawText": "{57;29)\n",
+      "expectedText": "[ 5 7 ; 2 9 ]",
+      "expectedLatex": "\\[\n\\begin{bmatrix}\n5 & 7 \\\\\n2 & 9\n\\end{bmatrix}\n\\]",
+      "fragmentLatex": "% === Recognition Quality: UNCERTAIN (35%) ===\n% [Warning] Low OCR recognition confidence (35%). Image may be blurry, low-resolution, or handwritten.\n%   Suggestion: Please verify the output carefully against your original source.\n% ==========================================\n\n% Note: Low recognition confidence (35%) on line below\n\\[\n{57;29)\n\\]",
+      "completeLatex": "\\documentclass[11pt,a4paper]{article}\n\\usepackage{iftex}\n\\ifPDFTeX\n  \\usepackage[utf8]{inputenc}\n  \\usepackage[T1]{fontenc}\n\\fi\n\\usepackage[english]{babel}\n\\usepackage{amsmath,amssymb,amsfonts}\n\n\\begin{document}\n\n% === Recognition Quality: UNCERTAIN (35%) ===\n% [Warning] Low OCR recognition confidence (35%). Image may be blurry, low-resolution, or handwritten.\n%   Suggestion: Please verify the output carefully against your original source.\n% ==========================================\n\n% Note: Low recognition confidence (35%) on line below\n\\[\n{57;29)\n\\]\n\n\\end{document}",
+      "cer": 0.6153846153846154,
+      "ocrCer": 0.6153846153846154,
+      "latexCer": 7.159090909090909,
+      "tokenF1": 0.08813559322033898,
+      "actualLineLabels": [
+        "matrix"
+      ],
+      "predictedLineLabels": [
+        "math"
+      ],
+      "containsTotal": 2,
+      "containsPassed": 2,
+      "containsFailed": [],
+      "forbidsTotal": 0,
+      "forbidsPassed": 0,
+      "forbidsFailed": [],
+      "hallucinations": [],
+      "fragmentCompileSuccess": false,
+      "fragmentCompileError": "! Missing } inserted.",
+      "documentCompileSuccess": false,
+      "documentCompileError": "! Missing } inserted."
+    },
+    {
+      "id": "synth_stress_matrix_noise",
+      "file": "synthetic/synth_stress_matrix_noise.png",
+      "set": "stress",
+      "lang": "en",
+      "tags": [
+        "stress",
+        "math",
+        "matrix",
+        "degradation:noise_heavy"
+      ],
+      "status": "supported",
+      "timeMs": 86,
+      "rawText": "Par 2 9]\n",
+      "expectedText": "[ 5 7 ; 2 9 ]",
+      "expectedLatex": "\\[\n\\begin{bmatrix}\n5 & 7 \\\\\n2 & 9\n\\end{bmatrix}\n\\]",
+      "fragmentLatex": "% === Recognition Quality: UNCERTAIN (31%) ===\n% [Warning] Low OCR recognition confidence (31%). Image may be blurry, low-resolution, or handwritten.\n%   Suggestion: Please verify the output carefully against your original source.\n% ==========================================\n\n% Note: Low recognition confidence (31%) on line below\n\\[\nPar 2 9]\n\\]",
+      "completeLatex": "\\documentclass[11pt,a4paper]{article}\n\\usepackage{iftex}\n\\ifPDFTeX\n  \\usepackage[utf8]{inputenc}\n  \\usepackage[T1]{fontenc}\n\\fi\n\\usepackage[english]{babel}\n\\usepackage{amsmath,amssymb,amsfonts}\n\n\\begin{document}\n\n% === Recognition Quality: UNCERTAIN (31%) ===\n% [Warning] Low OCR recognition confidence (31%). Image may be blurry, low-resolution, or handwritten.\n%   Suggestion: Please verify the output carefully against your original source.\n% ==========================================\n\n% Note: Low recognition confidence (31%) on line below\n\\[\nPar 2 9]\n\\]\n\n\\end{document}",
+      "cer": 0.6153846153846154,
+      "ocrCer": 0.6153846153846154,
+      "latexCer": 7.181818181818182,
+      "tokenF1": 0.09427609427609426,
+      "actualLineLabels": [
+        "matrix"
+      ],
+      "predictedLineLabels": [
+        "math"
+      ],
+      "containsTotal": 2,
+      "containsPassed": 0,
+      "containsFailed": [
+        "5",
+        "7"
+      ],
+      "forbidsTotal": 0,
+      "forbidsPassed": 0,
+      "forbidsFailed": [],
+      "hallucinations": [],
+      "fragmentCompileSuccess": true,
+      "documentCompileSuccess": true
+    },
+    {
+      "id": "synth_stress_table_rot4",
+      "file": "synthetic/synth_stress_table_rot4.png",
+      "set": "stress",
+      "lang": "en",
+      "tags": [
+        "stress",
+        "table",
+        "degradation:rotation_4"
+      ],
+      "status": "supported",
+      "timeMs": 80,
+      "rawText": "| Monitor | 2 | $300\n",
+      "expectedText": "Item Qty Cost\nMonitor 2 $300\nDesk 1 $150",
+      "expectedLatex": null,
+      "fragmentLatex": "% === Recognition Quality: MEDIUM (73%) ===\n% [Warning] Moderate recognition confidence (73%). Some characters or mathematical symbols may require correction.\n% ==========================================\n\n| Monitor | 2 | $300",
+      "completeLatex": "\\documentclass[11pt,a4paper]{article}\n\\usepackage{iftex}\n\\ifPDFTeX\n  \\usepackage[utf8]{inputenc}\n  \\usepackage[T1]{fontenc}\n\\fi\n\\usepackage[english]{babel}\n\\usepackage{amsmath,amssymb,amsfonts}\n\n\\begin{document}\n\n% === Recognition Quality: MEDIUM (73%) ===\n% [Warning] Moderate recognition confidence (73%). Some characters or mathematical symbols may require correction.\n% ==========================================\n\n| Monitor | 2 | $300\n\n\\end{document}",
+      "cer": 0.65,
+      "ocrCer": 0.65,
+      "latexCer": null,
+      "tokenF1": null,
+      "actualLineLabels": [
+        "table",
+        "table",
+        "table"
+      ],
+      "predictedLineLabels": [
+        "prose"
+      ],
+      "containsTotal": 2,
+      "containsPassed": 1,
+      "containsFailed": [
+        "Desk"
+      ],
+      "forbidsTotal": 0,
+      "forbidsPassed": 0,
+      "forbidsFailed": [],
+      "hallucinations": [],
+      "fragmentCompileSuccess": false,
+      "fragmentCompileError": "! Missing $ inserted.",
+      "documentCompileSuccess": false,
+      "documentCompileError": "! Missing $ inserted."
+    },
+    {
+      "id": "synth_stress_table_contrast",
+      "file": "synthetic/synth_stress_table_contrast.png",
+      "set": "stress",
+      "lang": "en",
+      "tags": [
+        "stress",
+        "table",
+        "degradation:contrast_squeezed"
+      ],
+      "status": "supported",
+      "timeMs": 67,
+      "rawText": "[item | | cost\n",
+      "expectedText": "Item Qty Cost\nMonitor 2 $300\nDesk 1 $150",
+      "expectedLatex": null,
+      "fragmentLatex": "% === Recognition Quality: UNCERTAIN (58%) ===\n% [Warning] Moderate recognition confidence (58%). Some characters or mathematical symbols may require correction.\n% ==========================================\n\n% Note: Low recognition confidence (58%) on line below\n[item | | cost",
+      "completeLatex": "\\documentclass[11pt,a4paper]{article}\n\\usepackage{iftex}\n\\ifPDFTeX\n  \\usepackage[utf8]{inputenc}\n  \\usepackage[T1]{fontenc}\n\\fi\n\\usepackage[english]{babel}\n\\usepackage{amsmath,amssymb,amsfonts}\n\n\\begin{document}\n\n% === Recognition Quality: UNCERTAIN (58%) ===\n% [Warning] Moderate recognition confidence (58%). Some characters or mathematical symbols may require correction.\n% ==========================================\n\n% Note: Low recognition confidence (58%) on line below\n[item | | cost\n\n\\end{document}",
+      "cer": 0.825,
+      "ocrCer": 0.825,
+      "latexCer": null,
+      "tokenF1": null,
+      "actualLineLabels": [
+        "table",
+        "table",
+        "table"
+      ],
+      "predictedLineLabels": [
+        "prose"
+      ],
+      "containsTotal": 1,
+      "containsPassed": 0,
+      "containsFailed": [
+        "Monitor"
+      ],
+      "forbidsTotal": 0,
+      "forbidsPassed": 0,
+      "forbidsFailed": [],
+      "hallucinations": [],
+      "fragmentCompileSuccess": true,
+      "documentCompileSuccess": true
+    },
+    {
+      "id": "synth_stress_table_vignette",
+      "file": "synthetic/synth_stress_table_vignette.png",
+      "set": "stress",
+      "lang": "en",
+      "tags": [
+        "stress",
+        "table",
+        "degradation:vignette"
+      ],
+      "status": "supported",
+      "timeMs": 75,
+      "rawText": "“item | @ty | cost\n",
+      "expectedText": "Item Qty Cost\nMonitor 2 $300\nDesk 1 $150",
+      "expectedLatex": null,
+      "fragmentLatex": "% === Recognition Quality: UNCERTAIN (57%) ===\n% [Warning] Moderate recognition confidence (57%). Some characters or mathematical symbols may require correction.\n% ==========================================\n\n% Note: Low recognition confidence (57%) on line below\n“item | @ty | cost",
+      "completeLatex": "\\documentclass[11pt,a4paper]{article}\n\\usepackage{iftex}\n\\ifPDFTeX\n  \\usepackage[utf8]{inputenc}\n  \\usepackage[T1]{fontenc}\n\\fi\n\\usepackage[english]{babel}\n\\usepackage{amsmath,amssymb,amsfonts}\n\n\\begin{document}\n\n% === Recognition Quality: UNCERTAIN (57%) ===\n% [Warning] Moderate recognition confidence (57%). Some characters or mathematical symbols may require correction.\n% ==========================================\n\n% Note: Low recognition confidence (57%) on line below\n“item | @ty | cost\n\n\\end{document}",
+      "cer": 0.8,
+      "ocrCer": 0.8,
+      "latexCer": null,
+      "tokenF1": null,
+      "actualLineLabels": [
+        "table",
+        "table",
+        "table"
+      ],
+      "predictedLineLabels": [
+        "prose"
+      ],
+      "containsTotal": 1,
+      "containsPassed": 0,
+      "containsFailed": [
+        "Monitor"
+      ],
+      "forbidsTotal": 0,
+      "forbidsPassed": 0,
+      "forbidsFailed": [],
+      "hallucinations": [],
+      "fragmentCompileSuccess": true,
+      "documentCompileSuccess": true
+    },
+    {
+      "id": "synth_stress_cases_rot4",
+      "file": "synthetic/synth_stress_cases_rot4.png",
+      "set": "stress",
+      "lang": "en",
+      "tags": [
+        "stress",
+        "math",
+        "cases",
+        "degradation:rotation_4"
+      ],
+      "status": "supported",
+      "timeMs": 132,
+      "rawText": "{3x+2y=12\n{x-y=1\n",
+      "expectedText": "{ 3x + 2y = 12\n{ x - y = 1",
+      "expectedLatex": "\\[\n\\begin{cases}\n3x + 2y = 12 \\\\\nx - y = 1\n\\end{cases}\n\\]",
+      "fragmentLatex": "\\[\n\\begin{cases}\n3x+2y=12 \\\\\nx-y=1\n\\end{cases}\n\\]",
+      "completeLatex": "\\documentclass[11pt,a4paper]{article}\n\\usepackage{iftex}\n\\ifPDFTeX\n  \\usepackage[utf8]{inputenc}\n  \\usepackage[T1]{fontenc}\n\\fi\n\\usepackage[english]{babel}\n\\usepackage{amsmath,amssymb,amsfonts}\n\n\\begin{document}\n\n\\[\n\\begin{cases}\n3x+2y=12 \\\\\nx-y=1\n\\end{cases}\n\\]\n\n\\end{document}",
+      "cer": 0.38461538461538464,
+      "ocrCer": 0.38461538461538464,
+      "latexCer": 0.1568627450980392,
+      "tokenF1": 1,
+      "actualLineLabels": [
+        "cases",
+        "cases"
+      ],
+      "predictedLineLabels": [
+        "cases",
+        "cases"
+      ],
+      "containsTotal": 1,
+      "containsPassed": 0,
+      "containsFailed": [
+        "3x + 2y = 12"
+      ],
+      "forbidsTotal": 0,
+      "forbidsPassed": 0,
+      "forbidsFailed": [],
+      "hallucinations": [],
+      "fragmentCompileSuccess": true,
+      "documentCompileSuccess": true
+    },
+    {
+      "id": "synth_stress_cases_blur2",
+      "file": "synthetic/synth_stress_cases_blur2.png",
+      "set": "stress",
+      "lang": "en",
+      "tags": [
+        "stress",
+        "math",
+        "cases",
+        "degradation:blur_2"
+      ],
+      "status": "supported",
+      "timeMs": 64,
+      "rawText": "{ 3x + 2y = 12\n{x-y=1\n",
+      "expectedText": "{ 3x + 2y = 12\n{ x - y = 1",
+      "expectedLatex": "\\[\n\\begin{cases}\n3x + 2y = 12 \\\\\nx - y = 1\n\\end{cases}\n\\]",
+      "fragmentLatex": "\\[\n\\begin{cases}\n3x + 2y = 12 \\\\\nx-y=1\n\\end{cases}\n\\]",
+      "completeLatex": "\\documentclass[11pt,a4paper]{article}\n\\usepackage{iftex}\n\\ifPDFTeX\n  \\usepackage[utf8]{inputenc}\n  \\usepackage[T1]{fontenc}\n\\fi\n\\usepackage[english]{babel}\n\\usepackage{amsmath,amssymb,amsfonts}\n\n\\begin{document}\n\n\\[\n\\begin{cases}\n3x + 2y = 12 \\\\\nx-y=1\n\\end{cases}\n\\]\n\n\\end{document}",
+      "cer": 0.19230769230769232,
+      "ocrCer": 0.19230769230769232,
+      "latexCer": 0.0784313725490196,
+      "tokenF1": 1,
+      "actualLineLabels": [
+        "cases",
+        "cases"
+      ],
+      "predictedLineLabels": [
+        "cases",
+        "cases"
+      ],
+      "containsTotal": 1,
+      "containsPassed": 1,
+      "containsFailed": [],
+      "forbidsTotal": 0,
+      "forbidsPassed": 0,
+      "forbidsFailed": [],
+      "hallucinations": [],
+      "fragmentCompileSuccess": true,
+      "documentCompileSuccess": true
+    },
+    {
+      "id": "synth_stress_sqrt_rot4",
+      "file": "synthetic/synth_stress_sqrt_rot4.png",
+      "set": "stress",
+      "lang": "en",
+      "tags": [
+        "stress",
+        "math",
+        "radical",
+        "degradation:rotation_4"
+      ],
+      "status": "supported",
+      "timeMs": 52,
+      "rawText": "V(x2 + y2)\n",
+      "expectedText": "√(x^2 + y^2)",
+      "expectedLatex": "\\[\n\\sqrt{x^{2} + y^{2}}\n\\]",
+      "fragmentLatex": "\\[\nV(x2 + y^{2})\n\\]",
+      "completeLatex": "\\documentclass[11pt,a4paper]{article}\n\\usepackage{iftex}\n\\ifPDFTeX\n  \\usepackage[utf8]{inputenc}\n  \\usepackage[T1]{fontenc}\n\\fi\n\\usepackage[english]{babel}\n\\usepackage{amsmath,amssymb,amsfonts}\n\n\\begin{document}\n\n\\[\nV(x2 + y^{2})\n\\]\n\n\\end{document}",
+      "cer": 0.25,
+      "ocrCer": 0.25,
+      "latexCer": 0.5,
+      "tokenF1": 0.631578947368421,
+      "actualLineLabels": [
+        "math"
+      ],
+      "predictedLineLabels": [
+        "math"
+      ],
+      "containsTotal": 1,
+      "containsPassed": 0,
+      "containsFailed": [
+        "x^{2}"
+      ],
+      "forbidsTotal": 0,
+      "forbidsPassed": 0,
+      "forbidsFailed": [],
+      "hallucinations": [],
+      "fragmentCompileSuccess": true,
+      "documentCompileSuccess": true
+    },
+    {
+      "id": "synth_stress_fraction_rot5",
+      "file": "synthetic/synth_stress_fraction_rot5.png",
+      "set": "stress",
+      "lang": "en",
+      "tags": [
+        "stress",
+        "math",
+        "fraction",
+        "degradation:rotation_5"
+      ],
+      "status": "supported",
+      "timeMs": 178,
+      "rawText": "B+b/(c+d ex,\n",
+      "expectedText": "(a + b) / (c + d) = x / y",
+      "expectedLatex": "\\[\n\\frac{a + b}{c + d} = \\frac{x}{y}\n\\]",
+      "fragmentLatex": "% === Recognition Quality: UNCERTAIN (36%) ===\n% [Warning] Low OCR recognition confidence (36%). Image may be blurry, low-resolution, or handwritten.\n%   Suggestion: Please verify the output carefully against your original source.\n% ==========================================\n\n% Note: Low recognition confidence (36%) on line below\n\\[\nB+b/(c+d ex,\n\\]",
+      "completeLatex": "\\documentclass[11pt,a4paper]{article}\n\\usepackage{iftex}\n\\ifPDFTeX\n  \\usepackage[utf8]{inputenc}\n  \\usepackage[T1]{fontenc}\n\\fi\n\\usepackage[english]{babel}\n\\usepackage{amsmath,amssymb,amsfonts}\n\n\\begin{document}\n\n% === Recognition Quality: UNCERTAIN (36%) ===\n% [Warning] Low OCR recognition confidence (36%). Image may be blurry, low-resolution, or handwritten.\n%   Suggestion: Please verify the output carefully against your original source.\n% ==========================================\n\n% Note: Low recognition confidence (36%) on line below\n\\[\nB+b/(c+d ex,\n\\]\n\n\\end{document}",
+      "cer": 0.64,
+      "ocrCer": 0.64,
+      "latexCer": 9.878787878787879,
+      "tokenF1": 0.06081081081081081,
+      "actualLineLabels": [
+        "math"
+      ],
+      "predictedLineLabels": [
+        "math"
+      ],
+      "containsTotal": 1,
+      "containsPassed": 0,
+      "containsFailed": [
+        "a + b"
+      ],
+      "forbidsTotal": 0,
+      "forbidsPassed": 0,
+      "forbidsFailed": [],
+      "hallucinations": [],
+      "fragmentCompileSuccess": true,
+      "documentCompileSuccess": true
+    },
+    {
+      "id": "synth_stress_combined_extreme",
+      "file": "synthetic/synth_stress_combined_extreme.png",
+      "set": "stress",
+      "lang": "en",
+      "tags": [
+        "stress",
+        "math",
+        "degradation:extreme"
+      ],
+      "status": "supported",
+      "timeMs": 156,
+      "rawText": "x2 +\n2x\ny\n+ y? =\n(x\no\ny)?\n",
+      "expectedText": "x^2 + 2xy + y^2 = (x + y)^2",
+      "expectedLatex": "\\[\nx^{2} + 2xy + y^{2} = (x + y)^{2}\n\\]",
+      "fragmentLatex": "% === Recognition Quality: UNCERTAIN (77%) ===\n% [Warning] Unrecognized characters detected as \"?\" in the OCR output.\n%   Suggestion: Check exponents, indices, or special mathematical glyphs.\n% [Warning] Stacked vertical characters detected. May represent integral/summation limits or matrix elements.\n%   Suggestion: Tesseract line segmentation often splits upper/lower limits onto separate lines.\n% ==========================================\n\n\\[\nx2 +\n\\]\n\n2x\n\ny\n\n\\[\n+ y? =\n\\]\n\n\\[\n(x\n\\]\n\no\n\n% Note: Low recognition confidence (59%) on line below\n\\[\ny)?\n\\]",
+      "completeLatex": "\\documentclass[11pt,a4paper]{article}\n\\usepackage{iftex}\n\\ifPDFTeX\n  \\usepackage[utf8]{inputenc}\n  \\usepackage[T1]{fontenc}\n\\fi\n\\usepackage[english]{babel}\n\\usepackage{amsmath,amssymb,amsfonts}\n\n\\begin{document}\n\n% === Recognition Quality: UNCERTAIN (77%) ===\n% [Warning] Unrecognized characters detected as \"?\" in the OCR output.\n%   Suggestion: Check exponents, indices, or special mathematical glyphs.\n% [Warning] Stacked vertical characters detected. May represent integral/summation limits or matrix elements.\n%   Suggestion: Tesseract line segmentation often splits upper/lower limits onto separate lines.\n% ==========================================\n\n\\[\nx2 +\n\\]\n\n2x\n\ny\n\n\\[\n+ y? =\n\\]\n\n\\[\n(x\n\\]\n\no\n\n% Note: Low recognition confidence (59%) on line below\n\\[\ny)?\n\\]\n\n\\end{document}",
+      "cer": 0.4444444444444444,
+      "ocrCer": 0.4444444444444444,
+      "latexCer": 18.666666666666668,
+      "tokenF1": 0.05909090909090909,
+      "actualLineLabels": [
+        "math"
+      ],
+      "predictedLineLabels": [
+        "math",
+        "prose",
+        "prose",
+        "math",
+        "math",
+        "prose",
+        "math"
+      ],
+      "containsTotal": 1,
+      "containsPassed": 0,
+      "containsFailed": [
+        "(x + y)"
+      ],
+      "forbidsTotal": 0,
+      "forbidsPassed": 0,
+      "forbidsFailed": [],
+      "hallucinations": [],
+      "fragmentCompileSuccess": true,
+      "documentCompileSuccess": true
+    }
+  ]
+}

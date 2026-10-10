@@ -85,15 +85,17 @@ describe('Real Image Benchmark: 10 Mathematical & Language Cases', () => {
     assert.ok(result.rawText.includes('a') && result.rawText.includes('b'));
   });
 
-  it('Case 03: Radical (sqrt(x^2 + 1)) warns about 2D radical operator limitation', async () => {
+  it('Case 03: Radical image produces non-empty output with uncertain quality warnings without hallucinating \\sqrt', async () => {
+    // Image radicals are unsupported; Tesseract reads the radical as V and emits no vinculum.
     const imgPath = path.join(REAL_FIXTURES_DIR, 'case_03_sqrt.png');
     const buffer = fs.readFileSync(imgPath);
 
     const result = await convertImageToLatex(buffer, { mode: 'fragment' });
-    assert.ok(result.latex.length > 0);
+    assert.ok(result.latex.length > 0, 'Latex output should not be empty');
+    assert.ok(!result.latex.includes('\\sqrt'), 'Image radicals are unsupported and should not hallucinate \\sqrt');
     // Should include diagnostic comment or warning if radical is uncertain
     if (result.quality === 'uncertain') {
-      assert.ok(result.warnings.length > 0);
+      assert.ok(result.warnings.length > 0, 'Uncertain quality should emit warnings');
     }
   });
 
@@ -131,12 +133,14 @@ describe('Real Image Benchmark: 10 Mathematical & Language Cases', () => {
     assert.ok(result.latex.length > 0);
   });
 
-  it('Case 10: Table containing mathematical expressions', async () => {
+  it('Case 10: Table containing mathematical expressions (known limitation: math cells prevent table grid trigger)', async () => {
+    // Known limitation: OCR segmentation on mathematical table cells breaks uniform column bounding boxes.
+    // Table is not yet parsed as \begin{table}, but raw lines convert safely without crashing.
     const imgPath = path.join(REAL_FIXTURES_DIR, 'case_10_table_math.png');
     const buffer = fs.readFileSync(imgPath);
 
     const result = await convertImageToLatex(buffer, { mode: 'fragment' });
-    assert.ok(result.latex.length > 0);
+    assert.ok(result.latex.length > 0, 'Output must be non-empty');
     assert.ok(result.latex.includes('Fonction') || result.rawText.includes('Fonction'));
   });
 });

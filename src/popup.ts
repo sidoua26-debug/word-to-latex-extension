@@ -7,7 +7,13 @@
  */
 
 import { convertToLatex, convertDocxToLatex } from './pandocWasm.js';
-import { cleanupLatex } from './cleanup.js';
+import { cleanupLatex, wrapCompleteDocument, sanitizeFilename } from './cleanup.js';
+import {
+  analyzeDocxConversion,
+  analyzePasteConversion,
+  analyzeImageConversion,
+  type ConversionMetadata,
+} from './conversionStats.js';
 import { detectPastedFormat, DetectedInput } from './clipboardDetect.js';
 import {
   validateImageFile,
@@ -61,7 +67,11 @@ const statusEl = document.getElementById('status') as HTMLDivElement;
 const outputWrapper = document.getElementById('output-wrapper') as HTMLDivElement;
 const outputTextarea = document.getElementById('output') as HTMLTextAreaElement;
 const sourceIndicator = document.getElementById('source-indicator') as HTMLSpanElement;
+const conversionInfoCard = document.getElementById('conversion-info-card') as HTMLDivElement;
+const conversionStatsEl = document.getElementById('conversion-stats') as HTMLSpanElement;
+const conversionWarningsEl = document.getElementById('conversion-warnings') as HTMLDivElement;
 const copyBtn = document.getElementById('copy-btn') as HTMLButtonElement;
+const downloadBtn = document.getElementById('download-btn') as HTMLButtonElement;
 const copiedToast = document.getElementById('copied-toast') as HTMLDivElement;
 
 // State
@@ -69,8 +79,12 @@ let selectedFile: File | null = null;
 let lastPastedData: DetectedInput | null = null;
 let selectedImageFile: File | null = null;
 let selectedImageDataUrl: string | null = null;
-let imageOutputMode: 'fragment' | 'document' = 'fragment';
+let outputMode: 'fragment' | 'document' = 'fragment';
 let isConverting = false;
+let lastCleanLatexFragment: string | null = null;
+let lastSourceDesc = '';
+let currentDocName = 'converted';
+let lastMetadata: ConversionMetadata | null = null;
 
 // --- Tab Switching ---
 tabUpload.addEventListener('click', () => switchTab('upload'));
@@ -169,9 +183,15 @@ convertBtn.addEventListener('click', async () => {
     const arrayBuffer = await selectedFile.arrayBuffer();
     const rawLatex = await convertDocxToLatex(arrayBuffer);
     const cleanLatex = cleanupLatex(rawLatex);
+    lastCleanLatexFragment = cleanLatex;
+    lastSourceDesc = 'docx file';
+    currentDocName = selectedFile.name;
+    const finalLatex = outputMode === 'document' ? wrapCompleteDocument(cleanLatex) : cleanLatex;
 
-    renderOutput(cleanLatex, 'docx file');
-    await copyToClipboard(cleanLatex);
+    const meta = analyzeDocxConversion(rawLatex, cleanLatex);
+    lastMetadata = meta;
+    renderOutput(finalLatex, 'docx file', meta);
+    await copyToClipboard(finalLatex);
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     showStatus(`Conversion failed: ${message}`, 'error');
@@ -254,9 +274,15 @@ convertPasteBtn.addEventListener('click', async () => {
       text: inputContent,
     });
     const cleanLatex = cleanupLatex(rawLatex);
+    lastCleanLatexFragment = cleanLatex;
+    lastSourceDesc = sourceDesc;
+    currentDocName = 'pasted_content';
+    const finalLatex = outputMode === 'document' ? wrapCompleteDocument(cleanLatex) : cleanLatex;
 
-    renderOutput(cleanLatex, sourceDesc);
-    await copyToClipboard(cleanLatex);
+    const meta = analyzePasteConversion(inputFormat, inputContent, cleanLatex);
+    lastMetadata = meta;
+    renderOutput(finalLatex, sourceDesc, meta);
+    await copyToClipboard(finalLatex);
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     showStatus(`Conversion failed: ${message}`, 'error');
@@ -369,15 +395,22 @@ window.addEventListener('paste', async (e: ClipboardEvent) => {
 
 // Output mode buttons
 btnModeFragment.addEventListener('click', () => {
-  imageOutputMode = 'fragment';
+  outputMode = 'fragment';
   btnModeFragment.classList.add('active');
   btnModeDocument.classList.remove('active');
+  if (lastCleanLatexFragment && !outputWrapper.hidden) {
+    renderOutput(lastCleanLatexFragment, lastSourceDesc, lastMetadata);
+  }
 });
 
 btnModeDocument.addEventListener('click', () => {
-  imageOutputMode = 'document';
+  outputMode = 'document';
   btnModeDocument.classList.add('active');
   btnModeFragment.classList.remove('active');
+  if (lastCleanLatexFragment && !outputWrapper.hidden) {
+    const fullDoc = wrapCompleteDocument(lastCleanLatexFragment, { hasFrench: true });
+    renderOutput(fullDoc, lastSourceDesc, lastMetadata);
+  }
 });
 
 // --- Image Mode: Conversion ---
@@ -396,7 +429,7 @@ convertImageBtn.addEventListener('click', async () => {
     const canvas = preprocessCanvas(img);
 
     const result = await convertImageToLatex(canvas, {
-      mode: imageOutputMode,
+      mode: 'fragment',
       embedFigure: checkEmbedFigure.checked,
       imageFileName: selectedImageFile.name,
       hasFrench: true,
@@ -405,7 +438,14 @@ convertImageBtn.addEventListener('click', async () => {
       },
     });
 
-    renderOutput(result.latex, `image (${selectedImageFile.name})`);
+    lastCleanLatexFragment = result.latex;
+    lastSourceDesc = `image (${selectedImageFile.name})`;
+    currentDocName = selectedImageFile.name;
+    const finalLatex = outputMode === 'document' ? wrapCompleteDocument(result.latex, { hasFrench: true }) : result.latex;
+
+    const meta = analyzeImageConversion(result, result.latex);
+    lastMetadata = meta;
+    renderOutput(finalLatex, `image (${selectedImageFile.name})`, meta);
     if (result.quality === 'uncertain' || result.quality === 'low') {
       showStatus(`Conversion complete (${result.confidence}% confidence). Review and edit formulas in the output box below before copying.`, 'info');
     } else if (result.hasMath) {
@@ -413,7 +453,7 @@ convertImageBtn.addEventListener('click', async () => {
     } else {
       hideStatus();
     }
-    await copyToClipboard(result.latex);
+    await copyToClipboard(finalLatex);
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     showStatus(`Image conversion failed: ${message}`, 'error');
@@ -424,11 +464,85 @@ convertImageBtn.addEventListener('click', async () => {
   }
 });
 
-// --- Output Presentation & Copy ---
-function renderOutput(latex: string, source: string) {
+// --- Output Presentation, Copy, and Download ---
+function renderOutput(latex: string, source: string, metadata?: ConversionMetadata | null) {
   outputTextarea.value = latex;
   sourceIndicator.textContent = `Converted from: ${source}`;
+
+  if (metadata !== undefined) {
+    lastMetadata = metadata;
+  }
+
+  if (lastMetadata && lastMetadata.formattedStats) {
+    conversionStatsEl.textContent = lastMetadata.formattedStats;
+
+    if (lastMetadata.warnings && lastMetadata.warnings.length > 0) {
+      conversionWarningsEl.innerHTML = '';
+      for (const w of lastMetadata.warnings) {
+        const item = document.createElement('div');
+        item.className = `warning-item severity-${w.severity}`;
+
+        const badge = document.createElement('span');
+        badge.className = 'warning-badge';
+        badge.textContent = w.severity === 'info' ? 'Note' : w.severity === 'warning' ? 'Warning' : 'Review';
+
+        const content = document.createElement('div');
+        content.className = 'warning-msg';
+        content.textContent = w.message;
+
+        if (w.suggestion) {
+          const sugg = document.createElement('span');
+          sugg.className = 'warning-suggestion';
+          sugg.textContent = `Tip: ${w.suggestion}`;
+          content.appendChild(sugg);
+        }
+
+        item.appendChild(badge);
+        item.appendChild(content);
+        conversionWarningsEl.appendChild(item);
+      }
+      conversionWarningsEl.hidden = false;
+    } else {
+      conversionWarningsEl.innerHTML = '';
+      conversionWarningsEl.hidden = true;
+    }
+
+    conversionInfoCard.hidden = false;
+  } else {
+    conversionInfoCard.hidden = true;
+  }
+
   outputWrapper.hidden = false;
+}
+
+/**
+ * Triggers a browser download of the given LaTeX content as a .tex file.
+ */
+export function downloadTexFile(content: string, filename: string): void {
+  try {
+    const cleanBase = sanitizeFilename(filename);
+    const targetFilename = `${cleanBase}.tex`;
+
+    const blob = new Blob([content], { type: 'text/x-tex;charset=utf-8' });
+    const objectUrl = URL.createObjectURL(blob);
+
+    const link = document.createElement('a');
+    link.href = objectUrl;
+    link.download = targetFilename;
+    link.style.display = 'none';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    setTimeout(() => {
+      URL.revokeObjectURL(objectUrl);
+    }, 1000);
+
+    showToast('✓ Downloaded .tex!');
+  } catch (err) {
+    console.error('[Word to LaTeX] Download error:', err);
+    showStatus('Could not download the file.', 'error');
+  }
 }
 
 copyBtn.addEventListener('click', async () => {
@@ -438,11 +552,18 @@ copyBtn.addEventListener('click', async () => {
   }
 });
 
+downloadBtn.addEventListener('click', () => {
+  const text = outputTextarea.value;
+  if (text) {
+    downloadTexFile(text, currentDocName);
+  }
+});
+
 async function copyToClipboard(text: string) {
   try {
     if (navigator.clipboard && navigator.clipboard.writeText) {
       await navigator.clipboard.writeText(text);
-      showToast();
+      showToast('✓ Copied!');
       return;
     }
     throw new Error('Clipboard API unavailable');
@@ -451,17 +572,18 @@ async function copyToClipboard(text: string) {
       outputTextarea.select();
       const success = document.execCommand('copy');
       if (success) {
-        showToast();
+        showToast('✓ Copied!');
         return;
       }
     } catch {}
     console.warn('[Word to LaTeX] Clipboard write failed:', err);
     outputTextarea.select();
-    showStatus('Auto-copy failed — text selected, press Ctrl+C to copy.', 'info');
+    showStatus('Could not copy. Please select and copy the output manually.', 'error');
   }
 }
 
-function showToast() {
+function showToast(message = '✓ Copied!') {
+  copiedToast.textContent = message;
   copiedToast.hidden = false;
   setTimeout(() => {
     copiedToast.hidden = true;

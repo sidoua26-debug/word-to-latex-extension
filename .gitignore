@@ -17,3 +17,6 @@ yarn-error.log*
 .venv/
 pix2tex_models/
 *.whl
+.bin/
+.tmp_compile/
+*.traineddata

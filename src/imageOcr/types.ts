@@ -39,3 +39,38 @@ export interface ImageRecognitionEngine {
     options: RecognitionOptions
   ): Promise<RecognitionResult>;
 }
+
+export interface BoundingBox {
+  x0: number;
+  y0: number;
+  x1: number;
+  y1: number;
+}
+
+export interface OcrSymbol {
+  text: string;
+  confidence: number;
+  bbox?: BoundingBox;
+}
+
+export interface OcrWord {
+  text: string;
+  confidence: number;
+  bbox?: BoundingBox;
+  symbols?: OcrSymbol[];
+}
+
+export interface OcrLine {
+  text: string;
+  confidence: number;
+  bbox?: BoundingBox;
+  words?: OcrWord[];
+}
+
+export interface OcrResultData {
+  text: string;
+  confidence: number;
+  lines?: OcrLine[];
+  words?: OcrWord[];
+}
+

@@ -16,6 +16,13 @@ import {
   collapseBlankLines,
   trimTrailingWhitespace,
   prependPackageComments,
+  findBalancedClose,
+  normalizeWhitespaceProtected,
+  validateLatexStructure,
+  hasFrenchText,
+  stripPackageComments,
+  wrapCompleteDocument,
+  sanitizeFilename,
 } from '../src/cleanup.ts';
 
 describe('removeTightlist', () => {
@@ -223,6 +230,14 @@ describe('unwrapForeignLanguage', () => {
     const input = '\\begin{otherlanguage}{french}\nTexte en français\n\\end{otherlanguage}';
     assert.equal(unwrapForeignLanguage(input).trim(), 'Texte en français');
   });
+
+  it('preserves LaTeX column specifications @{} and macro braces \\noalign{} while cleaning bare empty braces', () => {
+    const input = '\\begin{longtable}[]{@{}ll@{}}\n\\toprule\\noalign{}\n\\endhead\n\\foreignlanguage{french}{Ø}{}\\foreignlanguage{french}{Corps}\n\\end{longtable}';
+    const result = unwrapForeignLanguage(input);
+    assert.ok(result.includes('@{}ll@{}}'), 'Column spec @{} must be preserved');
+    assert.ok(result.includes('\\toprule\\noalign{}'), '\\noalign{} must be preserved');
+    assert.ok(result.includes('ØCorps'), 'Empty braces between foreignlanguage calls must be stripped');
+  });
 });
 
 describe('cleanFrenchPunctuationAndTildes', () => {
@@ -235,6 +250,13 @@ describe('cleanFrenchPunctuationAndTildes', () => {
   it('unwraps redundant spacing groups like {~ }', () => {
     const input = 'Ø{~ }Corps : laiton';
     assert.equal(cleanFrenchPunctuationAndTildes(input), 'Ø Corps : laiton');
+  });
+
+  it('does not corrupt empty tabular column specifiers @{} or @{}ll@{}', () => {
+    const input = '\\begin{longtable}[]{@{} >{\\raggedright\\arraybackslash}p{0.5\\linewidth} @{}}';
+    const result = cleanFrenchPunctuationAndTildes(input);
+    assert.ok(result.includes('@{}'), 'Must not replace @{} with @ space');
+    assert.ok(!result.includes('@ '), 'Must not introduce spaces into @{}');
   });
 
   it('normalizes leading bullet symbols with tildes', () => {
@@ -326,3 +348,217 @@ describe('cleanupLatex (full pipeline)', () => {
     assert.ok(result.includes('70L/min'));
   });
 });
+
+describe('findBalancedClose', () => {
+  it('finds matching closing brace for nested braces', () => {
+    const input = '{\\textbf{hello {world}}} rest';
+    const closeIdx = findBalancedClose(input, 0);
+    assert.equal(closeIdx, 23);
+    assert.equal(input.substring(0, closeIdx + 1), '{\\textbf{hello {world}}}');
+  });
+
+  it('skips escaped braces', () => {
+    const input = '{item \\{with\\} escaped} after';
+    const closeIdx = findBalancedClose(input, 0);
+    assert.equal(closeIdx, 22);
+    assert.equal(input.substring(0, closeIdx + 1), '{item \\{with\\} escaped}');
+  });
+
+  it('returns -1 for unbalanced braces', () => {
+    const input = '{unclosed brace';
+    assert.equal(findBalancedClose(input, 0), -1);
+  });
+});
+
+describe('normalizeWhitespaceProtected', () => {
+  it('protects whitespace inside verbatim environments', () => {
+    const input = [
+      'Normal text with too many blank lines\n\n\n\n',
+      '\\begin{verbatim}',
+      '  line 1   ',
+      '    line 2 with exact spacing',
+      '\\end{verbatim}',
+      '\n\n\nMore normal text',
+    ].join('\n');
+
+    const result = normalizeWhitespaceProtected(input);
+    assert.ok(result.includes('  line 1   \n    line 2 with exact spacing'));
+    assert.ok(!result.includes('\n\n\n\n'));
+  });
+
+  it('protects whitespace inside display math', () => {
+    const input = [
+      'Equation below:',
+      '\\[',
+      '   x + y = z   ',
+      '\\]',
+      '\n\n\nAfter math',
+    ].join('\n');
+
+    const result = normalizeWhitespaceProtected(input);
+    assert.ok(result.includes('\\[\n   x + y = z   \n\\]'));
+    assert.ok(!result.includes('\n\n\nAfter math'));
+  });
+});
+
+describe('validateLatexStructure', () => {
+  it('validates well-formed LaTeX', () => {
+    const input = '\\begin{itemize}\n\\item Item 1\n\\item Item 2\n\\end{itemize}';
+    const res = validateLatexStructure(input);
+    assert.equal(res.valid, true);
+    assert.equal(res.errors.length, 0);
+  });
+
+  it('detects unclosed environment', () => {
+    const input = '\\begin{itemize}\n\\item Item 1\n\\item Item 2';
+    const res = validateLatexStructure(input);
+    assert.equal(res.valid, false);
+    assert.ok(res.errors.some(e => e.includes('Unclosed environments: itemize')));
+  });
+
+  it('detects mismatched environment tags', () => {
+    const input = '\\begin{itemize}\n\\item Test\n\\end{enumerate}';
+    const res = validateLatexStructure(input);
+    assert.equal(res.valid, false);
+    assert.ok(res.errors.some(e => e.includes('Mismatched environment')));
+  });
+
+  it('detects unbalanced braces', () => {
+    const input = '\\textbf{hello';
+    const res = validateLatexStructure(input);
+    assert.equal(res.valid, false);
+    assert.ok(res.errors.some(e => e.includes('Unbalanced braces')));
+  });
+});
+
+describe('hasFrenchText', () => {
+  it('detects French accents and ligatures', () => {
+    assert.equal(hasFrenchText('Bonjour le monde'), false);
+    assert.equal(hasFrenchText('Voici un résumé'), true);
+    assert.equal(hasFrenchText('L’œuvre de l’auteur'), true);
+    assert.equal(hasFrenchText('« Citation »'), true);
+    assert.equal(hasFrenchText('élève, déjà, ça, où'), true);
+  });
+});
+
+describe('stripPackageComments', () => {
+  it('strips package comments and leaves clean body', () => {
+    const input = [
+      '% Required packages (add to your preamble):',
+      '% \\usepackage{booktabs}',
+      '% \\usepackage{longtable}',
+      '',
+      '\\begin{longtable}{ll}',
+      '\\toprule',
+      'A & B \\\\',
+      '\\bottomrule',
+      '\\end{longtable}',
+    ].join('\n');
+
+    const result = stripPackageComments(input);
+    assert.ok(!result.includes('% Required packages'));
+    assert.ok(!result.includes('% \\usepackage'));
+    assert.ok(result.startsWith('\\begin{longtable}'));
+  });
+});
+
+describe('wrapCompleteDocument', () => {
+  it('wraps a plain fragment into a compilable document', () => {
+    const fragment = 'Hello world, this is a plain paragraph.';
+    const doc = wrapCompleteDocument(fragment);
+
+    assert.ok(doc.includes('\\documentclass[11pt,a4paper]{article}'));
+    assert.ok(doc.includes('\\usepackage[utf8]{inputenc}'));
+    assert.ok(doc.includes('\\usepackage[T1]{fontenc}'));
+    assert.ok(doc.includes('\\usepackage[english]{babel}'));
+    assert.ok(doc.includes('\\usepackage{amsmath,amssymb,amsfonts}'));
+    assert.ok(doc.includes('\\begin{document}'));
+    assert.ok(doc.includes(fragment));
+    assert.ok(doc.includes('\\end{document}'));
+  });
+
+  it('detects French text and enables french babel', () => {
+    const frenchFragment = 'Bonjour, voici un résumé avec des accents é, è, à.';
+    const doc = wrapCompleteDocument(frenchFragment);
+
+    assert.ok(doc.includes('\\usepackage[french,english]{babel}'));
+  });
+
+  it('extracts required packages from fragment comments and content', () => {
+    const fragment = [
+      '% Required packages (add to your preamble):',
+      '% \\usepackage{array}',
+      '% \\usepackage{booktabs}',
+      '% \\usepackage{calc}',
+      '% \\usepackage{longtable}',
+      '',
+      '\\begin{longtable}[]{@{}ll@{}}',
+      '\\toprule',
+      'Cell 1 & Cell 2 \\\\',
+      '\\bottomrule',
+      '\\end{longtable}',
+    ].join('\n');
+
+    const doc = wrapCompleteDocument(fragment);
+
+    // Packages should be in preamble
+    assert.ok(doc.includes('\\usepackage{booktabs}'));
+    assert.ok(doc.includes('\\usepackage{longtable}'));
+    assert.ok(doc.includes('\\usepackage{calc}'));
+    assert.ok(doc.includes('\\usepackage{array}'));
+
+    // Body inside \begin{document} should not contain the comment header
+    const bodyPart = doc.split('\\begin{document}')[1].split('\\end{document}')[0];
+    assert.ok(!bodyPart.includes('% Required packages'));
+    assert.ok(!bodyPart.includes('% \\usepackage'));
+    assert.ok(bodyPart.includes('\\begin{longtable}'));
+  });
+});
+
+describe('sanitizeFilename', () => {
+  it('strips extension and trims spaces', () => {
+    assert.equal(sanitizeFilename('my_document.docx'), 'my_document');
+    assert.equal(sanitizeFilename('report_2026.png'), 'report_2026');
+  });
+
+  it('sanitizes invalid filesystem characters', () => {
+    assert.equal(sanitizeFilename('doc:with/invalid*chars?.docx'), 'doc_with_invalid_chars_');
+    assert.equal(sanitizeFilename('file<name>|"test"'), 'file_name___test_');
+  });
+
+  it('falls back to converted on empty or invalid names', () => {
+    assert.equal(sanitizeFilename(''), 'converted');
+    assert.equal(sanitizeFilename('   .docx'), 'converted');
+    assert.equal(sanitizeFilename('???'), 'converted');
+  });
+
+  it('preserves valid Unicode names and French accents', () => {
+    assert.equal(sanitizeFilename('rapport_élève_2026.docx'), 'rapport_élève_2026');
+    assert.equal(sanitizeFilename('théorème_de_pythagore.png'), 'théorème_de_pythagore');
+  });
+
+  it('full cleanup pipeline preserves Pandoc table column specifications and \\noalign{}', () => {
+    const input = [
+      '{\\def\\LTcaptype{none}',
+      '\\begin{longtable}[]{@{}',
+      '  >{\\raggedright\\arraybackslash}p{(\\linewidth - 2\\tabcolsep) * \\real{0.5000}}',
+      '  >{\\raggedright\\arraybackslash}p{(\\linewidth - 2\\tabcolsep) * \\real{0.5000}}@{}}',
+      '\\toprule\\noalign{}',
+      '\\endhead',
+      '\\bottomrule\\noalign{}',
+      '\\endlastfoot',
+      'Header A & Header B \\\\',
+      'Row 1 & Bullet 1',
+      '',
+      'Bullet 2 \\\\',
+      '\\end{longtable}',
+      '}',
+    ].join('\n');
+    const clean = cleanupLatex(input);
+    assert.ok(clean.includes('@{}'), 'Column spec @{} must stay intact');
+    assert.ok(clean.includes('\\toprule\\noalign{}'), '\\toprule\\noalign{} must stay intact');
+    assert.ok(!clean.includes('@\n'), 'Must not strip braces from @{}');
+    assert.ok(!clean.includes('\\noalign\n'), 'Must not strip braces from \\noalign{}');
+  });
+});
+

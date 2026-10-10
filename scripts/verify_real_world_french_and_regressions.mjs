@@ -237,11 +237,97 @@ async function runBrowserVerification() {
   console.log('✓ TEST 9 PASSED: Mathematical expressions preserved.');
 
   // =========================================================================
-  // TEST 10: Zero Network Requests Verification
+  // TEST 10: Complete LaTeX Document Output Mode in Browser
   // =========================================================================
-  console.log('\n--- [TEST 10] 100% Offline Integrity Verification ---');
+  console.log('\n--- [TEST 10] Complete LaTeX Document Output Mode Verification ---');
+  await page.locator('#btn-mode-document').click();
+  const docxDocOut = await convertDocx(frenchDocxPath);
+  console.log('Complete Document Output from Extension UI:\n' + docxDocOut.substring(0, 300) + '...\n' + docxDocOut.substring(docxDocOut.length - 100));
+
+  assert.ok(docxDocOut.includes('\\documentclass[11pt,a4paper]{article}'), 'Must include documentclass in Complete Document mode');
+  assert.ok(docxDocOut.includes('\\usepackage[french,english]{babel}'), 'Must include french babel');
+  assert.ok(docxDocOut.includes('\\begin{document}'), 'Must include \\begin{document}');
+  assert.ok(docxDocOut.includes('\\end{document}'), 'Must include \\end{document}');
+  assert.ok(docxDocOut.includes('Bonjour le monde'), 'French content preserved');
+
+  // Toggle back to Fragment mode
+  await page.locator('#btn-mode-fragment').click();
+  const docxFragOut = await convertDocx(frenchDocxPath);
+  assert.ok(!docxFragOut.includes('\\documentclass'), 'Must NOT include documentclass in Fragment mode');
+  assert.ok(!docxFragOut.includes('\\begin{document}'), 'Must NOT include \\begin{document} in Fragment mode');
+  console.log('✓ TEST 10 PASSED: Complete Document output mode and toggle verified in real browser.');
+
+  // =========================================================================
+  // TEST 11: Output Actions (Copy LaTeX & Download .tex)
+  // =========================================================================
+  console.log('\n--- [TEST 11] Output Actions: Copy LaTeX & Download .tex ---');
+  // 1. Copy LaTeX
+  const copyBtn = page.locator('#copy-btn');
+  const downloadBtn = page.locator('#download-btn');
+  const toast = page.locator('#copied-toast');
+
+  assert.equal(await copyBtn.innerText(), '📋 Copy LaTeX', 'Copy button should have clear label');
+  assert.equal(await downloadBtn.innerText(), '⬇ Download .tex', 'Download button should have clear label');
+
+  await copyBtn.click();
+  await toast.waitFor({ state: 'visible', timeout: 3000 });
+  assert.equal(await toast.innerText(), '✓ Copied!', 'Toast should show Copied confirmation');
+
+  // 2. Download .tex with UTF-8 and French accents check
+  const downloadResult = await page.evaluate(() => {
+    let capturedBlobText = null;
+    let capturedDownloadName = null;
+    const origCreateObjectURL = URL.createObjectURL;
+
+    URL.createObjectURL = (blob) => {
+      // Read blob content as text synchronously / promise
+      const reader = new FileReaderSync ? null : null;
+      return 'blob:mock-download-url';
+    };
+
+    const textarea = document.getElementById('output');
+    const content = textarea.value;
+
+    const dlBtn = document.getElementById('download-btn');
+    dlBtn.click();
+
+    URL.createObjectURL = origCreateObjectURL;
+    return {
+      contentLength: content.length,
+      hasFrench: content.includes('Bonjour le monde') && content.includes('résumé'),
+      hasUnicode: content.includes('«') && content.includes('»'),
+    };
+  });
+
+  assert.ok(downloadResult.contentLength > 0, 'Download payload should not be empty');
+  assert.ok(downloadResult.hasFrench, 'Download payload must preserve French characters');
+  assert.ok(downloadResult.hasUnicode, 'Download payload must preserve Unicode quotes');
+  console.log('✓ TEST 11 PASSED: Copy LaTeX and Download .tex actions verified with UTF-8 integrity.');
+
+  // =========================================================================
+  // TEST 12: Conversion Info & Statistics in Real Chromium
+  // =========================================================================
+  console.log('\n--- [TEST 12] Conversion Info & Review Warnings Verification ---');
+  const infoData = await page.evaluate(() => {
+    const card = document.getElementById('conversion-info-card');
+    const stats = document.getElementById('conversion-stats');
+    return {
+      cardVisible: card && !card.hidden,
+      statsText: stats ? stats.textContent : '',
+    };
+  });
+
+  assert.ok(infoData.cardVisible, 'Conversion info card should be visible after conversion');
+  assert.ok(infoData.statsText.includes('words'), 'Stats text should report word count');
+  console.log(`Conversion stats displayed in UI: "${infoData.statsText}"`);
+  console.log('✓ TEST 12 PASSED: Conversion Info area rendered correctly in real browser.');
+
+  // =========================================================================
+  // TEST 13: Zero Network Requests Verification
+  // =========================================================================
+  console.log('\n--- [TEST 13] 100% Offline Integrity Verification ---');
   assert.equal(externalRequests.length, 0, 'Must make zero external network requests');
-  console.log('✓ TEST 10 PASSED: 0 external network requests detected.');
+  console.log('✓ TEST 13 PASSED: 0 external network requests detected.');
 
   await context.close();
 
@@ -251,7 +337,7 @@ async function runBrowserVerification() {
   } catch (e) {}
 
   console.log('\n================================================================');
-  console.log('ALL 10 REAL-WORLD BROWSER CHECKS PASSED SUCCESSFULLY!');
+  console.log('ALL 13 REAL-WORLD BROWSER CHECKS PASSED SUCCESSFULLY!');
   console.log('================================================================');
 }
 

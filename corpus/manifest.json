@@ -1,0 +1,2039 @@
+{
+  "version": "1.0.0",
+  "description": "Word to LaTeX Golden Evaluation Corpus (80 samples: 33 dev, 23 holdout, 24 stress)",
+  "total_samples": 80,
+  "dev_samples": 33,
+  "holdout_samples": 23,
+  "stress_samples": 24,
+  "samples": [
+    {
+      "id": "seed_french_sample",
+      "file": "seed/french_sample.png",
+      "set": "dev",
+      "lang": "fr",
+      "tags": [
+        "seed",
+        "french",
+        "accents",
+        "prose"
+      ],
+      "ground_truth": {
+        "expected_text": "Théorème fondamental\nVoici des caractères accentués : é, è, à, ç, œ, ù.\nCalculer la dérivée de la fonction f sur cet intervalle.",
+        "expected_latex": null,
+        "line_labels": [
+          "prose",
+          "prose",
+          "prose"
+        ],
+        "expected_latex_contains": [
+          "Théorème",
+          "caractères",
+          "dérivée"
+        ],
+        "expected_latex_forbids": [],
+        "status": "supported"
+      }
+    },
+    {
+      "id": "seed_math_equation",
+      "file": "seed/math_equation.png",
+      "set": "dev",
+      "lang": "en",
+      "tags": [
+        "seed",
+        "math",
+        "algebra"
+      ],
+      "ground_truth": {
+        "expected_text": "E = mc^2\nf(x) = x^2 + 2x + 1",
+        "expected_latex": "\\[\nE = mc^{2}\n\\]\n\\[\nf(x) = x^{2} + 2x + 1\n\\]",
+        "line_labels": [
+          "math",
+          "math"
+        ],
+        "expected_latex_contains": [
+          "mc",
+          "x^{2}",
+          "+ 1"
+        ],
+        "expected_latex_forbids": [],
+        "status": "supported"
+      }
+    },
+    {
+      "id": "seed_math_fraction",
+      "file": "seed/math_fraction.png",
+      "set": "dev",
+      "lang": "en",
+      "tags": [
+        "seed",
+        "math",
+        "fraction"
+      ],
+      "ground_truth": {
+        "expected_text": "(x + 1) / (x - 1)",
+        "expected_latex": "\\[\n\\frac{x + 1}{x - 1}\n\\]",
+        "line_labels": [
+          "math"
+        ],
+        "expected_latex_contains": [
+          "(x + 1)",
+          "(x - 1)"
+        ],
+        "expected_latex_forbids": [],
+        "status": "supported"
+      }
+    },
+    {
+      "id": "seed_math_matrix",
+      "file": "seed/math_matrix.png",
+      "set": "dev",
+      "lang": "en",
+      "tags": [
+        "seed",
+        "math",
+        "matrix"
+      ],
+      "ground_truth": {
+        "expected_text": "[ 1 2 ]\n[ 3 4 ]",
+        "expected_latex": "\\[\n\\begin{bmatrix}\n1 & 2 \\\\\n3 & 4\n\\end{bmatrix}\n\\]",
+        "line_labels": [
+          "matrix"
+        ],
+        "expected_latex_contains": [
+          "\\begin{bmatrix}",
+          "1 & 2",
+          "3 & 4",
+          "\\end{bmatrix}"
+        ],
+        "expected_latex_forbids": [],
+        "status": "supported"
+      }
+    },
+    {
+      "id": "seed_table_sample",
+      "file": "seed/table_sample.png",
+      "set": "dev",
+      "lang": "en",
+      "tags": [
+        "seed",
+        "table",
+        "booktabs"
+      ],
+      "ground_truth": {
+        "expected_text": "Item Quantity Price\nApples 10 $5.00\nOranges 8 $4.50",
+        "expected_latex": null,
+        "line_labels": [
+          "table",
+          "table",
+          "table"
+        ],
+        "expected_latex_contains": [
+          "\\begin{table}",
+          "\\begin{tabular}",
+          "Item & Quantity & Price",
+          "Apples & 10 & \\$5.00",
+          "\\bottomrule"
+        ],
+        "expected_latex_forbids": [],
+        "status": "supported"
+      }
+    },
+    {
+      "id": "seed_case_01_pythagoras",
+      "file": "seed/case_01_pythagoras.png",
+      "set": "dev",
+      "lang": "en",
+      "tags": [
+        "seed",
+        "math",
+        "pythagoras",
+        "geometry"
+      ],
+      "ground_truth": {
+        "expected_text": "x^2 + y^2 = z^2",
+        "expected_latex": "\\[\nx^{2} + y^{2} = z^{2}\n\\]",
+        "line_labels": [
+          "math"
+        ],
+        "expected_latex_contains": [
+          "x^{2}",
+          "y^{2}",
+          "z^{2}"
+        ],
+        "expected_latex_forbids": [],
+        "status": "supported"
+      }
+    },
+    {
+      "id": "seed_case_02_fraction",
+      "file": "seed/case_02_fraction.png",
+      "set": "dev",
+      "lang": "en",
+      "tags": [
+        "seed",
+        "math",
+        "fraction"
+      ],
+      "ground_truth": {
+        "expected_text": "(a + b) / c",
+        "expected_latex": "\\[\n\\frac{a + b}{c}\n\\]",
+        "line_labels": [
+          "math"
+        ],
+        "expected_latex_contains": [
+          "\\frac{a + b}{c}"
+        ],
+        "expected_latex_forbids": [],
+        "status": "supported"
+      }
+    },
+    {
+      "id": "seed_case_03_sqrt",
+      "file": "seed/case_03_sqrt.png",
+      "set": "dev",
+      "lang": "en",
+      "tags": [
+        "seed",
+        "math",
+        "radical",
+        "limitation"
+      ],
+      "ground_truth": {
+        "expected_text": "sqrt(x^2 + 1)",
+        "expected_latex": "\\[\n\\sqrt{x^{2} + 1}\n\\]",
+        "line_labels": [
+          "math"
+        ],
+        "expected_latex_contains": [],
+        "expected_latex_forbids": [
+          "\\sqrt"
+        ],
+        "status": "known_limitation"
+      }
+    },
+    {
+      "id": "seed_case_04_integral",
+      "file": "seed/case_04_integral.png",
+      "set": "dev",
+      "lang": "en",
+      "tags": [
+        "seed",
+        "math",
+        "calculus",
+        "integral",
+        "limitation"
+      ],
+      "ground_truth": {
+        "expected_text": "int_0^1 x^2 dx",
+        "expected_latex": "\\[\n\\int_{0}^{1} x^{2} dx\n\\]",
+        "line_labels": [
+          "math"
+        ],
+        "expected_latex_contains": [
+          "x"
+        ],
+        "expected_latex_forbids": [],
+        "status": "known_limitation"
+      }
+    },
+    {
+      "id": "seed_case_05_summation",
+      "file": "seed/case_05_summation.png",
+      "set": "dev",
+      "lang": "en",
+      "tags": [
+        "seed",
+        "math",
+        "summation",
+        "limitation"
+      ],
+      "ground_truth": {
+        "expected_text": "sum_{i=1}^n i",
+        "expected_latex": "\\[\n\\sum_{i=1}^{n} i\n\\]",
+        "line_labels": [
+          "math"
+        ],
+        "expected_latex_contains": [
+          "i"
+        ],
+        "expected_latex_forbids": [],
+        "status": "known_limitation"
+      }
+    },
+    {
+      "id": "seed_case_06_matrix",
+      "file": "seed/case_06_matrix.png",
+      "set": "dev",
+      "lang": "en",
+      "tags": [
+        "seed",
+        "math",
+        "matrix"
+      ],
+      "ground_truth": {
+        "expected_text": "( 1 2 )\n( 3 4 )",
+        "expected_latex": "\\[\n\\begin{pmatrix}\n1 & 2 \\\\\n3 & 4\n\\end{pmatrix}\n\\]",
+        "line_labels": [
+          "matrix"
+        ],
+        "expected_latex_contains": [
+          "\\begin{",
+          "matrix",
+          "1",
+          "2"
+        ],
+        "expected_latex_forbids": [],
+        "status": "supported"
+      }
+    },
+    {
+      "id": "seed_case_07_system",
+      "file": "seed/case_07_system.png",
+      "set": "dev",
+      "lang": "en",
+      "tags": [
+        "seed",
+        "math",
+        "cases",
+        "system"
+      ],
+      "ground_truth": {
+        "expected_text": "{ 2x + y = 5\n{ x - 3y = 2",
+        "expected_latex": "\\[\n\\begin{cases}\n2x + y = 5 \\\\\nx - 3y = 2\n\\end{cases}\n\\]",
+        "line_labels": [
+          "cases",
+          "cases"
+        ],
+        "expected_latex_contains": [
+          "\\begin{cases}",
+          "2x + y = 5",
+          "x - 3y = 2",
+          "\\end{cases}"
+        ],
+        "expected_latex_forbids": [],
+        "status": "supported"
+      }
+    },
+    {
+      "id": "seed_case_08_french_math",
+      "file": "seed/case_08_french_math.png",
+      "set": "dev",
+      "lang": "fr",
+      "tags": [
+        "seed",
+        "french",
+        "mixed-math",
+        "prose"
+      ],
+      "ground_truth": {
+        "expected_text": "Soit f une fonction continue sur l'intervalle [0, 1]. On considère l'intégrale suivante :\nI = int_0^1 f(x) dx\nCalculer la valeur moyenne de f.",
+        "expected_latex": null,
+        "line_labels": [
+          "prose",
+          "prose",
+          "math",
+          "prose"
+        ],
+        "expected_latex_contains": [
+          "Soit f une fonction",
+          "intervalle",
+          "Calculer"
+        ],
+        "expected_latex_forbids": [],
+        "status": "supported"
+      }
+    },
+    {
+      "id": "seed_case_09_french_accents",
+      "file": "seed/case_09_french_accents.png",
+      "set": "dev",
+      "lang": "fr",
+      "tags": [
+        "seed",
+        "french",
+        "accents",
+        "prose"
+      ],
+      "ground_truth": {
+        "expected_text": "Documentation Français\nVoici des caractères accentués : é, è, à, ç, œ, ù.\nL'élève étudie attentivement le théorème où apparaît le paramètre déjà défini.",
+        "expected_latex": null,
+        "line_labels": [
+          "prose",
+          "prose",
+          "prose",
+          "prose"
+        ],
+        "expected_latex_contains": [
+          "Documentation",
+          "caractères",
+          "élève"
+        ],
+        "expected_latex_forbids": [],
+        "status": "supported"
+      }
+    },
+    {
+      "id": "seed_case_10_table_math",
+      "file": "seed/case_10_table_math.png",
+      "set": "dev",
+      "lang": "fr",
+      "tags": [
+        "seed",
+        "table",
+        "math-cells",
+        "french",
+        "limitation"
+      ],
+      "ground_truth": {
+        "expected_text": "Fonction Dérivée Primitive\nf(x)=e^x f'(x)=e^x F(x)=e^x\ng(x)=sin(x) g'(x)=cos(x) G(x)=-cos(x)",
+        "expected_latex": null,
+        "line_labels": [
+          "table",
+          "table",
+          "table"
+        ],
+        "expected_latex_contains": [
+          "Fonction"
+        ],
+        "expected_latex_forbids": [],
+        "status": "known_limitation"
+      }
+    },
+    {
+      "id": "synth_dev_superscript",
+      "file": "synthetic/synth_dev_superscript.png",
+      "set": "dev",
+      "lang": "en",
+      "tags": [
+        "dev",
+        "math",
+        "superscript"
+      ],
+      "ground_truth": {
+        "expected_text": "x^2 + y^10 = z^3",
+        "expected_latex": "\\[\nx^{2} + y^{10} = z^{3}\n\\]",
+        "line_labels": [
+          "math"
+        ],
+        "expected_latex_contains": [
+          "x^{2}",
+          "y^{10}",
+          "z^{3}"
+        ],
+        "expected_latex_forbids": [],
+        "status": "supported"
+      }
+    },
+    {
+      "id": "synth_dev_subscript",
+      "file": "synthetic/synth_dev_subscript.png",
+      "set": "dev",
+      "lang": "en",
+      "tags": [
+        "dev",
+        "math",
+        "subscript"
+      ],
+      "ground_truth": {
+        "expected_text": "a_1 + a_2 = a_3",
+        "expected_latex": "\\[\na_{1} + a_{2} = a_{3}\n\\]",
+        "line_labels": [
+          "math"
+        ],
+        "expected_latex_contains": [
+          "a_{1}",
+          "a_{2}",
+          "a_{3}"
+        ],
+        "expected_latex_forbids": [],
+        "status": "supported"
+      }
+    },
+    {
+      "id": "synth_dev_baseline_id",
+      "file": "synthetic/synth_dev_baseline_id.png",
+      "set": "dev",
+      "lang": "en",
+      "tags": [
+        "dev",
+        "prose",
+        "baseline-preservation"
+      ],
+      "ground_truth": {
+        "expected_text": "Release version2 is ready for item1 testing.",
+        "expected_latex": null,
+        "line_labels": [
+          "prose"
+        ],
+        "expected_latex_contains": [
+          "version2",
+          "item1"
+        ],
+        "expected_latex_forbids": [
+          "version^{2}",
+          "item^{1}"
+        ],
+        "status": "supported"
+      }
+    },
+    {
+      "id": "synth_dev_chemical",
+      "file": "synthetic/synth_dev_chemical.png",
+      "set": "dev",
+      "lang": "en",
+      "tags": [
+        "dev",
+        "prose",
+        "chemistry",
+        "baseline-preservation"
+      ],
+      "ground_truth": {
+        "expected_text": "Water consists of H2O and releases CO2 during reaction.",
+        "expected_latex": null,
+        "line_labels": [
+          "prose"
+        ],
+        "expected_latex_contains": [
+          "H2O",
+          "CO2"
+        ],
+        "expected_latex_forbids": [
+          "H_{2}O",
+          "CO_{2}"
+        ],
+        "status": "supported"
+      }
+    },
+    {
+      "id": "synth_dev_calculus_dx",
+      "file": "synthetic/synth_dev_calculus_dx.png",
+      "set": "dev",
+      "lang": "en",
+      "tags": [
+        "dev",
+        "math",
+        "calculus"
+      ],
+      "ground_truth": {
+        "expected_text": "∫ x^2 dx = x^3 / 3 + C",
+        "expected_latex": "\\[\n\\int x^{2} dx = \\frac{x^{3}}{3} + C\n\\]",
+        "line_labels": [
+          "math"
+        ],
+        "expected_latex_contains": [
+          "\\int",
+          "x^{2}",
+          "dx"
+        ],
+        "expected_latex_forbids": [],
+        "status": "supported"
+      }
+    },
+    {
+      "id": "synth_dev_matrix_bracket",
+      "file": "synthetic/synth_dev_matrix_bracket.png",
+      "set": "dev",
+      "lang": "en",
+      "tags": [
+        "dev",
+        "math",
+        "matrix"
+      ],
+      "ground_truth": {
+        "expected_text": "[ 5 7 ; 2 9 ]",
+        "expected_latex": "\\[\n\\begin{bmatrix}\n5 & 7 \\\\\n2 & 9\n\\end{bmatrix}\n\\]",
+        "line_labels": [
+          "matrix"
+        ],
+        "expected_latex_contains": [
+          "\\begin{bmatrix}",
+          "5 & 7",
+          "2 & 9",
+          "\\end{bmatrix}"
+        ],
+        "expected_latex_forbids": [],
+        "status": "supported"
+      }
+    },
+    {
+      "id": "synth_dev_system_cases",
+      "file": "synthetic/synth_dev_system_cases.png",
+      "set": "dev",
+      "lang": "en",
+      "tags": [
+        "dev",
+        "math",
+        "cases"
+      ],
+      "ground_truth": {
+        "expected_text": "{ 3x + 2y = 12\n{ x - y = 1",
+        "expected_latex": "\\[\n\\begin{cases}\n3x + 2y = 12 \\\\\nx - y = 1\n\\end{cases}\n\\]",
+        "line_labels": [
+          "cases",
+          "cases"
+        ],
+        "expected_latex_contains": [
+          "\\begin{cases}",
+          "3x + 2y = 12",
+          "x - y = 1",
+          "\\end{cases}"
+        ],
+        "expected_latex_forbids": [],
+        "status": "supported"
+      }
+    },
+    {
+      "id": "synth_dev_sqrt_scoping",
+      "file": "synthetic/synth_dev_sqrt_scoping.png",
+      "set": "dev",
+      "lang": "en",
+      "tags": [
+        "dev",
+        "math",
+        "radical"
+      ],
+      "ground_truth": {
+        "expected_text": "√(x^2 + y^2)",
+        "expected_latex": "\\[\n\\sqrt{x^{2} + y^{2}}\n\\]",
+        "line_labels": [
+          "math"
+        ],
+        "expected_latex_contains": [
+          "\\sqrt{x^{2} + y^{2}}"
+        ],
+        "expected_latex_forbids": [],
+        "status": "supported"
+      }
+    },
+    {
+      "id": "synth_dev_french_action_calc",
+      "file": "synthetic/synth_dev_french_action_calc.png",
+      "set": "dev",
+      "lang": "fr",
+      "tags": [
+        "dev",
+        "french",
+        "action-verb",
+        "prose"
+      ],
+      "ground_truth": {
+        "expected_text": "Calculer la valeur exacte de l'expression suivante.",
+        "expected_latex": null,
+        "line_labels": [
+          "prose"
+        ],
+        "expected_latex_contains": [
+          "Calculer la valeur exacte"
+        ],
+        "expected_latex_forbids": [
+          "\\[",
+          "\\]"
+        ],
+        "status": "supported"
+      }
+    },
+    {
+      "id": "synth_dev_french_action_montrer",
+      "file": "synthetic/synth_dev_french_action_montrer.png",
+      "set": "dev",
+      "lang": "fr",
+      "tags": [
+        "dev",
+        "french",
+        "action-verb",
+        "prose"
+      ],
+      "ground_truth": {
+        "expected_text": "Montrer que la limite en zéro est égale à un.",
+        "expected_latex": null,
+        "line_labels": [
+          "prose"
+        ],
+        "expected_latex_contains": [
+          "Montrer que la limite"
+        ],
+        "expected_latex_forbids": [
+          "\\[",
+          "\\]"
+        ],
+        "status": "supported"
+      }
+    },
+    {
+      "id": "synth_dev_french_action_soit",
+      "file": "synthetic/synth_dev_french_action_soit.png",
+      "set": "dev",
+      "lang": "fr",
+      "tags": [
+        "dev",
+        "french",
+        "action-verb",
+        "prose"
+      ],
+      "ground_truth": {
+        "expected_text": "Soit n un entier naturel non nul donné.",
+        "expected_latex": null,
+        "line_labels": [
+          "prose"
+        ],
+        "expected_latex_contains": [
+          "Soit n un entier naturel"
+        ],
+        "expected_latex_forbids": [
+          "\\[",
+          "\\]"
+        ],
+        "status": "supported"
+      }
+    },
+    {
+      "id": "synth_dev_french_accents",
+      "file": "synthetic/synth_dev_french_accents.png",
+      "set": "dev",
+      "lang": "fr",
+      "tags": [
+        "dev",
+        "french",
+        "accents",
+        "prose"
+      ],
+      "ground_truth": {
+        "expected_text": "L'ingénieur vérifie l'équation déjà résolue avec succès.",
+        "expected_latex": null,
+        "line_labels": [
+          "prose"
+        ],
+        "expected_latex_contains": [
+          "ingénieur",
+          "vérifie",
+          "équation",
+          "succès"
+        ],
+        "expected_latex_forbids": [],
+        "status": "supported"
+      }
+    },
+    {
+      "id": "synth_dev_diameter_spec",
+      "file": "synthetic/synth_dev_diameter_spec.png",
+      "set": "dev",
+      "lang": "en",
+      "tags": [
+        "dev",
+        "prose",
+        "symbols"
+      ],
+      "ground_truth": {
+        "expected_text": "The pipe diameter is Ø 40 mm nominal.",
+        "expected_latex": null,
+        "line_labels": [
+          "prose"
+        ],
+        "expected_latex_contains": [
+          "diameter is",
+          "40 mm"
+        ],
+        "expected_latex_forbids": [],
+        "status": "supported"
+      }
+    },
+    {
+      "id": "synth_dev_table_currency",
+      "file": "synthetic/synth_dev_table_currency.png",
+      "set": "dev",
+      "lang": "en",
+      "tags": [
+        "dev",
+        "table",
+        "currency"
+      ],
+      "ground_truth": {
+        "expected_text": "Item Qty Cost\nMonitor 2 $300\nDesk 1 $150",
+        "expected_latex": null,
+        "line_labels": [
+          "table",
+          "table",
+          "table"
+        ],
+        "expected_latex_contains": [
+          "\\begin{tabular}",
+          "Monitor",
+          "\\$300",
+          "\\$150"
+        ],
+        "expected_latex_forbids": [],
+        "status": "supported"
+      }
+    },
+    {
+      "id": "synth_dev_prose_uniform_words",
+      "file": "synthetic/synth_dev_prose_uniform_words.png",
+      "set": "dev",
+      "lang": "en",
+      "tags": [
+        "dev",
+        "prose",
+        "negative-table"
+      ],
+      "ground_truth": {
+        "expected_text": "Alpha bravo charlie\nDelta echo foxtrot\nGolf hotel india",
+        "expected_latex": null,
+        "line_labels": [
+          "prose",
+          "prose",
+          "prose"
+        ],
+        "expected_latex_contains": [
+          "Alpha bravo charlie"
+        ],
+        "expected_latex_forbids": [
+          "\\begin{tabular}",
+          "\\begin{table}"
+        ],
+        "status": "supported"
+      }
+    },
+    {
+      "id": "synth_dev_french_prose_uniform_numbers",
+      "file": "synthetic/synth_dev_french_prose_uniform_numbers.png",
+      "set": "dev",
+      "lang": "fr",
+      "tags": [
+        "dev",
+        "french",
+        "negative-table",
+        "prose"
+      ],
+      "ground_truth": {
+        "expected_text": "Le fichier contient 12 données importantes.\nLe serveur traite 14 requêtes par seconde.",
+        "expected_latex": null,
+        "line_labels": [
+          "prose",
+          "prose"
+        ],
+        "expected_latex_contains": [
+          "données importantes",
+          "requêtes"
+        ],
+        "expected_latex_forbids": [
+          "\\begin{tabular}"
+        ],
+        "status": "supported"
+      }
+    },
+    {
+      "id": "synth_dev_numbered_list",
+      "file": "synthetic/synth_dev_numbered_list.png",
+      "set": "dev",
+      "lang": "en",
+      "tags": [
+        "dev",
+        "prose",
+        "negative-table"
+      ],
+      "ground_truth": {
+        "expected_text": "1. Step one preparation\n2. Step two execution",
+        "expected_latex": null,
+        "line_labels": [
+          "prose",
+          "prose"
+        ],
+        "expected_latex_contains": [
+          "Step one preparation",
+          "Step two execution"
+        ],
+        "expected_latex_forbids": [
+          "\\begin{tabular}"
+        ],
+        "status": "supported"
+      }
+    },
+    {
+      "id": "synth_dev_short_expr_no_eq",
+      "file": "synthetic/synth_dev_short_expr_no_eq.png",
+      "set": "dev",
+      "lang": "en",
+      "tags": [
+        "dev",
+        "math",
+        "negative-table"
+      ],
+      "ground_truth": {
+        "expected_text": "x + y\na + b",
+        "expected_latex": "\\[\nx + y\n\\]\n\\[\na + b\n\\]",
+        "line_labels": [
+          "math",
+          "math"
+        ],
+        "expected_latex_contains": [
+          "x + y",
+          "a + b"
+        ],
+        "expected_latex_forbids": [
+          "\\begin{tabular}"
+        ],
+        "status": "supported"
+      }
+    },
+    {
+      "id": "synth_hold_poly_clean",
+      "file": "synthetic/synth_hold_poly_clean.png",
+      "set": "holdout",
+      "lang": "en",
+      "tags": [
+        "holdout",
+        "math",
+        "polynomial",
+        "degradation:clean"
+      ],
+      "ground_truth": {
+        "expected_text": "P(x) = 2x^3 - 5x^2 + 3x - 7",
+        "expected_latex": "\\[\nP(x) = 2x^{3} - 5x^{2} + 3x - 7\n\\]",
+        "line_labels": [
+          "math"
+        ],
+        "expected_latex_contains": [
+          "2x^{3}",
+          "5x^{2}"
+        ],
+        "expected_latex_forbids": [],
+        "status": "supported"
+      }
+    },
+    {
+      "id": "synth_hold_poly_rot2",
+      "file": "synthetic/synth_hold_poly_rot2.png",
+      "set": "holdout",
+      "lang": "en",
+      "tags": [
+        "holdout",
+        "math",
+        "polynomial",
+        "degradation:rotation"
+      ],
+      "ground_truth": {
+        "expected_text": "P(x) = 2x^3 - 5x^2 + 3x - 7",
+        "expected_latex": "\\[\nP(x) = 2x^{3} - 5x^{2} + 3x - 7\n\\]",
+        "line_labels": [
+          "math"
+        ],
+        "expected_latex_contains": [
+          "P(x)"
+        ],
+        "expected_latex_forbids": [],
+        "status": "supported"
+      }
+    },
+    {
+      "id": "synth_hold_poly_blur",
+      "file": "synthetic/synth_hold_poly_blur.png",
+      "set": "holdout",
+      "lang": "en",
+      "tags": [
+        "holdout",
+        "math",
+        "polynomial",
+        "degradation:blur"
+      ],
+      "ground_truth": {
+        "expected_text": "P(x) = 2x^3 - 5x^2 + 3x - 7",
+        "expected_latex": "\\[\nP(x) = 2x^{3} - 5x^{2} + 3x - 7\n\\]",
+        "line_labels": [
+          "math"
+        ],
+        "expected_latex_contains": [
+          "P(x)"
+        ],
+        "expected_latex_forbids": [],
+        "status": "supported"
+      }
+    },
+    {
+      "id": "synth_hold_poly_noise",
+      "file": "synthetic/synth_hold_poly_noise.png",
+      "set": "holdout",
+      "lang": "en",
+      "tags": [
+        "holdout",
+        "math",
+        "polynomial",
+        "degradation:noise"
+      ],
+      "ground_truth": {
+        "expected_text": "P(x) = 2x^3 - 5x^2 + 3x - 7",
+        "expected_latex": "\\[\nP(x) = 2x^{3} - 5x^{2} + 3x - 7\n\\]",
+        "line_labels": [
+          "math"
+        ],
+        "expected_latex_contains": [
+          "P(x)"
+        ],
+        "expected_latex_forbids": [],
+        "status": "supported"
+      }
+    },
+    {
+      "id": "synth_hold_poly_low_contrast",
+      "file": "synthetic/synth_hold_poly_low_contrast.png",
+      "set": "holdout",
+      "lang": "en",
+      "tags": [
+        "holdout",
+        "math",
+        "polynomial",
+        "degradation:low-contrast"
+      ],
+      "ground_truth": {
+        "expected_text": "P(x) = 2x^3 - 5x^2 + 3x - 7",
+        "expected_latex": "\\[\nP(x) = 2x^{3} - 5x^{2} + 3x - 7\n\\]",
+        "line_labels": [
+          "math"
+        ],
+        "expected_latex_contains": [
+          "P(x)"
+        ],
+        "expected_latex_forbids": [],
+        "status": "supported"
+      }
+    },
+    {
+      "id": "synth_hold_poly_low_dpi",
+      "file": "synthetic/synth_hold_poly_low_dpi.png",
+      "set": "holdout",
+      "lang": "en",
+      "tags": [
+        "holdout",
+        "math",
+        "polynomial",
+        "degradation:low-dpi"
+      ],
+      "ground_truth": {
+        "expected_text": "P(x) = 2x^3 - 5x^2 + 3x - 7",
+        "expected_latex": "\\[\nP(x) = 2x^{3} - 5x^{2} + 3x - 7\n\\]",
+        "line_labels": [
+          "math"
+        ],
+        "expected_latex_contains": [
+          "P(x)"
+        ],
+        "expected_latex_forbids": [],
+        "status": "supported"
+      }
+    },
+    {
+      "id": "synth_hold_trig_identity",
+      "file": "synthetic/synth_hold_trig_identity.png",
+      "set": "holdout",
+      "lang": "en",
+      "tags": [
+        "holdout",
+        "math",
+        "trigonometry",
+        "degradation:clean"
+      ],
+      "ground_truth": {
+        "expected_text": "sin^2(θ) + cos^2(θ) = 1",
+        "expected_latex": "\\[\n\\sin^{2}(\\theta) + \\cos^{2}(\\theta) = 1\n\\]",
+        "line_labels": [
+          "math"
+        ],
+        "expected_latex_contains": [
+          "sin",
+          "cos",
+          "= 1"
+        ],
+        "expected_latex_forbids": [],
+        "status": "supported"
+      }
+    },
+    {
+      "id": "synth_hold_trig_rot3",
+      "file": "synthetic/synth_hold_trig_rot3.png",
+      "set": "holdout",
+      "lang": "en",
+      "tags": [
+        "holdout",
+        "math",
+        "trigonometry",
+        "degradation:rotation"
+      ],
+      "ground_truth": {
+        "expected_text": "sin^2(θ) + cos^2(θ) = 1",
+        "expected_latex": "\\[\n\\sin^{2}(\\theta) + \\cos^{2}(\\theta) = 1\n\\]",
+        "line_labels": [
+          "math"
+        ],
+        "expected_latex_contains": [
+          "sin"
+        ],
+        "expected_latex_forbids": [],
+        "status": "supported"
+      }
+    },
+    {
+      "id": "synth_hold_euler_identity",
+      "file": "synthetic/synth_hold_euler_identity.png",
+      "set": "holdout",
+      "lang": "en",
+      "tags": [
+        "holdout",
+        "math",
+        "euler",
+        "degradation:clean"
+      ],
+      "ground_truth": {
+        "expected_text": "e^iπ + 1 = 0",
+        "expected_latex": "\\[\ne^{i\\pi} + 1 = 0\n\\]",
+        "line_labels": [
+          "math"
+        ],
+        "expected_latex_contains": [
+          "e^{i",
+          "+ 1 = 0"
+        ],
+        "expected_latex_forbids": [],
+        "status": "supported"
+      }
+    },
+    {
+      "id": "synth_hold_fraction_division",
+      "file": "synthetic/synth_hold_fraction_division.png",
+      "set": "holdout",
+      "lang": "en",
+      "tags": [
+        "holdout",
+        "math",
+        "fraction",
+        "degradation:clean"
+      ],
+      "ground_truth": {
+        "expected_text": "(a + b) / (c + d) = x / y",
+        "expected_latex": "\\[\n\\frac{a + b}{c + d} = \\frac{x}{y}\n\\]",
+        "line_labels": [
+          "math"
+        ],
+        "expected_latex_contains": [
+          "\\frac{a + b}{c + d}",
+          "\\frac{x}{y}"
+        ],
+        "expected_latex_forbids": [],
+        "status": "supported"
+      }
+    },
+    {
+      "id": "synth_hold_summation_limit",
+      "file": "synthetic/synth_hold_summation_limit.png",
+      "set": "holdout",
+      "lang": "en",
+      "tags": [
+        "holdout",
+        "math",
+        "summation",
+        "degradation:clean"
+      ],
+      "ground_truth": {
+        "expected_text": "∑ k^2 = n(n + 1)(2n + 1) / 6",
+        "expected_latex": "\\[\n\\sum k^{2} = \\frac{n(n + 1)(2n + 1)}{6}\n\\]",
+        "line_labels": [
+          "math"
+        ],
+        "expected_latex_contains": [
+          "k^{2}",
+          "(2n + 1)"
+        ],
+        "expected_latex_forbids": [],
+        "status": "supported"
+      }
+    },
+    {
+      "id": "synth_hold_french_paragraph",
+      "file": "synthetic/synth_hold_french_paragraph.png",
+      "set": "holdout",
+      "lang": "fr",
+      "tags": [
+        "holdout",
+        "french",
+        "prose",
+        "degradation:clean"
+      ],
+      "ground_truth": {
+        "expected_text": "En mathématiques, la continuité est une propriété topologique fondamentale.",
+        "expected_latex": null,
+        "line_labels": [
+          "prose"
+        ],
+        "expected_latex_contains": [
+          "mathématiques",
+          "continuité",
+          "topologique"
+        ],
+        "expected_latex_forbids": [],
+        "status": "supported"
+      }
+    },
+    {
+      "id": "synth_hold_french_quote",
+      "file": "synthetic/synth_hold_french_quote.png",
+      "set": "holdout",
+      "lang": "fr",
+      "tags": [
+        "holdout",
+        "french",
+        "typography",
+        "degradation:clean"
+      ],
+      "ground_truth": {
+        "expected_text": "Le professeur a dit : « Voici l'énoncé du problème ».",
+        "expected_latex": null,
+        "line_labels": [
+          "prose"
+        ],
+        "expected_latex_contains": [
+          "professeur",
+          "énoncé"
+        ],
+        "expected_latex_forbids": [],
+        "status": "supported"
+      }
+    },
+    {
+      "id": "synth_hold_table_data",
+      "file": "synthetic/synth_hold_table_data.png",
+      "set": "holdout",
+      "lang": "en",
+      "tags": [
+        "holdout",
+        "table",
+        "degradation:clean"
+      ],
+      "ground_truth": {
+        "expected_text": "Name Age Score\nAlice 24 95\nBob 28 88",
+        "expected_latex": null,
+        "line_labels": [
+          "table",
+          "table",
+          "table"
+        ],
+        "expected_latex_contains": [
+          "\\begin{tabular}",
+          "Alice",
+          "Bob"
+        ],
+        "expected_latex_forbids": [],
+        "status": "supported"
+      }
+    },
+    {
+      "id": "synth_hold_physics_formula",
+      "file": "synthetic/synth_hold_physics_formula.png",
+      "set": "holdout",
+      "lang": "en",
+      "tags": [
+        "holdout",
+        "math",
+        "physics",
+        "degradation:clean"
+      ],
+      "ground_truth": {
+        "expected_text": "F = G (m_1 m_2) / r^2",
+        "expected_latex": "\\[\nF = G \\frac{m_{1} m_{2}}{r^{2}}\n\\]",
+        "line_labels": [
+          "math"
+        ],
+        "expected_latex_contains": [
+          "m_{1}",
+          "m_{2}",
+          "r^{2}"
+        ],
+        "expected_latex_forbids": [],
+        "status": "supported"
+      }
+    },
+    {
+      "id": "synth_hold_mixed_font_math",
+      "file": "synthetic/synth_hold_mixed_font_math.png",
+      "set": "holdout",
+      "lang": "en",
+      "tags": [
+        "holdout",
+        "math",
+        "degradation:clean"
+      ],
+      "ground_truth": {
+        "expected_text": "x^2 + 2xy + y^2 = (x + y)^2",
+        "expected_latex": "\\[\nx^{2} + 2xy + y^{2} = (x + y)^{2}\n\\]",
+        "line_labels": [
+          "math"
+        ],
+        "expected_latex_contains": [
+          "x^{2}",
+          "y^{2}",
+          "(x + y)^{2}"
+        ],
+        "expected_latex_forbids": [],
+        "status": "supported"
+      }
+    },
+    {
+      "id": "synth_hold_complex_equation",
+      "file": "synthetic/synth_hold_complex_equation.png",
+      "set": "holdout",
+      "lang": "en",
+      "tags": [
+        "holdout",
+        "math",
+        "complex",
+        "degradation:clean"
+      ],
+      "ground_truth": {
+        "expected_text": "z = a + bi",
+        "expected_latex": "\\[\nz = a + bi\n\\]",
+        "line_labels": [
+          "math"
+        ],
+        "expected_latex_contains": [
+          "z = a + bi"
+        ],
+        "expected_latex_forbids": [],
+        "status": "supported"
+      }
+    },
+    {
+      "id": "synth_hold_gaussian_integral",
+      "file": "synthetic/synth_hold_gaussian_integral.png",
+      "set": "holdout",
+      "lang": "en",
+      "tags": [
+        "holdout",
+        "math",
+        "calculus",
+        "distinct-source"
+      ],
+      "ground_truth": {
+        "expected_text": "∫ e^-x^2 dx = √π",
+        "expected_latex": "\\[\n\\int e^{-x^{2}} dx = \\sqrt{\\pi}\n\\]",
+        "line_labels": [
+          "math"
+        ],
+        "expected_latex_contains": [
+          "\\int",
+          "e^{-x^{2}}"
+        ],
+        "expected_latex_forbids": [],
+        "status": "supported"
+      }
+    },
+    {
+      "id": "synth_hold_matrix_rotation",
+      "file": "synthetic/synth_hold_matrix_rotation.png",
+      "set": "holdout",
+      "lang": "en",
+      "tags": [
+        "holdout",
+        "math",
+        "matrix",
+        "distinct-source"
+      ],
+      "ground_truth": {
+        "expected_text": "[ cos(θ) -sin(θ) ; sin(θ) cos(θ) ]",
+        "expected_latex": "\\[\n\\begin{bmatrix}\n\\cos(\\theta) & -\\sin(\\theta) \\\\\n\\sin(\\theta) & \\cos(\\theta)\n\\end{bmatrix}\n\\]",
+        "line_labels": [
+          "matrix"
+        ],
+        "expected_latex_contains": [
+          "\\begin{bmatrix}",
+          "\\cos",
+          "\\sin",
+          "\\end{bmatrix}"
+        ],
+        "expected_latex_forbids": [],
+        "status": "supported"
+      }
+    },
+    {
+      "id": "synth_hold_french_cinematics",
+      "file": "synthetic/synth_hold_french_cinematics.png",
+      "set": "holdout",
+      "lang": "fr",
+      "tags": [
+        "holdout",
+        "french",
+        "prose",
+        "physics",
+        "distinct-source"
+      ],
+      "ground_truth": {
+        "expected_text": "Le vecteur vitesse est tangent à la trajectoire au point considéré.",
+        "expected_latex": null,
+        "line_labels": [
+          "prose"
+        ],
+        "expected_latex_contains": [
+          "vecteur vitesse",
+          "trajectoire",
+          "considéré"
+        ],
+        "expected_latex_forbids": [
+          "\\["
+        ],
+        "status": "supported"
+      }
+    },
+    {
+      "id": "synth_hold_table_elements",
+      "file": "synthetic/synth_hold_table_elements.png",
+      "set": "holdout",
+      "lang": "fr",
+      "tags": [
+        "holdout",
+        "table",
+        "chemistry",
+        "distinct-source"
+      ],
+      "ground_truth": {
+        "expected_text": "Element Symbole Masse\nHydrogene H 1.008\nHelium He 4.002",
+        "expected_latex": null,
+        "line_labels": [
+          "table",
+          "table",
+          "table"
+        ],
+        "expected_latex_contains": [
+          "\\begin{tabular}",
+          "Hydrogene",
+          "Helium"
+        ],
+        "expected_latex_forbids": [],
+        "status": "supported"
+      }
+    },
+    {
+      "id": "synth_hold_logarithm_identity",
+      "file": "synthetic/synth_hold_logarithm_identity.png",
+      "set": "holdout",
+      "lang": "en",
+      "tags": [
+        "holdout",
+        "math",
+        "algebra",
+        "distinct-source"
+      ],
+      "ground_truth": {
+        "expected_text": "ln(xy) = ln(x) + ln(y)",
+        "expected_latex": "\\[\n\\ln(xy) = \\ln(x) + \\ln(y)\n\\]",
+        "line_labels": [
+          "math"
+        ],
+        "expected_latex_contains": [
+          "ln(xy)",
+          "ln(x) + ln(y)"
+        ],
+        "expected_latex_forbids": [],
+        "status": "supported"
+      }
+    },
+    {
+      "id": "synth_hold_quadratic_formula",
+      "file": "synthetic/synth_hold_quadratic_formula.png",
+      "set": "holdout",
+      "lang": "en",
+      "tags": [
+        "holdout",
+        "math",
+        "algebra",
+        "distinct-source"
+      ],
+      "ground_truth": {
+        "expected_text": "x = (-b + √(b^2 - 4ac)) / (2a)",
+        "expected_latex": "\\[\nx = \\frac{-b + \\sqrt{b^{2} - 4ac}}{2a}\n\\]",
+        "line_labels": [
+          "math"
+        ],
+        "expected_latex_contains": [
+          "-b",
+          "b^{2}",
+          "4ac",
+          "2a"
+        ],
+        "expected_latex_forbids": [],
+        "status": "supported"
+      }
+    },
+    {
+      "id": "synth_stress_poly_rot4",
+      "file": "synthetic/synth_stress_poly_rot4.png",
+      "set": "stress",
+      "lang": "en",
+      "tags": [
+        "stress",
+        "math",
+        "degradation:rotation_4"
+      ],
+      "ground_truth": {
+        "expected_text": "P(x) = 2x^3 - 5x^2 + 3x - 7",
+        "expected_latex": "\\[\nP(x) = 2x^{3} - 5x^{2} + 3x - 7\n\\]",
+        "line_labels": [
+          "math"
+        ],
+        "expected_latex_contains": [
+          "P(x)"
+        ],
+        "expected_latex_forbids": [],
+        "status": "supported"
+      }
+    },
+    {
+      "id": "synth_stress_poly_rot5",
+      "file": "synthetic/synth_stress_poly_rot5.png",
+      "set": "stress",
+      "lang": "en",
+      "tags": [
+        "stress",
+        "math",
+        "degradation:rotation_5"
+      ],
+      "ground_truth": {
+        "expected_text": "P(x) = 2x^3 - 5x^2 + 3x - 7",
+        "expected_latex": "\\[\nP(x) = 2x^{3} - 5x^{2} + 3x - 7\n\\]",
+        "line_labels": [
+          "math"
+        ],
+        "expected_latex_contains": [
+          "P(x)"
+        ],
+        "expected_latex_forbids": [],
+        "status": "supported"
+      }
+    },
+    {
+      "id": "synth_stress_poly_blur2",
+      "file": "synthetic/synth_stress_poly_blur2.png",
+      "set": "stress",
+      "lang": "en",
+      "tags": [
+        "stress",
+        "math",
+        "degradation:blur_2"
+      ],
+      "ground_truth": {
+        "expected_text": "P(x) = 2x^3 - 5x^2 + 3x - 7",
+        "expected_latex": "\\[\nP(x) = 2x^{3} - 5x^{2} + 3x - 7\n\\]",
+        "line_labels": [
+          "math"
+        ],
+        "expected_latex_contains": [
+          "P(x)"
+        ],
+        "expected_latex_forbids": [],
+        "status": "supported"
+      }
+    },
+    {
+      "id": "synth_stress_poly_heavy_noise",
+      "file": "synthetic/synth_stress_poly_heavy_noise.png",
+      "set": "stress",
+      "lang": "en",
+      "tags": [
+        "stress",
+        "math",
+        "degradation:noise_heavy"
+      ],
+      "ground_truth": {
+        "expected_text": "P(x) = 2x^3 - 5x^2 + 3x - 7",
+        "expected_latex": "\\[\nP(x) = 2x^{3} - 5x^{2} + 3x - 7\n\\]",
+        "line_labels": [
+          "math"
+        ],
+        "expected_latex_contains": [
+          "P(x)"
+        ],
+        "expected_latex_forbids": [],
+        "status": "supported"
+      }
+    },
+    {
+      "id": "synth_stress_poly_contrast_squeezed",
+      "file": "synthetic/synth_stress_poly_contrast_squeezed.png",
+      "set": "stress",
+      "lang": "en",
+      "tags": [
+        "stress",
+        "math",
+        "degradation:contrast_squeezed"
+      ],
+      "ground_truth": {
+        "expected_text": "P(x) = 2x^3 - 5x^2 + 3x - 7",
+        "expected_latex": "\\[\nP(x) = 2x^{3} - 5x^{2} + 3x - 7\n\\]",
+        "line_labels": [
+          "math"
+        ],
+        "expected_latex_contains": [
+          "P(x)"
+        ],
+        "expected_latex_forbids": [],
+        "status": "supported"
+      }
+    },
+    {
+      "id": "synth_stress_poly_downscale45",
+      "file": "synthetic/synth_stress_poly_downscale45.png",
+      "set": "stress",
+      "lang": "en",
+      "tags": [
+        "stress",
+        "math",
+        "degradation:downscale_45"
+      ],
+      "ground_truth": {
+        "expected_text": "P(x) = 2x^3 - 5x^2 + 3x - 7",
+        "expected_latex": "\\[\nP(x) = 2x^{3} - 5x^{2} + 3x - 7\n\\]",
+        "line_labels": [
+          "math"
+        ],
+        "expected_latex_contains": [
+          "P(x)"
+        ],
+        "expected_latex_forbids": [],
+        "status": "supported"
+      }
+    },
+    {
+      "id": "synth_stress_poly_vignette",
+      "file": "synthetic/synth_stress_poly_vignette.png",
+      "set": "stress",
+      "lang": "en",
+      "tags": [
+        "stress",
+        "math",
+        "degradation:vignette"
+      ],
+      "ground_truth": {
+        "expected_text": "P(x) = 2x^3 - 5x^2 + 3x - 7",
+        "expected_latex": "\\[\nP(x) = 2x^{3} - 5x^{2} + 3x - 7\n\\]",
+        "line_labels": [
+          "math"
+        ],
+        "expected_latex_contains": [
+          "P(x)"
+        ],
+        "expected_latex_forbids": [],
+        "status": "supported"
+      }
+    },
+    {
+      "id": "synth_stress_poly_combined_rot_blur",
+      "file": "synthetic/synth_stress_poly_combined_rot_blur.png",
+      "set": "stress",
+      "lang": "en",
+      "tags": [
+        "stress",
+        "math",
+        "degradation:combined_rot_blur"
+      ],
+      "ground_truth": {
+        "expected_text": "P(x) = 2x^3 - 5x^2 + 3x - 7",
+        "expected_latex": "\\[\nP(x) = 2x^{3} - 5x^{2} + 3x - 7\n\\]",
+        "line_labels": [
+          "math"
+        ],
+        "expected_latex_contains": [
+          "P(x)"
+        ],
+        "expected_latex_forbids": [],
+        "status": "supported"
+      }
+    },
+    {
+      "id": "synth_stress_poly_combined_noise_contrast",
+      "file": "synthetic/synth_stress_poly_combined_noise_contrast.png",
+      "set": "stress",
+      "lang": "en",
+      "tags": [
+        "stress",
+        "math",
+        "degradation:combined_noise_contrast"
+      ],
+      "ground_truth": {
+        "expected_text": "P(x) = 2x^3 - 5x^2 + 3x - 7",
+        "expected_latex": "\\[\nP(x) = 2x^{3} - 5x^{2} + 3x - 7\n\\]",
+        "line_labels": [
+          "math"
+        ],
+        "expected_latex_contains": [
+          "P(x)"
+        ],
+        "expected_latex_forbids": [],
+        "status": "supported"
+      }
+    },
+    {
+      "id": "synth_stress_french_rot4",
+      "file": "synthetic/synth_stress_french_rot4.png",
+      "set": "stress",
+      "lang": "fr",
+      "tags": [
+        "stress",
+        "french",
+        "degradation:rotation_4"
+      ],
+      "ground_truth": {
+        "expected_text": "Calculer la valeur exacte de l'expression suivante.",
+        "expected_latex": null,
+        "line_labels": [
+          "prose"
+        ],
+        "expected_latex_contains": [
+          "valeur exacte"
+        ],
+        "expected_latex_forbids": [],
+        "status": "supported"
+      }
+    },
+    {
+      "id": "synth_stress_french_blur2",
+      "file": "synthetic/synth_stress_french_blur2.png",
+      "set": "stress",
+      "lang": "fr",
+      "tags": [
+        "stress",
+        "french",
+        "degradation:blur_2"
+      ],
+      "ground_truth": {
+        "expected_text": "Calculer la valeur exacte de l'expression suivante.",
+        "expected_latex": null,
+        "line_labels": [
+          "prose"
+        ],
+        "expected_latex_contains": [
+          "valeur exacte"
+        ],
+        "expected_latex_forbids": [],
+        "status": "supported"
+      }
+    },
+    {
+      "id": "synth_stress_french_noise",
+      "file": "synthetic/synth_stress_french_noise.png",
+      "set": "stress",
+      "lang": "fr",
+      "tags": [
+        "stress",
+        "french",
+        "degradation:noise_heavy"
+      ],
+      "ground_truth": {
+        "expected_text": "L'ingénieur vérifie l'équation déjà résolue avec succès.",
+        "expected_latex": null,
+        "line_labels": [
+          "prose"
+        ],
+        "expected_latex_contains": [
+          "ingénieur",
+          "résolue"
+        ],
+        "expected_latex_forbids": [],
+        "status": "supported"
+      }
+    },
+    {
+      "id": "synth_stress_french_vignette",
+      "file": "synthetic/synth_stress_french_vignette.png",
+      "set": "stress",
+      "lang": "fr",
+      "tags": [
+        "stress",
+        "french",
+        "degradation:vignette"
+      ],
+      "ground_truth": {
+        "expected_text": "L'élève étudie attentivement le théorème où apparaît le paramètre.",
+        "expected_latex": null,
+        "line_labels": [
+          "prose"
+        ],
+        "expected_latex_contains": [
+          "élève",
+          "théorème"
+        ],
+        "expected_latex_forbids": [],
+        "status": "supported"
+      }
+    },
+    {
+      "id": "synth_stress_matrix_rot4",
+      "file": "synthetic/synth_stress_matrix_rot4.png",
+      "set": "stress",
+      "lang": "en",
+      "tags": [
+        "stress",
+        "math",
+        "matrix",
+        "degradation:rotation_4"
+      ],
+      "ground_truth": {
+        "expected_text": "[ 5 7 ; 2 9 ]",
+        "expected_latex": "\\[\n\\begin{bmatrix}\n5 & 7 \\\\\n2 & 9\n\\end{bmatrix}\n\\]",
+        "line_labels": [
+          "matrix"
+        ],
+        "expected_latex_contains": [
+          "5",
+          "7",
+          "2",
+          "9"
+        ],
+        "expected_latex_forbids": [],
+        "status": "supported"
+      }
+    },
+    {
+      "id": "synth_stress_matrix_blur2",
+      "file": "synthetic/synth_stress_matrix_blur2.png",
+      "set": "stress",
+      "lang": "en",
+      "tags": [
+        "stress",
+        "math",
+        "matrix",
+        "degradation:blur_2"
+      ],
+      "ground_truth": {
+        "expected_text": "[ 5 7 ; 2 9 ]",
+        "expected_latex": "\\[\n\\begin{bmatrix}\n5 & 7 \\\\\n2 & 9\n\\end{bmatrix}\n\\]",
+        "line_labels": [
+          "matrix"
+        ],
+        "expected_latex_contains": [
+          "5",
+          "7"
+        ],
+        "expected_latex_forbids": [],
+        "status": "supported"
+      }
+    },
+    {
+      "id": "synth_stress_matrix_noise",
+      "file": "synthetic/synth_stress_matrix_noise.png",
+      "set": "stress",
+      "lang": "en",
+      "tags": [
+        "stress",
+        "math",
+        "matrix",
+        "degradation:noise_heavy"
+      ],
+      "ground_truth": {
+        "expected_text": "[ 5 7 ; 2 9 ]",
+        "expected_latex": "\\[\n\\begin{bmatrix}\n5 & 7 \\\\\n2 & 9\n\\end{bmatrix}\n\\]",
+        "line_labels": [
+          "matrix"
+        ],
+        "expected_latex_contains": [
+          "5",
+          "7"
+        ],
+        "expected_latex_forbids": [],
+        "status": "supported"
+      }
+    },
+    {
+      "id": "synth_stress_table_rot4",
+      "file": "synthetic/synth_stress_table_rot4.png",
+      "set": "stress",
+      "lang": "en",
+      "tags": [
+        "stress",
+        "table",
+        "degradation:rotation_4"
+      ],
+      "ground_truth": {
+        "expected_text": "Item Qty Cost\nMonitor 2 $300\nDesk 1 $150",
+        "expected_latex": null,
+        "line_labels": [
+          "table",
+          "table",
+          "table"
+        ],
+        "expected_latex_contains": [
+          "Monitor",
+          "Desk"
+        ],
+        "expected_latex_forbids": [],
+        "status": "supported"
+      }
+    },
+    {
+      "id": "synth_stress_table_contrast",
+      "file": "synthetic/synth_stress_table_contrast.png",
+      "set": "stress",
+      "lang": "en",
+      "tags": [
+        "stress",
+        "table",
+        "degradation:contrast_squeezed"
+      ],
+      "ground_truth": {
+        "expected_text": "Item Qty Cost\nMonitor 2 $300\nDesk 1 $150",
+        "expected_latex": null,
+        "line_labels": [
+          "table",
+          "table",
+          "table"
+        ],
+        "expected_latex_contains": [
+          "Monitor"
+        ],
+        "expected_latex_forbids": [],
+        "status": "supported"
+      }
+    },
+    {
+      "id": "synth_stress_table_vignette",
+      "file": "synthetic/synth_stress_table_vignette.png",
+      "set": "stress",
+      "lang": "en",
+      "tags": [
+        "stress",
+        "table",
+        "degradation:vignette"
+      ],
+      "ground_truth": {
+        "expected_text": "Item Qty Cost\nMonitor 2 $300\nDesk 1 $150",
+        "expected_latex": null,
+        "line_labels": [
+          "table",
+          "table",
+          "table"
+        ],
+        "expected_latex_contains": [
+          "Monitor"
+        ],
+        "expected_latex_forbids": [],
+        "status": "supported"
+      }
+    },
+    {
+      "id": "synth_stress_cases_rot4",
+      "file": "synthetic/synth_stress_cases_rot4.png",
+      "set": "stress",
+      "lang": "en",
+      "tags": [
+        "stress",
+        "math",
+        "cases",
+        "degradation:rotation_4"
+      ],
+      "ground_truth": {
+        "expected_text": "{ 3x + 2y = 12\n{ x - y = 1",
+        "expected_latex": "\\[\n\\begin{cases}\n3x + 2y = 12 \\\\\nx - y = 1\n\\end{cases}\n\\]",
+        "line_labels": [
+          "cases",
+          "cases"
+        ],
+        "expected_latex_contains": [
+          "3x + 2y = 12"
+        ],
+        "expected_latex_forbids": [],
+        "status": "supported"
+      }
+    },
+    {
+      "id": "synth_stress_cases_blur2",
+      "file": "synthetic/synth_stress_cases_blur2.png",
+      "set": "stress",
+      "lang": "en",
+      "tags": [
+        "stress",
+        "math",
+        "cases",
+        "degradation:blur_2"
+      ],
+      "ground_truth": {
+        "expected_text": "{ 3x + 2y = 12\n{ x - y = 1",
+        "expected_latex": "\\[\n\\begin{cases}\n3x + 2y = 12 \\\\\nx - y = 1\n\\end{cases}\n\\]",
+        "line_labels": [
+          "cases",
+          "cases"
+        ],
+        "expected_latex_contains": [
+          "3x"
+        ],
+        "expected_latex_forbids": [],
+        "status": "supported"
+      }
+    },
+    {
+      "id": "synth_stress_sqrt_rot4",
+      "file": "synthetic/synth_stress_sqrt_rot4.png",
+      "set": "stress",
+      "lang": "en",
+      "tags": [
+        "stress",
+        "math",
+        "radical",
+        "degradation:rotation_4"
+      ],
+      "ground_truth": {
+        "expected_text": "√(x^2 + y^2)",
+        "expected_latex": "\\[\n\\sqrt{x^{2} + y^{2}}\n\\]",
+        "line_labels": [
+          "math"
+        ],
+        "expected_latex_contains": [
+          "x^{2}"
+        ],
+        "expected_latex_forbids": [],
+        "status": "supported"
+      }
+    },
+    {
+      "id": "synth_stress_fraction_rot5",
+      "file": "synthetic/synth_stress_fraction_rot5.png",
+      "set": "stress",
+      "lang": "en",
+      "tags": [
+        "stress",
+        "math",
+        "fraction",
+        "degradation:rotation_5"
+      ],
+      "ground_truth": {
+        "expected_text": "(a + b) / (c + d) = x / y",
+        "expected_latex": "\\[\n\\frac{a + b}{c + d} = \\frac{x}{y}\n\\]",
+        "line_labels": [
+          "math"
+        ],
+        "expected_latex_contains": [
+          "a + b"
+        ],
+        "expected_latex_forbids": [],
+        "status": "supported"
+      }
+    },
+    {
+      "id": "synth_stress_combined_extreme",
+      "file": "synthetic/synth_stress_combined_extreme.png",
+      "set": "stress",
+      "lang": "en",
+      "tags": [
+        "stress",
+        "math",
+        "degradation:extreme"
+      ],
+      "ground_truth": {
+        "expected_text": "x^2 + 2xy + y^2 = (x + y)^2",
+        "expected_latex": "\\[\nx^{2} + 2xy + y^{2} = (x + y)^{2}\n\\]",
+        "line_labels": [
+          "math"
+        ],
+        "expected_latex_contains": [
+          "(x + y)"
+        ],
+        "expected_latex_forbids": [],
+        "status": "supported"
+      }
+    }
+  ]
+}

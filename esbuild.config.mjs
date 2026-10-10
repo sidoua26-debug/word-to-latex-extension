@@ -94,8 +94,6 @@ if (existsSync(tesseractWorkerSrc)) {
 const tesseractCoreFiles = [
   'tesseract-core-lstm.wasm',
   'tesseract-core-lstm.wasm.js',
-  'tesseract-core-simd-lstm.wasm',
-  'tesseract-core-simd-lstm.wasm.js',
 ];
 for (const file of tesseractCoreFiles) {
   const src = join(NODE_MODULES, 'tesseract.js-core', file);
@@ -103,7 +101,7 @@ for (const file of tesseractCoreFiles) {
     cpSync(src, join(tesseractVendorDest, file));
   }
 }
-console.log('✓ Bundled Tesseract worker & WASM core to dist/vendor/tesseract/');
+console.log('✓ Bundled active Tesseract worker & WASM core to dist/vendor/tesseract/');
 
 // 6. Copy offline tessdata models into dist/tessdata/
 const tessdataSrc = join(ASSETS, 'tessdata');

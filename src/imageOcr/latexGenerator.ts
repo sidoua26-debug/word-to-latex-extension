@@ -1,7 +1,4 @@
-/**
- * latexGenerator.ts — Formats recognized content into Mode 1 (Fragment)
- * or Mode 2 (Complete Document), and optionally adds figure embedding.
- */
+import { wrapCompleteDocument } from '../cleanup.ts';
 
 export interface LatexGenerationOptions {
   mode: 'fragment' | 'document';
@@ -38,25 +35,5 @@ export function formatLatexOutput(
     return body;
   }
 
-  // Complete document mode
-  const babelOption = options.hasFrench ? 'french,english' : 'english';
-
-  return [
-    '\\documentclass[11pt,a4paper]{article}',
-    '\\usepackage[utf8]{inputenc}',
-    '\\usepackage[T1]{fontenc}',
-    `\\usepackage[${babelOption}]{babel}`,
-    '\\usepackage{amsmath,amssymb,amsfonts}',
-    '\\usepackage{graphicx}',
-    '\\usepackage{booktabs}',
-    '\\usepackage{longtable}',
-    '\\usepackage{calc}',
-    '\\usepackage{array}',
-    '',
-    '\\begin{document}',
-    '',
-    body,
-    '',
-    '\\end{document}',
-  ].join('\n');
+  return wrapCompleteDocument(body, { hasFrench: options.hasFrench });
 }

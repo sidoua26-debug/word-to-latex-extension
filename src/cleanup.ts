@@ -1,56 +1,89 @@
 /**
- * cleanup.ts — Post-process Pandoc's LaTeX output for clean, paste-ready fragments.
+ * cleanup.ts — Multi-stage LaTeX Quality Pipeline for clean, paste-ready fragments.
  * Framework-agnostic; no DOM or browser dependencies.
+ *
+ * Pipeline Stages:
+ * 1. Structural & Artifact Removal (\tightlist, \pandocbounded, \foreignlanguage, redundant empty anchors)
+ * 2. Environment Normalization & Table List Minipages (depth-aware wrapping)
+ * 3. Typography & Unicode Normalization (French high punctuation, tildes, bullets, NBSP)
+ * 4. Safe Brace Cleanup (depth-aware redundant brace unwrapping without damaging macro/math arguments)
+ * 5. Whitespace & Blank-line Normalization (verbatim & math protected)
+ * 6. Package Detection Comments (\usepackage recommendations)
+ * 7. Structural Validation & Fallback Safety Net
  */
 
-/** Remove lines that are exactly `\tightlist` (with optional surrounding whitespace). */
-function removeTightlist(latex: string): string {
+/**
+ * Finds the index of the matching closing character (e.g. '}' for '{'),
+ * taking into account nesting and escaped characters (e.g. '\}').
+ * Returns -1 if unbalanced.
+ */
+export function findBalancedClose(
+  str: string,
+  openIdx: number,
+  openChar = '{',
+  closeChar = '}'
+): number {
+  if (str[openIdx] !== openChar) return -1;
+
+  let depth = 1;
+  let i = openIdx + 1;
+
+  while (i < str.length && depth > 0) {
+    if (str[i] === '\\') {
+      // Skip escaped characters like \{ or \}
+      i += 2;
+      continue;
+    }
+    if (str[i] === openChar) {
+      depth++;
+    } else if (str[i] === closeChar) {
+      depth--;
+    }
+    i++;
+  }
+
+  return depth === 0 ? i - 1 : -1;
+}
+
+/** Stage 1: Remove lines that are exactly `\tightlist` (with optional surrounding whitespace). */
+export function removeTightlist(latex: string): string {
   return latex.replace(/^[ \t]*\\tightlist[ \t]*$/gm, '');
 }
 
 /**
- * Unwrap `\pandocbounded{...}` commands, keeping only the inner content.
- * Handles nested braces correctly by tracking brace depth.
+ * Stage 1: Unwrap `\pandocbounded{...}` commands, keeping only the inner content.
+ * Handles nested braces correctly using depth-aware scanning.
  */
-function unwrapPandocbounded(latex: string): string {
+export function unwrapPandocbounded(latex: string): string {
   const marker = '\\pandocbounded{';
   let result = latex;
 
-  // Repeat until no more \pandocbounded{ remain
   while (true) {
     const idx = result.indexOf(marker);
     if (idx === -1) break;
 
-    const contentStart = idx + marker.length;
-    let depth = 1;
-    let i = contentStart;
+    const openIdx = idx + marker.length - 1;
+    const closeIdx = findBalancedClose(result, openIdx);
 
-    while (i < result.length && depth > 0) {
-      if (result[i] === '{') depth++;
-      else if (result[i] === '}') depth--;
-      i++;
-    }
-
-    if (depth !== 0) {
-      // Unbalanced braces — bail out to avoid corruption
+    if (closeIdx === -1) {
+      // Unbalanced braces — bail out safely to avoid corruption
       break;
     }
 
-    // Extract the inner content (everything between the opening { and matching })
-    const inner = result.substring(contentStart, i - 1);
-    result = result.substring(0, idx) + inner + result.substring(i);
+    const inner = result.substring(openIdx + 1, closeIdx);
+    result = result.substring(0, idx) + inner + result.substring(closeIdx + 1);
   }
 
   return result;
 }
 
 /**
- * Unwraps `\foreignlanguage{<lang>}{<content>}` and `\begin{otherlanguage}{<lang>}` wrappers.
+ * Stage 1: Unwraps `\foreignlanguage{<lang>}{<content>}` and `\begin{otherlanguage}{<lang>}` wrappers.
  * For paste-ready LaTeX fragments, redundant language annotations clutter output
  * and prevent seamless pasting into standard documents.
- * Handles balanced braces correctly for arbitrary nested LaTeX content.
+ * Uses depth-aware brace scanning for both language and content arguments.
  */
-function unwrapForeignLanguage(latex: string): string {
+export function unwrapForeignLanguage(latex: string): string {
   let result = latex;
   const marker = '\\foreignlanguage{';
 
@@ -58,102 +91,40 @@ function unwrapForeignLanguage(latex: string): string {
     const idx = result.indexOf(marker);
     if (idx === -1) break;
 
-    // Find the end of the language argument: \foreignlanguage{<lang>}{
-    const langCloseIdx = result.indexOf('}', idx + marker.length);
+    const langOpenIdx = idx + marker.length - 1;
+    const langCloseIdx = findBalancedClose(result, langOpenIdx);
     if (langCloseIdx === -1 || result[langCloseIdx + 1] !== '{') {
       break;
     }
 
-    const contentStart = langCloseIdx + 2;
-    let depth = 1;
-    let i = contentStart;
-
-    while (i < result.length && depth > 0) {
-      if (result[i] === '{') depth++;
-      else if (result[i] === '}') depth--;
-      i++;
-    }
-
-    if (depth !== 0) {
+    const contentOpenIdx = langCloseIdx + 1;
+    const contentCloseIdx = findBalancedClose(result, contentOpenIdx);
+    if (contentCloseIdx === -1) {
       break;
     }
 
-    const inner = result.substring(contentStart, i - 1);
-    result = result.substring(0, idx) + inner + result.substring(i);
+    const inner = result.substring(contentOpenIdx + 1, contentCloseIdx);
+    result = result.substring(0, idx) + inner + result.substring(contentCloseIdx + 1);
   }
 
   // Also strip block-level otherlanguage environments
   result = result.replace(/\\begin\{otherlanguage\*?\}\{[^}]*\}\s*/g, '');
   result = result.replace(/\\end\{otherlanguage\*?\}\s*/g, '');
 
-  // Remove empty braces {} left between unwrapped commands
+  // Remove bare empty braces {} left between unwrapped commands while preserving @{} and \macro{}
+  result = result.replace(/(\\[a-zA-Z*]+|@)\{\}/g, '$1__PROTECTED_EMPTY__');
   result = result.replace(/\{\}/g, '');
+  result = result.replace(/__PROTECTED_EMPTY__/g, '{}');
 
   return result;
 }
 
 /**
- * Cleans unnecessary tildes introduced by Word French typography metadata
- * without affecting standard semantic LaTeX ties like Fig.~1 or math.
- */
-function cleanFrenchPunctuationAndTildes(latex: string): string {
-  let result = latex;
-
-  // 1. Unwrap empty/spacing groups like {~ } or { } or {~}
-  result = result.replace(/\{\s*~*\s*\}/g, ' ');
-
-  // 2. Normalize tildes before French high punctuation marks: ~: -> " :", ~; -> " ;", ~! -> " !", ~? -> " ?"
-  result = result.replace(/~([:;!?»])/g, ' $1');
-  result = result.replace(/(«)~/g, '$1 ');
-
-  // 3. Normalize tilde followed by whitespace: "~ " -> " "
-  result = result.replace(/~[ \t]+/g, ' ');
-
-  // 4. Normalize tildes following bullet symbols or non-ASCII characters at line start
-  result = result.replace(/(^[ \t]*[^\w\s\\])[ \t]*~[ \t]*/gmu, '$1  ');
-
-  return result;
-}
-
-/**
- * Unwraps redundant grouping braces around plain text and Unicode symbols
- * introduced by Pandoc's span/mso-spacerun mapping (e.g. {{Ø}} or {Ø } -> Ø).
- * Does NOT touch arguments to LaTeX commands (\textbf{...}) or math sub/superscripts.
- */
-function unwrapRedundantBraces(latex: string): string {
-  let result = latex;
-
-  // Remove bare empty braces {} left between unwrapped commands
-  result = result.replace(/\{\}/g, '');
-
-  // Unwrap double braces {{...}} -> {...}
-  while (/\{\{([^{}]+)\}\}/.test(result)) {
-    result = result.replace(/\{\{([^{}]+)\}\}/g, '{$1}');
-  }
-
-  // Unwrap bare braces around content not preceded by a backslash macro, ^ or _
-  result = result.replace(/(^|[\s\n(])\{([^{}\\]+)\}/gu, '$1$2');
-  result = result.replace(/(^|[\s\n(])\{([^{}\\]+)\}/gu, '$1$2');
-
-  return result;
-}
-
-/** Collapse 3+ consecutive blank lines down to at most 2. */
-function collapseBlankLines(latex: string): string {
-  return latex.replace(/([ \t]*\n){3,}/g, '\n\n');
-}
-
-/** Trim trailing whitespace from each line. */
-function trimTrailingWhitespace(latex: string): string {
-  return latex.replace(/[ \t]+$/gm, '');
-}
-
-/**
- * Wraps list environments (\begin{itemize} or \begin{enumerate}) located inside table environments
+ * Stage 2: Wraps list environments (\begin{itemize} or \begin{enumerate}) located inside table environments
  * (longtable, tabular, tabularx, etc.) in a minipage if they are not already wrapped.
- * This guarantees valid, compilable LaTeX for tables containing lists.
+ * Guarantees valid, compilable LaTeX for tables containing lists.
  */
-function fixTableLists(latex: string): string {
+export function fixTableLists(latex: string): string {
   const tableRegex = /(\\begin\{(?:longtable|tabular\*?|tabularx|tabulary)\}[\s\S]*?\\end\{(?:longtable|tabular\*?|tabularx|tabulary)\})/g;
 
   return latex.replace(tableRegex, (tableBlock) => {
@@ -210,7 +181,104 @@ function fixTableLists(latex: string): string {
   });
 }
 
-/** Package detection rules: pattern → package name. */
+/**
+ * Stage 3: Cleans unnecessary tildes introduced by Word French typography metadata
+ * without affecting standard semantic LaTeX ties like Fig.~1 or math.
+ */
+export function cleanFrenchPunctuationAndTildes(latex: string): string {
+  let result = latex;
+
+  // 1. Unwrap empty/spacing groups containing tildes like {~ } or {~} or { ~ }
+  result = result.replace(/\{\s*~+\s*\}/g, ' ');
+
+  // 2. Normalize tildes before French high punctuation marks: ~: -> " :", ~; -> " ;", ~! -> " !", ~? -> " ?"
+  result = result.replace(/~([:;!?»])/g, ' $1');
+  result = result.replace(/(«)~/g, '$1 ');
+
+  // 3. Normalize tilde followed by whitespace: "~ " -> " "
+  result = result.replace(/~[ \t]+/g, ' ');
+
+  // 4. Normalize tildes following bullet symbols or non-ASCII characters at line start
+  result = result.replace(/(^[ \t]*[^\w\s\\])[ \t]*~[ \t]*/gmu, '$1  ');
+
+  return result;
+}
+
+/**
+ * Stage 4: Unwraps redundant grouping braces around plain text and Unicode symbols
+ * introduced by Pandoc's span/mso-spacerun mapping (e.g. {{Ø}} or {Ø } -> Ø).
+ * Does NOT touch arguments to LaTeX commands (\textbf{...}), math sub/superscripts (^2, _1),
+ * or protected macro arguments.
+ */
+export function unwrapRedundantBraces(latex: string): string {
+  let result = latex;
+
+  // Unwrap double braces {{...}} -> {...}
+  while (/\{\{([^{}]+)\}\}/.test(result)) {
+    result = result.replace(/\{\{([^{}]+)\}\}/g, '{$1}');
+  }
+
+  // Unwrap bare braces around content not preceded by a backslash macro, ^, _, or =
+  result = result.replace(/(^|[\s\n(])\{([^{}\\]+)\}/gu, '$1$2');
+  result = result.replace(/(^|[\s\n(])\{([^{}\\]+)\}/gu, '$1$2');
+
+  return result;
+}
+
+/**
+ * Stage 5: Normalizes whitespace and blank lines while strictly protecting
+ * verbatim environments, code listings, and display math.
+ */
+export function normalizeWhitespaceProtected(latex: string): string {
+  // Identify protected regions: verbatim, lstlisting, equation, align, display math
+  const protectedPattern = /(\\begin\{(?:verbatim\*?|lstlisting|minted|equation\*?|align\*?|gather\*?|multline\*?)\}[\s\S]*?\\end\{(?:verbatim\*?|lstlisting|minted|equation\*?|align\*?|gather\*?|multline\*?)\}|\\\[[\s\S]*?\\\]|\$\$[\s\S]*?\$\$)/g;
+
+  const segments: string[] = [];
+  let lastIdx = 0;
+  let match: RegExpExecArray | null;
+
+  while ((match = protectedPattern.exec(latex)) !== null) {
+    const start = match.index;
+    const end = start + match[0].length;
+
+    // Normalize unprotected text before this block
+    if (start > lastIdx) {
+      const unprotected = latex.substring(lastIdx, start);
+      segments.push(normalizeStandardWhitespace(unprotected));
+    }
+
+    // Keep protected block intact
+    segments.push(match[0]);
+    lastIdx = end;
+  }
+
+  if (lastIdx < latex.length) {
+    segments.push(normalizeStandardWhitespace(latex.substring(lastIdx)));
+  }
+
+  return segments.join('');
+}
+
+function normalizeStandardWhitespace(text: string): string {
+  let res = text;
+  // Collapse 3+ consecutive blank lines down to 2
+  res = res.replace(/([ \t]*\n){3,}/g, '\n\n');
+  // Trim trailing whitespace from each line
+  res = res.replace(/[ \t]+$/gm, '');
+  return res;
+}
+
+/** Collapse 3+ consecutive blank lines down to at most 2. */
+export function collapseBlankLines(latex: string): string {
+  return normalizeStandardWhitespace(latex);
+}
+
+/** Trim trailing whitespace from each line. */
+export function trimTrailingWhitespace(latex: string): string {
+  return latex.replace(/[ \t]+$/gm, '');
+}
+
+/** Stage 6: Package detection rules: pattern → package name. */
 const PACKAGE_RULES: Array<{ pattern: RegExp; pkg: string }> = [
   { pattern: /\\(toprule|midrule|bottomrule)\b/, pkg: 'booktabs' },
   { pattern: /\\begin\{longtable\}/, pkg: 'longtable' },
@@ -218,15 +286,17 @@ const PACKAGE_RULES: Array<{ pattern: RegExp; pkg: string }> = [
   { pattern: /\\real\{/, pkg: 'calc' },
   { pattern: />\{.*?\\arraybackslash\}|\\arraybackslash\b/, pkg: 'array' },
   { pattern: /\\includegraphics/, pkg: 'graphicx' },
-  { pattern: /\\(hyperlink|hyperref)\b/, pkg: 'hyperref' },
+  { pattern: /\\(hyperlink|hyperref|href|url)\b/, pkg: 'hyperref' },
   { pattern: /\\(uline|sout)\b/, pkg: 'ulem' },
+  { pattern: /\\begin\{(?:align\*?|gather\*?|pmatrix|bmatrix|cases|matrix)\}|\\text\{/, pkg: 'amsmath' },
+  { pattern: /\\(mathbb|mathcal|mathfrak)\b/, pkg: 'amssymb' },
 ];
 
 /**
  * Scan LaTeX for constructs needing specific packages and prepend a comment block
  * listing the required \usepackage lines.
  */
-function prependPackageComments(latex: string): string {
+export function prependPackageComments(latex: string): string {
   const needed = new Set<string>();
 
   for (const rule of PACKAGE_RULES) {
@@ -249,33 +319,202 @@ function prependPackageComments(latex: string): string {
 }
 
 /**
- * Full cleanup pipeline. Applies all transformations in order.
+ * Stage 7: Lightweight Structural Validation
+ * Verifies balanced braces and matched environment blocks to detect any corruption early.
+ */
+export function validateLatexStructure(latex: string): { valid: boolean; errors: string[] } {
+  const errors: string[] = [];
+
+  // 1. Check brace balance
+  let braceDepth = 0;
+  for (let i = 0; i < latex.length; i++) {
+    if (latex[i] === '\\') {
+      i++; // Skip escaped character like \{ or \}
+      continue;
+    }
+    if (latex[i] === '{') {
+      braceDepth++;
+    } else if (latex[i] === '}') {
+      braceDepth--;
+      if (braceDepth < 0) {
+        errors.push(`Unmatched closing brace '}' at position ${i}`);
+        break;
+      }
+    }
+  }
+  if (braceDepth !== 0) {
+    errors.push(`Unbalanced braces: final depth was ${braceDepth}`);
+  }
+
+  // 2. Check environment matches (\begin{env} ... \end{env})
+  const envStack: string[] = [];
+  const envTokenRegex = /\\(begin|end)\{([a-zA-Z0-9*_-]+)\}/g;
+  let match: RegExpExecArray | null;
+
+  while ((match = envTokenRegex.exec(latex)) !== null) {
+    const action = match[1];
+    const envName = match[2];
+
+    if (action === 'begin') {
+      envStack.push(envName);
+    } else if (action === 'end') {
+      const last = envStack.pop();
+      if (last !== envName) {
+        errors.push(`Mismatched environment: expected \\end{${last || 'none'}}, found \\end{${envName}}`);
+      }
+    }
+  }
+
+  if (envStack.length > 0) {
+    errors.push(`Unclosed environments: ${envStack.join(', ')}`);
+  }
+
+  return {
+    valid: errors.length === 0,
+    errors,
+  };
+}
+
+/**
+ * Full cleanup pipeline. Applies all transformations in order with structural validation.
  * @param raw — Raw LaTeX string from Pandoc.
  * @returns Cleaned, paste-ready LaTeX fragment.
  */
 export function cleanupLatex(raw: string): string {
   let result = raw;
+
+  // Stage 1: Pandoc artifact removal
   result = removeTightlist(result);
   result = unwrapPandocbounded(result);
   result = unwrapForeignLanguage(result);
+
+  // Stage 2: Typography & French punctuation
   result = cleanFrenchPunctuationAndTildes(result);
+
+  // Stage 3: Safe brace unwrapping
   result = unwrapRedundantBraces(result);
+
+  // Stage 4: Table list minipages
   result = fixTableLists(result);
-  result = collapseBlankLines(result);
-  result = trimTrailingWhitespace(result);
+
+  // Stage 5: Protected whitespace normalization
+  result = normalizeWhitespaceProtected(result);
+
+  // Stage 6: Package detection comments
   result = prependPackageComments(result);
+
+  // Stage 7: Structural validation (safety net)
+  const validation = validateLatexStructure(result);
+  if (!validation.valid) {
+    console.warn('[LaTeX Cleanup Pipeline] Structural validation warning:', validation.errors);
+    // If transformed result introduced unclosed environments or broken braces,
+    // safely return raw input with basic minimal cleanup to avoid corrupting output
+    const fallbackValidation = validateLatexStructure(raw);
+    if (fallbackValidation.valid) {
+      let safeFallback = removeTightlist(raw);
+      safeFallback = trimTrailingWhitespace(safeFallback);
+      safeFallback = prependPackageComments(safeFallback);
+      return safeFallback;
+    }
+  }
+
   return result;
 }
 
-// Also export individual functions for unit testing
-export {
-  removeTightlist,
-  unwrapPandocbounded,
-  unwrapForeignLanguage,
-  cleanFrenchPunctuationAndTildes,
-  unwrapRedundantBraces,
-  fixTableLists,
-  collapseBlankLines,
-  trimTrailingWhitespace,
-  prependPackageComments,
-};
+/**
+ * Detects if a string contains French text (accents, ligatures, guillemets, or French keywords).
+ */
+export function hasFrenchText(text: string): boolean {
+  return /[éèêëàâîïôùûüçœæÉÈÊËÀÂÎÏÔÙÛÜÇŒÆ«»]/u.test(text);
+}
+
+/**
+ * Strips package comments generated by prependPackageComments from a LaTeX fragment.
+ */
+export function stripPackageComments(latex: string): string {
+  let result = latex.replace(/^% Required packages \(add to your preamble\):\s*\n/gm, '');
+  result = result.replace(/^% \\usepackage\{[^}]+\}\s*\n?/gm, '');
+  return result.replace(/^\n+/, '');
+}
+
+/**
+ * Wraps a LaTeX fragment into a complete, standalone, compilable LaTeX document.
+ */
+export function wrapCompleteDocument(
+  latexFragment: string,
+  options?: { hasFrench?: boolean }
+): string {
+  const isFrench = options?.hasFrench ?? hasFrenchText(latexFragment);
+  const neededPackages = new Set<string>();
+
+  for (const rule of PACKAGE_RULES) {
+    if (rule.pattern.test(latexFragment)) {
+      neededPackages.add(rule.pkg);
+    }
+  }
+
+  // Also check if any % \usepackage{...} was already present in the fragment comments
+  const commentMatches = latexFragment.match(/^% \\usepackage\{([^}]+)\}/gm);
+  if (commentMatches) {
+    for (const line of commentMatches) {
+      const match = line.match(/^% \\usepackage\{([^}]+)\}/);
+      if (match && match[1]) {
+        neededPackages.add(match[1]);
+      }
+    }
+  }
+
+  const preamblePackages: string[] = [
+    '\\usepackage{iftex}',
+    '\\ifPDFTeX',
+    '  \\usepackage[utf8]{inputenc}',
+    '  \\usepackage[T1]{fontenc}',
+    '\\fi',
+    isFrench ? '\\usepackage[french,english]{babel}' : '\\usepackage[english]{babel}',
+    '\\usepackage{amsmath,amssymb,amsfonts}',
+  ];
+
+  const candidatePackages = ['graphicx', 'booktabs', 'longtable', 'calc', 'array', 'ulem', 'tabularx', 'hyperref'];
+  for (const pkg of candidatePackages) {
+    if (neededPackages.has(pkg)) {
+      preamblePackages.push(`\\usepackage{${pkg}}`);
+    }
+  }
+
+  for (const pkg of neededPackages) {
+    if (!candidatePackages.includes(pkg) && pkg !== 'amsmath' && pkg !== 'amssymb') {
+      preamblePackages.push(`\\usepackage{${pkg}}`);
+    }
+  }
+
+  const cleanBody = stripPackageComments(latexFragment).trim();
+
+  const lines = [
+    '\\documentclass[11pt,a4paper]{article}',
+    ...preamblePackages,
+    '',
+    '\\begin{document}',
+    '',
+    cleanBody,
+    '',
+    '\\end{document}',
+  ];
+
+  return lines.join('\n');
+}
+
+/**
+ * Sanitize filename for safe filesystem export.
+ * Strips existing extensions and invalid characters.
+ */
+export function sanitizeFilename(name: string): string {
+  let base = name.replace(/\.[^/.]+$/, '');
+  base = base.replace(/[<>:"/\\|?*\x00-\x1F]/g, '_');
+  base = base.trim().replace(/^\.+/, '').replace(/\.+$/, '');
+  base = base.substring(0, 64);
+  if (!base || base.replace(/[_.]/g, '').length === 0) {
+    return 'converted';
+  }
+  return base;
+}
+

@@ -7,6 +7,11 @@
   "scripts": {
     "build": "node esbuild.config.mjs",
     "test": "node --test --test-concurrency=1 --experimental-strip-types tests/*.test.ts",
+    "test:compile": "node --experimental-strip-types scripts/test_compile.mjs",
+    "corpus:generate": "node corpus/generate.mjs",
+    "eval": "node --experimental-strip-types scripts/eval.mjs",
+    "corpus:add-real": "node scripts/add_real_sample.mjs",
+    "setup:tectonic": "node scripts/setup_tectonic.mjs",
     "clean": "rm -rf dist word-to-latex-offline.zip",
     "package": "npm run build && (cd dist && zip -r ../word-to-latex-offline.zip .)"
   },

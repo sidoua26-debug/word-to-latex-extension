@@ -11,6 +11,17 @@
     <h1>Word → LaTeX</h1>
     <p class="subtitle">Offline conversion powered by Pandoc WASM</p>
 
+    <!-- Output format selector -->
+    <div class="output-mode-bar">
+      <div class="option-row">
+        <span class="option-label">Output Mode:</span>
+        <div class="segmented-control" role="group" aria-label="Output Mode">
+          <button type="button" class="segment-btn active" id="btn-mode-fragment">Fragment</button>
+          <button type="button" class="segment-btn" id="btn-mode-document">Complete Document</button>
+        </div>
+      </div>
+    </div>
+
     <!-- Tab navigation -->
     <div class="tab-bar">
       <button type="button" class="tab-btn active" id="tab-upload">Upload File</button>
@@ -94,13 +105,6 @@
 
       <!-- Image Options -->
       <div class="image-options-group">
-        <div class="option-row">
-          <span class="option-label">Output:</span>
-          <div class="segmented-control">
-            <button type="button" class="segment-btn active" id="btn-mode-fragment">Fragment</button>
-            <button type="button" class="segment-btn" id="btn-mode-document">Document</button>
-          </div>
-        </div>
         <label class="checkbox-label" title="Generate \\begin{figure} with \\includegraphics">
           <input type="checkbox" id="check-embed-figure" />
           <span>Embed image as figure</span>
@@ -130,11 +134,24 @@
           <span class="editable-badge" title="Directly editable in the box below">✎ Editable</span>
           <span id="source-indicator" class="source-indicator"></span>
         </div>
-        <button id="copy-btn" class="copy-btn" title="Copy to clipboard">📋 Copy</button>
+        <div class="output-actions-group">
+          <button type="button" id="copy-btn" class="action-btn copy-btn" title="Copy LaTeX to clipboard">📋 Copy LaTeX</button>
+          <button type="button" id="download-btn" class="action-btn download-btn" title="Download .tex file">⬇ Download .tex</button>
+        </div>
       </div>
+
+      <!-- Conversion Info & Quality Notes -->
+      <div id="conversion-info-card" class="conversion-info-card" hidden>
+        <div class="conversion-stats-header">
+          <span class="stats-label">Conversion info</span>
+          <span id="conversion-stats" class="conversion-stats-text"></span>
+        </div>
+        <div id="conversion-warnings" class="conversion-warnings-block" hidden></div>
+      </div>
+
       <textarea id="output" placeholder="LaTeX output appears here. You can directly edit and fine-tune expressions before copying..." aria-label="Editable LaTeX Output" spellcheck="false"></textarea>
       <div class="output-hint">💡 Tip: You can freely edit and refine equations or text above before copying.</div>
-      <div id="copied-toast" class="toast" hidden>✓ Copied to clipboard!</div>
+      <div id="copied-toast" class="toast" hidden>✓ Copied!</div>
     </div>
   </div>
 
