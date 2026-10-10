@@ -193,6 +193,39 @@ describe('conversionStats: table warning heuristics', () => {
     assert.equal(meta.warnings[0].severity, 'review');
     assert.ok(meta.warnings[0].message.includes('nested paragraphs or lists'));
   });
+
+  it('produces review warning when floating text boxes are present', () => {
+    const latex = '% Text box\n\\begin{flushright}\\begin{minipage}{0.48\\linewidth}Signature\\end{minipage}\\end{flushright}';
+    const meta = analyzeDocxConversion(latex, latex);
+    const warning = meta.warnings.find((w) => w.message.includes('Floating text boxes were moved into the flow'));
+    assert.ok(warning);
+    assert.equal(warning.severity, 'review');
+  });
+
+  it('produces info note when markers were found and option is checked (markers + checked -> note)', () => {
+    const raw = '%%LATEX_NEWPAGE%%Some text';
+    const clean = '\\newpage\nSome text';
+    const meta = analyzeDocxConversion(raw, clean, undefined, { approximatePageBreaks: true, foundApproximateBreaks: true });
+    const note = meta.warnings.find((w) => w.message.includes("Page breaks follow Word's last saved layout"));
+    assert.ok(note, 'Review banner note must be present when markers were found and checkbox is checked');
+    assert.equal(note.severity, 'info');
+  });
+
+  it('omits info note when no markers were found even if option is checked (no markers + checked -> no note)', () => {
+    const raw = 'Some text without markers';
+    const clean = 'Some text without markers';
+    const meta = analyzeDocxConversion(raw, clean, undefined, { approximatePageBreaks: true, foundApproximateBreaks: false });
+    const note = meta.warnings.find((w) => w.message.includes("Page breaks follow Word's last saved layout"));
+    assert.equal(note, undefined, 'Review banner note must NOT be present when no markers were converted');
+  });
+
+  it('omits info note when option is unchecked even if document has markers (markers + unchecked -> no note)', () => {
+    const raw = 'Some text with markers';
+    const clean = 'Some text with markers';
+    const meta = analyzeDocxConversion(raw, clean, undefined, { approximatePageBreaks: false, foundApproximateBreaks: false });
+    const note = meta.warnings.find((w) => w.message.includes("Page breaks follow Word's last saved layout"));
+    assert.equal(note, undefined, 'Review banner note must NOT be present when user unchecked approximate page breaks');
+  });
 });
 
 describe('conversionStats: analyzePasteConversion', () => {

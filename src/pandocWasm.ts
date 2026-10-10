@@ -11,9 +11,19 @@ import {
   PandocInstance,
   ConvertInput,
   runPandocConvert,
+  type DocxPreprocessOptions,
+  type DocxPreprocessMetadata,
+  lastDocxPreprocessMetadata,
 } from './pandocCore.js';
 
-export { PandocInstance, ConvertInput, runPandocConvert };
+export {
+  PandocInstance,
+  ConvertInput,
+  runPandocConvert,
+  type DocxPreprocessOptions,
+  type DocxPreprocessMetadata,
+  lastDocxPreprocessMetadata,
+};
 
 let pandocInstancePromise: Promise<PandocInstance> | null = null;
 
@@ -61,6 +71,9 @@ export async function convertToLatex(input: ConvertInput): Promise<string> {
  * @param fileBytes — The raw bytes of the .docx file.
  * @returns The LaTeX output string.
  */
-export async function convertDocxToLatex(fileBytes: ArrayBuffer): Promise<string> {
-  return convertToLatex({ format: 'docx', bytes: fileBytes });
+export async function convertDocxToLatex(
+  fileBytes: ArrayBuffer,
+  options?: DocxPreprocessOptions
+): Promise<string> {
+  return convertToLatex({ format: 'docx', bytes: fileBytes, options });
 }

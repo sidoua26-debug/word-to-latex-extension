@@ -6,8 +6,8 @@
  * 3. Offline Image to LaTeX recognition (text, equations, tables)
  */
 
-import { convertToLatex, convertDocxToLatex } from './pandocWasm.js';
-import { cleanupLatex, wrapCompleteDocument, sanitizeFilename } from './cleanup.js';
+import { convertToLatex, convertDocxToLatex, lastDocxPreprocessMetadata } from './pandocWasm.js';
+import { cleanupLatex, wrapCompleteDocument, sanitizeFilename, type WrapCompleteDocumentOptions } from './cleanup.js';
 import {
   analyzeDocxConversion,
   analyzePasteConversion,
@@ -36,6 +36,7 @@ const fileInput = document.getElementById('docx-file') as HTMLInputElement;
 const fileName = document.getElementById('file-name') as HTMLSpanElement;
 const fileLabel = document.querySelector('.file-label') as HTMLLabelElement;
 const clearFileBtn = document.getElementById('clear-file-btn') as HTMLButtonElement | null;
+const checkApproxPageBreaks = document.getElementById('check-approx-page-breaks') as HTMLInputElement | null;
 const convertBtn = document.getElementById('convert-btn') as HTMLButtonElement;
 const uploadBtnText = convertBtn.querySelector('.btn-text') as HTMLSpanElement;
 const uploadBtnSpinner = convertBtn.querySelector('.btn-spinner') as HTMLSpanElement;
@@ -85,6 +86,7 @@ let lastCleanLatexFragment: string | null = null;
 let lastSourceDesc = '';
 let currentDocName = 'converted';
 let lastMetadata: ConversionMetadata | null = null;
+let lastDocxGeometry: WrapCompleteDocumentOptions['geometry'] | undefined = undefined;
 
 // --- Tab Switching ---
 tabUpload.addEventListener('click', () => switchTab('upload'));
@@ -181,14 +183,19 @@ convertBtn.addEventListener('click', async () => {
 
   try {
     const arrayBuffer = await selectedFile.arrayBuffer();
-    const rawLatex = await convertDocxToLatex(arrayBuffer);
+    const approxBreaks = Boolean(checkApproxPageBreaks?.checked);
+    const rawLatex = await convertDocxToLatex(arrayBuffer, { approximatePageBreaks: approxBreaks });
     const cleanLatex = cleanupLatex(rawLatex);
     lastCleanLatexFragment = cleanLatex;
     lastSourceDesc = 'docx file';
     currentDocName = selectedFile.name;
-    const finalLatex = outputMode === 'document' ? wrapCompleteDocument(cleanLatex) : cleanLatex;
+    lastDocxGeometry = lastDocxPreprocessMetadata?.geometry;
+    const finalLatex = outputMode === 'document' ? wrapCompleteDocument(cleanLatex, { geometry: lastDocxGeometry }) : cleanLatex;
 
-    const meta = analyzeDocxConversion(rawLatex, cleanLatex);
+    const meta = analyzeDocxConversion(rawLatex, cleanLatex, undefined, {
+      approximatePageBreaks: approxBreaks,
+      foundApproximateBreaks: lastDocxPreprocessMetadata?.foundApproximateBreaks ?? false,
+    });
     lastMetadata = meta;
     renderOutput(finalLatex, 'docx file', meta);
     await copyToClipboard(finalLatex);
@@ -277,6 +284,7 @@ convertPasteBtn.addEventListener('click', async () => {
     lastCleanLatexFragment = cleanLatex;
     lastSourceDesc = sourceDesc;
     currentDocName = 'pasted_content';
+    lastDocxGeometry = undefined;
     const finalLatex = outputMode === 'document' ? wrapCompleteDocument(cleanLatex) : cleanLatex;
 
     const meta = analyzePasteConversion(inputFormat, inputContent, cleanLatex);
@@ -408,7 +416,7 @@ btnModeDocument.addEventListener('click', () => {
   btnModeDocument.classList.add('active');
   btnModeFragment.classList.remove('active');
   if (lastCleanLatexFragment && !outputWrapper.hidden) {
-    const fullDoc = wrapCompleteDocument(lastCleanLatexFragment, { hasFrench: true });
+    const fullDoc = wrapCompleteDocument(lastCleanLatexFragment, { hasFrench: true, geometry: lastDocxGeometry });
     renderOutput(fullDoc, lastSourceDesc, lastMetadata);
   }
 });
@@ -441,6 +449,7 @@ convertImageBtn.addEventListener('click', async () => {
     lastCleanLatexFragment = result.latex;
     lastSourceDesc = `image (${selectedImageFile.name})`;
     currentDocName = selectedImageFile.name;
+    lastDocxGeometry = undefined;
     const finalLatex = outputMode === 'document' ? wrapCompleteDocument(result.latex, { hasFrench: true }) : result.latex;
 
     const meta = analyzeImageConversion(result, result.latex);

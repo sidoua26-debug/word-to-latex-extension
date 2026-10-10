@@ -19,8 +19,18 @@ export interface PandocInstance {
   pandoc: (args_str: string, inData: unknown, resources: unknown[]) => Promise<unknown>;
 }
 
+import {
+  preprocessDocx,
+  type DocxPreprocessOptions,
+  type DocxPreprocessMetadata,
+} from './docxPreprocess.ts';
+
+export type { DocxPreprocessOptions, DocxPreprocessMetadata };
+
+export let lastDocxPreprocessMetadata: DocxPreprocessMetadata | null = null;
+
 export type ConvertInput =
-  | { format: 'docx'; bytes: ArrayBuffer; filename?: string }
+  | { format: 'docx'; bytes: ArrayBuffer; filename?: string; options?: DocxPreprocessOptions }
   | { format: 'html' | 'markdown'; text: string };
 
 /**
@@ -43,7 +53,10 @@ export async function runPandocConvert(
           )
         : input.bytes;
 
-    const blob = new Blob([arrayBuffer], {
+    const preprocessed = preprocessDocx(arrayBuffer, input.options);
+    lastDocxPreprocessMetadata = preprocessed.metadata;
+
+    const blob = new Blob([preprocessed.bytes], {
       type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
     });
 

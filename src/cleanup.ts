@@ -120,6 +120,115 @@ export function unwrapForeignLanguage(latex: string): string {
 }
 
 /**
+ * Stage 1: Unwraps Pandoc bidi direction commands `\RL{...}` and `\LR{...}`,
+ * keeping only the inner content.
+ * Pandoc emits these wrappers when Word runs have `<w:rtl/>` flags,
+ * but standard LaTeX preambles do not load bidi packages, causing undefined control sequence errors.
+ * Handles nested braces depth-aware via findBalancedClose.
+ */
+export function unwrapBidiCommands(latex: string): string {
+  const markers = ['\\RL{', '\\LR{'];
+  let result = latex;
+
+  for (const marker of markers) {
+    let startSearch = 0;
+    while (true) {
+      const idx = result.indexOf(marker, startSearch);
+      if (idx === -1) break;
+
+      const openIdx = idx + marker.length - 1;
+      const closeIdx = findBalancedClose(result, openIdx);
+
+      if (closeIdx === -1) {
+        startSearch = idx + marker.length;
+        continue;
+      }
+
+      const inner = result.substring(openIdx + 1, closeIdx);
+      result = result.substring(0, idx) + inner + result.substring(closeIdx + 1);
+      startSearch = idx;
+    }
+  }
+
+  return result;
+}
+
+/**
+ * Stage 1: Unwraps layout fidelity markers injected by docxPreprocess:
+ * - %%LATEX_CENTER_START%%...%%LATEX_CENTER_END%% -> \begin{center} ... \end{center}
+ * - %%LATEX_FLUSHRIGHT_START%%...%%LATEX_FLUSHRIGHT_END%% -> \begin{flushright} ... \end{flushright}
+ * - %%LATEX_NEWPAGE%% -> \newpage
+ * - %%LATEX_TEXTBOX_START%%...%%LATEX_TEXTBOX_END%% -> % Text box \begin{flushright}\begin{minipage}{0.48\linewidth}\raggedright ... \end{minipage}\end{flushright}
+ */
+export function unwrapLayoutMarkers(latex: string): string {
+  let result = latex;
+
+  // Merge consecutive centered paragraphs into one center environment with \\ line breaks
+  result = result.replace(
+    /\\?%\\?%LATEX\\?_CENTER\\?_END\\?%\\?%\s*\\?%\\?%LATEX\\?_CENTER\\?_START\\?%\\?%/g,
+    '\\\\\n'
+  );
+
+  // Center
+  result = result.replace(
+    /\\?%\\?%LATEX\\?_CENTER\\?_START\\?%\\?%([\s\S]*?)\\?%\\?%LATEX\\?_CENTER\\?_END\\?%\\?%/g,
+    (_, content) => {
+      let clean = content.trim();
+      clean = clean.replace(/^\\\\\s*/, '').replace(/\s*\\\\$/, '');
+      if (!clean) return '';
+      return `\\begin{center}\n${clean}\n\\end{center}`;
+    }
+  );
+
+  // Merge consecutive flushright paragraphs if any
+  result = result.replace(
+    /\\?%\\?%LATEX\\?_FLUSHRIGHT\\?_END\\?%\\?%\s*\\?%\\?%LATEX\\?_FLUSHRIGHT\\?_START\\?%\\?%/g,
+    '\\\\\n'
+  );
+
+  // Flushright
+  result = result.replace(
+    /\\?%\\?%LATEX\\?_FLUSHRIGHT\\?_START\\?%\\?%([\s\S]*?)\\?%\\?%LATEX\\?_FLUSHRIGHT\\?_END\\?%\\?%/g,
+    (_, content) => {
+      let clean = content.trim();
+      clean = clean.replace(/^\\\\\s*/, '').replace(/\s*\\\\$/, '');
+      if (!clean) return '';
+      return `\\begin{flushright}\n${clean}\n\\end{flushright}`;
+    }
+  );
+
+  // Newpage
+  result = result.replace(/\\?%\\?%LATEX\\?_NEWPAGE\\?%\\?%/g, '\\newpage\n');
+
+  // Textbox with left, center, right alignment and width
+  result = result.replace(
+    /\\?%\\?%LATEX\\?_TEXTBOX\\?_LEFT(?:\\?_WIDTH\\?_([0-9.]+))?\\?_START\\?%\\?%([\s\S]*?)\\?%\\?%LATEX\\?_TEXTBOX\\?_END\\?%\\?%/g,
+    (_, width, content) => {
+      const w = width || '0.48';
+      return `\n% Text box\n\\begin{flushleft}\n\\begin{minipage}{${w}\\linewidth}\\raggedright\n${content.trim()}\n\\end{minipage}\n\\end{flushleft}\n`;
+    }
+  );
+
+  result = result.replace(
+    /\\?%\\?%LATEX\\?_TEXTBOX\\?_CENTER(?:\\?_WIDTH\\?_([0-9.]+))?\\?_START\\?%\\?%([\s\S]*?)\\?%\\?%LATEX\\?_TEXTBOX\\?_END\\?%\\?%/g,
+    (_, width, content) => {
+      const w = width || '0.48';
+      return `\n% Text box\n\\begin{center}\n\\begin{minipage}{${w}\\linewidth}\\centering\n${content.trim()}\n\\end{minipage}\n\\end{center}\n`;
+    }
+  );
+
+  result = result.replace(
+    /\\?%\\?%LATEX\\?_TEXTBOX(?:\\?_RIGHT)?(?:\\?_WIDTH\\?_([0-9.]+))?\\?_START\\?%\\?%([\s\S]*?)\\?%\\?%LATEX\\?_TEXTBOX\\?_END\\?%\\?%/g,
+    (_, width, content) => {
+      const w = width || '0.48';
+      return `\n% Text box\n\\begin{flushright}\n\\begin{minipage}{${w}\\linewidth}\\raggedright\n${content.trim()}\n\\end{minipage}\n\\end{flushright}\n`;
+    }
+  );
+
+  return result;
+}
+
+/**
  * Stage 2: Wraps list environments (\begin{itemize} or \begin{enumerate}) located inside table environments
  * (longtable, tabular, tabularx, etc.) in a minipage if they are not already wrapped.
  * Guarantees valid, compilable LaTeX for tables containing lists.
@@ -305,15 +414,29 @@ export function prependPackageComments(latex: string): string {
     }
   }
 
-  if (needed.size === 0) return latex;
+  const notes: string[] = [];
+  if (/[\u0590-\u05FF\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF]/u.test(latex)) {
+    notes.push('% Note: Right-to-Left (Arabic/Hebrew) text detected. Standard LaTeX requires a bidi package (e.g. polyglossia or babel) and an RTL font in your preamble.');
+  }
+  if (latex.includes('% Text box')) {
+    notes.push('% Note: Floating text boxes were moved into the flow; check positions.');
+  }
+
+  if (needed.size === 0 && notes.length === 0) return latex;
 
   const sorted = [...needed].sort();
-  const lines = [
-    '% Required packages (add to your preamble):',
-    ...sorted.map((pkg) => `% \\usepackage{${pkg}}`),
-    '',
-    '',
-  ];
+  const lines: string[] = [];
+  if (sorted.length > 0) {
+    lines.push(
+      '% Required packages (add to your preamble):',
+      ...sorted.map((pkg) => `% \\usepackage{${pkg}}`)
+    );
+  }
+  if (notes.length > 0) {
+    if (lines.length > 0) lines.push('');
+    lines.push(...notes);
+  }
+  lines.push('', '');
 
   return lines.join('\n') + latex;
 }
@@ -387,6 +510,8 @@ export function cleanupLatex(raw: string): string {
   result = removeTightlist(result);
   result = unwrapPandocbounded(result);
   result = unwrapForeignLanguage(result);
+  result = unwrapBidiCommands(result);
+  result = unwrapLayoutMarkers(result);
 
   // Stage 2: Typography & French punctuation
   result = cleanFrenchPunctuationAndTildes(result);
@@ -434,7 +559,22 @@ export function hasFrenchText(text: string): boolean {
 export function stripPackageComments(latex: string): string {
   let result = latex.replace(/^% Required packages \(add to your preamble\):\s*\n/gm, '');
   result = result.replace(/^% \\usepackage\{[^}]+\}\s*\n?/gm, '');
+  result = result.replace(/^% Note: Right-to-Left[^\n]*\n?/gm, '');
+  result = result.replace(/^% Note: Floating text boxes[^\n]*\n?/gm, '');
   return result.replace(/^\n+/, '');
+}
+
+export interface WrapCompleteDocumentOptions {
+  hasFrench?: boolean;
+  geometry?: {
+    paperWidthMm?: number;
+    paperHeightMm?: number;
+    topMm?: number;
+    bottomMm?: number;
+    leftMm?: number;
+    rightMm?: number;
+    baseFontSizePt?: number;
+  };
 }
 
 /**
@@ -442,10 +582,11 @@ export function stripPackageComments(latex: string): string {
  */
 export function wrapCompleteDocument(
   latexFragment: string,
-  options?: { hasFrench?: boolean }
+  options?: WrapCompleteDocumentOptions
 ): string {
   const isFrench = options?.hasFrench ?? hasFrenchText(latexFragment);
   const neededPackages = new Set<string>();
+  const geometry = options?.geometry;
 
   for (const rule of PACKAGE_RULES) {
     if (rule.pattern.test(latexFragment)) {
@@ -474,6 +615,21 @@ export function wrapCompleteDocument(
     '\\usepackage{amsmath,amssymb,amsfonts}',
   ];
 
+  if (geometry) {
+    const geoOpts: string[] = [];
+    if (geometry.paperWidthMm && geometry.paperHeightMm) {
+      geoOpts.push(`paperwidth=${geometry.paperWidthMm}mm`);
+      geoOpts.push(`paperheight=${geometry.paperHeightMm}mm`);
+    }
+    if (geometry.topMm !== undefined) geoOpts.push(`top=${geometry.topMm}mm`);
+    if (geometry.bottomMm !== undefined) geoOpts.push(`bottom=${geometry.bottomMm}mm`);
+    if (geometry.leftMm !== undefined) geoOpts.push(`left=${geometry.leftMm}mm`);
+    if (geometry.rightMm !== undefined) geoOpts.push(`right=${geometry.rightMm}mm`);
+    if (geoOpts.length > 0) {
+      preamblePackages.push(`\\usepackage[${geoOpts.join(',')}]{geometry}`);
+    }
+  }
+
   const candidatePackages = ['graphicx', 'booktabs', 'longtable', 'calc', 'array', 'ulem', 'tabularx', 'hyperref'];
   for (const pkg of candidatePackages) {
     if (neededPackages.has(pkg)) {
@@ -487,10 +643,19 @@ export function wrapCompleteDocument(
     }
   }
 
+  if (/[\u0590-\u05FF\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF]/u.test(latexFragment)) {
+    preamblePackages.push('% Note: Right-to-Left (Arabic/Hebrew) text detected: compiling RTL text requires a bidi package (babel/polyglossia) and an RTL font');
+  }
+
+  if (latexFragment.includes('% Text box')) {
+    preamblePackages.push('% Note: Floating text boxes were moved into the flow; check positions.');
+  }
+
   const cleanBody = stripPackageComments(latexFragment).trim();
+  const fontSize = geometry?.baseFontSizePt || 11;
 
   const lines = [
-    '\\documentclass[11pt,a4paper]{article}',
+    `\\documentclass[${fontSize}pt,a4paper]{article}`,
     ...preamblePackages,
     '',
     '\\begin{document}',

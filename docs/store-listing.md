@@ -22,7 +22,11 @@ Powered by Pandoc WASM and an offline Tesseract OCR engine with French, English,
    - Paste rich text or tables copied from Word, Google Docs, or web pages.
    - Converts HTML tables into clean `booktabs` and `longtable` syntax.
 
-3. **Image to LaTeX (Experimental)**:
+3. **Word Document Layout Preservation**:
+   - **Preserved**: Paragraph alignment (`center`, `flushright`), page breaks (explicit breaks and approximate page breaks following Word's saved `lastRenderedPageBreak`), floating text boxes (retained in document flow with proportional widths `0.25-0.90\linewidth`), and page geometry/margins in Complete Document mode.
+   - **Not Preserved**: Exact 2D floating coordinates and shape overlap (no exact page or stamp positions claimed), Word line spacing rules (LaTeX manages paragraph and inter-element spacing), images nested inside drawing text boxes, graphical stamps/signatures, and Word headers/footers.
+
+4. **Image to LaTeX (Experimental)**:
    - Built-in offline OCR engine (Tesseract.js with `eng`, `fra`, and `equ` traineddata).
    - Recognizes simple typed equations, Greek letters, basic operators, and French accents.
    - Detects Unicode superscripts/subscripts and simple inline fractions (e.g. `1/2`).
@@ -48,7 +52,7 @@ The Image to LaTeX feature is designed for basic assistance and is **experimenta
   - **Unrecognized Glyphs**: Unclear symbols are preserved as `?` with a `% [Warning]` header rather than guessed.
 
 ### Corpus Evaluation Transparency
-Our golden evaluation corpus consists of 52 synthetic and curated test samples (including dev, holdout, and stress slices). On clean, high-resolution typed equations and French prose, the engine achieves strong baseline character accuracy; however, complex multi-line math and degraded images require manual review.
+Our golden evaluation corpus consists of 80 synthetic and curated test samples (33 dev, 23 holdout, and 24 stress). On this benchmark, the offline engine measured a median Character Error Rate (CER) of 19.2% (mean 30.4%), a LaTeX token F1 of 46.0%, and a LaTeX document compilation success rate of 97.5% (median CER was 25.0% on dev, 14.8% on holdout, and 25.0% on stress). Image OCR is experimental and output must be reviewed and edited before use.
 
 ---
 

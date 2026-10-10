@@ -16,6 +16,7 @@
     "package": "npm run build && (cd dist && zip -r ../word-to-latex-offline.zip .)"
   },
   "dependencies": {
+    "fflate": "^0.8.3",
     "pandoc-wasm": "*",
     "tesseract.js": "^7.0.0"
   },

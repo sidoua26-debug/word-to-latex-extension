@@ -40,6 +40,14 @@
         <input type="file" id="docx-file" accept=".docx" />
       </div>
 
+      <!-- DOCX Upload Options -->
+      <div class="upload-options-group" style="margin-bottom: 12px;">
+        <label class="checkbox-label" title="Preserve approximate page breaks based on Word rendered page metadata">
+          <input type="checkbox" id="check-approx-page-breaks" checked />
+          <span>Approximate page breaks</span>
+        </label>
+      </div>
+
       <button id="convert-btn" class="primary-btn" disabled>
         <span class="btn-text">Convert to LaTeX</span>
         <span class="btn-spinner" hidden>

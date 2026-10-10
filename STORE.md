@@ -35,7 +35,8 @@ KEY FEATURES:
 IMAGE OCR SCOPE & LIMITATIONS:
 • Supported: Simple typed equations, French accented text, Unicode superscripts/subscripts, simple inline fractions, and narrow stacked definite integrals.
 • Limited or Unsupported: Image radicals (OCR reads √ as V), matrix reconstruction from images, summation vertical limits, systems of equations without an explicit brace, handwriting, and rotated/stylized math. Unreadable glyphs are preserved as "?" with diagnostic review warnings.
-• Review Notice: Image OCR output is experimental and must be reviewed and edited before use. Tested against a 52-sample synthetic golden corpus.
+• Word Document Layout: Preserves paragraph alignment (center, flushright), explicit and approximate page breaks following Word's saved layout, and floating text boxes in document flow with proportional widths. Does not replicate exact 2D coordinates, graphical stamps, or Word line spacing.
+• Review Notice: Image OCR output is experimental and must be reviewed and edited before use. Tested against an 80-sample golden corpus (median CER 19.2%, document compile rate 97.5%).
 ```
 
 ---

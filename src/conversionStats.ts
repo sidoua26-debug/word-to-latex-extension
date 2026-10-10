@@ -174,10 +174,16 @@ export function formatStats(stats: ConversionStats): string {
  * @param cleanLatex — Post-processed LaTeX fragment
  * @param sourceText — Optional source text if extracted upstream
  */
+export interface DocxAnalysisOptions {
+  approximatePageBreaks?: boolean;
+  foundApproximateBreaks?: boolean;
+}
+
 export function analyzeDocxConversion(
   rawLatex: string,
   cleanLatex: string,
-  sourceText?: string
+  sourceText?: string,
+  options?: DocxAnalysisOptions
 ): ConversionMetadata {
   const words = sourceText ? countWords(sourceText) : countWords(cleanLatex);
   const tables = countTables(cleanLatex);
@@ -191,6 +197,28 @@ export function analyzeDocxConversion(
   if (images > 0) stats.images = images;
 
   const warnings: ConversionWarning[] = [];
+
+  // Check if floating text boxes were moved into flow
+  if (cleanLatex.includes('% Text box') || rawLatex.includes('%%LATEX_TEXTBOX_START%%')) {
+    warnings.push({
+      severity: 'review',
+      message: 'Floating text boxes were moved into the flow; check positions.',
+      suggestion: 'Verify the vertical alignment and surrounding text flow in your LaTeX editor.',
+    });
+  }
+
+  // Check if approximate page breaks were actually found and converted
+  const hasApproximateBreaks = options?.foundApproximateBreaks !== undefined
+    ? options.foundApproximateBreaks
+    : (options?.approximatePageBreaks !== false && (rawLatex.includes('LATEX_NEWPAGE') || (rawLatex.includes('LATEX') && rawLatex.includes('NEWPAGE'))));
+
+  if (hasApproximateBreaks) {
+    warnings.push({
+      severity: 'info',
+      message: "Page breaks follow Word's last saved layout; uncheck if the document was edited after saving.",
+      suggestion: "Review page breaks against your intended layout or uncheck 'Approximate page breaks' to let LaTeX flow naturally.",
+    });
+  }
 
   // Check specifically if any table contains complex nested list structure
   if (hasComplexTableStructure(cleanLatex)) {

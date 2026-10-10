@@ -216,6 +216,7 @@ async function runCompileVerification() {
   // -------------------------------------------------------------
   console.log('--- 1. DOCX Fixtures ---');
   const docxFixtures = [
+    'anonymized_discharge_summary.docx',
     'french_diameter_spec.docx',
     'french_text.docx',
     'headings_bold_italic.docx',

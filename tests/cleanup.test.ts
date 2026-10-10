@@ -23,7 +23,16 @@ import {
   stripPackageComments,
   wrapCompleteDocument,
   sanitizeFilename,
+  unwrapBidiCommands,
 } from '../src/cleanup.ts';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+// @ts-ignore
+import { createPandocInstance } from '../node_modules/pandoc-wasm/src/core.js';
+import { runPandocConvert } from '../src/pandocCore.ts';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 describe('removeTightlist', () => {
   it('removes bare \\tightlist lines', () => {
@@ -559,6 +568,73 @@ describe('sanitizeFilename', () => {
     assert.ok(clean.includes('\\toprule\\noalign{}'), '\\toprule\\noalign{} must stay intact');
     assert.ok(!clean.includes('@\n'), 'Must not strip braces from @{}');
     assert.ok(!clean.includes('\\noalign\n'), 'Must not strip braces from \\noalign{}');
+  });
+});
+
+describe('unwrapBidiCommands and RTL handling', () => {
+  it('unwraps 65.8\\RL{\\%} to 65.8\\%', () => {
+    const input = '65.8\\RL{\\%}';
+    assert.equal(unwrapBidiCommands(input), '65.8\\%');
+  });
+
+  it('unwraps nested braces: \\RL{a \\textbf{b} c} -> a \\textbf{b} c', () => {
+    const input = '\\RL{a \\textbf{b} c}';
+    assert.equal(unwrapBidiCommands(input), 'a \\textbf{b} c');
+  });
+
+  it('leaves text without \\RL untouched', () => {
+    const input = 'This is normal text without bidi macros.';
+    assert.equal(unwrapBidiCommands(input), input);
+  });
+
+  it('unwraps \\LR correctly', () => {
+    const input = '\\LR{some ltr text in rtl context}';
+    assert.equal(unwrapBidiCommands(input), 'some ltr text in rtl context');
+  });
+
+  it('handles multiple occurrences on one line', () => {
+    const input = 'Values: \\RL{10\\%} and \\RL{20\\%} with \\LR{note}';
+    assert.equal(unwrapBidiCommands(input), 'Values: 10\\% and 20\\% with note');
+  });
+
+  it('handles nested bidi wrappers \\RL{outer \\LR{inner}}', () => {
+    const input = '\\RL{outer \\LR{inner}}';
+    assert.equal(unwrapBidiCommands(input), 'outer inner');
+  });
+
+  it('full cleanupLatex unwraps \\RL{\\%} in Gran 65.8 context', () => {
+    const input = 'Gran 65.8\\RL{\\%}\n';
+    const clean = cleanupLatex(input);
+    assert.equal(clean, 'Gran 65.8\\%\n');
+  });
+
+  it('adds visible review note when genuine RTL (Arabic/Hebrew) text is present', () => {
+    const arabicInput = 'نص عربي';
+    const commented = prependPackageComments(arabicInput);
+    assert.ok(commented.includes('% Note: Right-to-Left (Arabic/Hebrew) text detected'));
+
+    const doc = wrapCompleteDocument(arabicInput);
+    assert.ok(doc.includes('% Note: Right-to-Left (Arabic/Hebrew) text detected'));
+  });
+
+  it('converts tiny DOCX fixture with <w:rtl/> run to clean LaTeX without \\RL', async () => {
+    // DOCX with "Gran 65.8" and a rtl "%" run (<w:rPr><w:rtl/><w:lang w:bidi="ar-DZ"/></w:rPr><w:t>%</w:t>)
+    const docxB64 = 'UEsDBBQAAAAAAONRSl3XeYTquAEAALgBAAATAAAAW0NvbnRlbnRfVHlwZXNdLnhtbDw/eG1sIHZlcnNpb249IjEuMCIgZW5jb2Rpbmc9IlVURi04IiBzdGFuZGFsb25lPSJ5ZXMiPz4KPFR5cGVzIHhtbG5zPSJodHRwOi8vc2NoZW1hcy5vcGVueG1sZm9ybWF0cy5vcmcvcGFja2FnZS8yMDA2L2NvbnRlbnQtdHlwZXMiPgogIDxEZWZhdWx0IEV4dGVuc2lvbj0icmVscyIgQ29udGVudFR5cGU9ImFwcGxpY2F0aW9uL3ZuZC5vcGVueG1sZm9ybWF0cy1wYWNrYWdlLnJlbGF0aW9uc2hpcHMreG1sIi8+CiAgPERlZmF1bHQgRXh0ZW5zaW9uPSJ4bWwiIENvbnRlbnRUeXBlPSJhcHBsaWNhdGlvbi94bWwiLz4KICA8T3ZlcnJpZGUgUGFydE5hbWU9Ii93b3JkL2RvY3VtZW50LnhtbCIgQ29udGVudFR5cGU9ImFwcGxpY2F0aW9uL3ZuZC5vcGVueG1sZm9ybWF0cy1vZmZpY2Vkb2N1bWVudC53b3JkcHJvY2Vzc2luZ21sLmRvY3VtZW50Lm1haW4reG1sIi8+CjwvVHlwZXM+UEsDBBQAAAAAAONRSl0gG4bqLgEAAC4BAAALAAAAX3JlbHMvLnJlbHM8P3htbCB2ZXJzaW9uPSIxLjAiIGVuY29kaW5nPSJVVEYtOCIgc3RhbmRhbG9uZT0ieWVzIj8+CjxSZWxhdGlvbnNoaXBzIHhtbG5zPSJodHRwOi8vc2NoZW1hcy5vcGVueG1sZm9ybWF0cy5vcmcvcGFja2FnZS8yMDA2L3JlbGF0aW9uc2hpcHMiPgogIDxSZWxhdGlvbnNoaXAgSWQ9InJJZDEiIFR5cGU9Imh0dHA6Ly9zY2hlbWFzLm9wZW54bWxmb3JtYXRzLm9yZy9vZmZpY2VEb2N1bWVudC8yMDA2L3JlbGF0aW9uc2hpcHMvb2ZmaWNlRG9jdW1lbnQiIFRhcmdldD0id29yZC9kb2N1bWVudC54bWwiLz4KPC9SZWxhdGlvbnNoaXBzPlBLAwQUAAAAAADjUUpdjdoyh3ABAABwAQAAEQAAAHdvcmQvZG9jdW1lbnQueG1sPD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9InllcyI/Pgo8dzpkb2N1bWVudCB4bWxuczp3PSJodHRwOi8vc2NoZW1hcy5vcGVueG1sZm9ybWF0cy5vcmcvd29yZHByb2Nlc3NpbmdtbC8yMDA2L21haW4iPgogIDx3OmJvZHk+CiAgICA8dzpwPgogICAgICA8dzpyPjx3OnQ+R3JhbiA2NS44PC93OnQ+PC93OnI+CiAgICAgIDx3OnI+CiAgICAgICAgPHc6clByPgogICAgICAgICAgPHc6cnRsLz4KICAgICAgICAgIDx3OmxhbmcgdzpiaWRpPSJhci1EWiIvPgogICAgICAgIDwvdzpyUHI+CiAgICAgICAgPHc6dD4lPC93OnQ+CiAgICAgIDwvdzpyPgogICAgPC93OnA+CiAgPC93OmJvZHk+Cjwvdzpkb2N1bWVudD5QSwECFAMUAAAAAADjUUpd13mE6rgBAAC4AQAAEwAAAAAAAAAAAAAAgAEAAAAAW0NvbnRlbnRfVHlwZXNdLnhtbFBLAQIUAxQAAAAAAONRSl0gG4bqLgEAAC4BAAALAAAAAAAAAAAAAACAAekBAABfcmVscy8ucmVsc1BLAQIUAxQAAAAAAONRSl2N2jKHcAEAAHABAAARAAAAAAAAAAAAAACAAUADAAB3b3JkL2RvY3VtZW50LnhtbFBLBQYAAAAAAwADALkAAADfBAAAAAA=';
+    const buffer = Buffer.from(docxB64, 'base64');
+
+    const wasmPath = path.resolve(__dirname, '../node_modules/pandoc-wasm/src/pandoc.wasm');
+    const wasmBuffer = fs.readFileSync(wasmPath);
+    const pandoc = await createPandocInstance(wasmBuffer);
+
+    const raw = await runPandocConvert(pandoc, {
+      format: 'docx',
+      bytes: buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength),
+    });
+
+    assert.ok(raw.includes('\\RL{\\%}'), 'Raw pandoc output must contain \\RL{\\%}');
+    const clean = cleanupLatex(raw);
+    assert.ok(!clean.includes('\\RL'), 'Cleaned output must not contain \\RL');
+    assert.equal(clean.trim(), 'Gran 65.8\\%');
   });
 });
 

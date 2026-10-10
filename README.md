@@ -35,8 +35,31 @@ The Image to LaTeX feature is designed for basic conversion assistance and is **
   - **Systems of Equations**: Only parsed into a `cases` environment if an explicit left brace `{` or piecewise condition keywords are detected.
   - **Handwriting & Stylized Math**: Handwritten notes, blackboard/whiteboard photos, and rotated or blurry images are not supported.
   - **Unrecognized Glyphs**: Preserved as `?` with a `% [Warning]` header rather than guessed.
-- **Golden Evaluation Corpus**:
-  - Benchmarked against a 52-sample synthetic and curated test corpus (including dev, holdout, and stress sets). High accuracy is achieved on clean typed inputs, but degraded scans require manual correction.
+- **Golden Evaluation Corpus & Measured Baseline**:
+  - Image OCR is **experimental** and requires manual review and editing before publication.
+  - Benchmarked against an 80-sample synthetic and curated test corpus (33 dev, 23 holdout, 24 stress).
+  - Measured baseline metrics from `baseline.json`:
+    - Overall (80 samples): median Character Error Rate (CER) 19.2% (mean 30.4%), LaTeX token F1 mean 46.0%, document compile rate 97.5%.
+    - Dev split (33 samples): median CER 25.0% (mean 28.9%), document compile rate 100%.
+    - Holdout split (23 samples): median CER 14.8% (mean 24.6%), document compile rate 100%.
+    - Stress split (24 samples): median CER 25.0% (mean 38.1%), document compile rate 91.7%.
+
+## Word Documents: Preserved vs. Not Preserved Layout
+
+### Preserved
+- **Paragraph Alignment**: Centered (`\begin{center}`) and right-aligned (`\begin{flushright}`) paragraphs.
+- **Page Breaks**: Hard page breaks (`w:br type="page"`), `pageBreakBefore`, section breaks, and approximate page breaks following Word's last saved layout (`lastRenderedPageBreak` markers, default ON when markers are present).
+- **Text Boxes**: Extracted into document flow with approximate position and proportional width mini-pages (`0.25\linewidth` to `0.90\linewidth` based on box dimensions).
+- **Page Geometry**: Page size (`pgSz`) and margins (`pgMar`) mapped to matching `\usepackage[...]{geometry}` options in Complete Document mode.
+- **Document Content**: Headings, lists, bold/italic formatting, nested tables, hyperlinks, and mathematical formulas.
+
+### Not Preserved
+- **Exact 2D Coordinates & Overlap**: Free-floating coordinate positioning and overlapping text layers are flattened into sequential document flow; no exact page or stamp positions are claimed.
+- **Word Line Spacing**: LaTeX manages paragraph line spacing and inter-element flow; Word line spacing metrics are not replicated.
+- **Images Inside Text Boxes**: Raster graphics or shapes nested inside drawing text boxes may be decoupled or skipped.
+- **Graphical Stamps & Signatures**: Scanned signature images, vector shapes, or rubber stamps.
+- **Word Headers & Footers**: Header and footer XML parts are not merged into the LaTeX body.
+
 
 ## Prerequisites
 
@@ -50,11 +73,14 @@ The Image to LaTeX feature is designed for basic conversion assistance and is **
 # 1. Install dependencies
 npm install
 
-# 2. Build the extension
+# 2. Build the extension (required before running tests)
 npm run build
 ```
 
 This compiles TypeScript, bundles all code and WASI shims with `esbuild`, and copies `pandoc.wasm`, icons, and static assets into the `dist/` directory.
+
+> **Note**: `npm run build` must run before `npm test` in a fresh clone because browser scenario tests load the built extension from `dist/`.
+
 
 ## Load in Microsoft Edge or Chrome (Unpacked Extension)
 
