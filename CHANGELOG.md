@@ -2,6 +2,12 @@
 
 All notable changes to the Word to LaTeX (Offline) browser extension are documented in this file.
 
+## [1.0.5] - 2026-10-11
+
+### Fixed
+- Restricted numeric misread warnings ("Numbers may be misread...") and quality capping to texts with multiple lines of decimal numbers or grouped digit sequences (e.g. tabular decimal ranges like 1.88 - 7.29) with confidence < 85%, preventing false positive warnings on simple integer math formulas (e.g. $x^2 + 2x + 1$) and prose paragraphs.
+- Removed legacy `plan.md` artifact from repository tracking.
+
 ## [1.0.4] - 2026-10-11
 
 ### Fixed

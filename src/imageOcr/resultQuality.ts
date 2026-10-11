@@ -52,8 +52,16 @@ export function assessQuality(ocrData: OcrResultData, generatedLatex: string): Q
   }
 
   // 2. Numeric honesty evaluation
-  const hasDigits = /\d/.test(text);
-  if (hasDigits && confidence < 85) {
+  // Restrict to cases where the text has multiple lines with decimal-like numbers
+  // or digit groups (e.g. tabular decimal ranges like 1.88 - 7.29) and confidence < 85.
+  // Excludes math formulas with simple integers (x^2, 2x+1) and prose paragraphs.
+  const isDecimalOrGroupedLine = (line: string): boolean => {
+    return /\d+[\.,]\d+/.test(line) || /(?:^|\D)\d{3,}(?:\D|$)/.test(line) || /\d+[\.,]\d+\s*[-–]\s*\d+[\.,]\d+/.test(line);
+  };
+  const decimalOrGroupedLines = lines.filter(isDecimalOrGroupedLine);
+  const hasMultipleNumericLines = decimalOrGroupedLines.length >= 2;
+
+  if (hasMultipleNumericLines && confidence < 85) {
     warnings.push({
       message: 'Numbers may be misread (decimal points, 1/7, 0/O, 5/S): verify every value against the source.',
     });
@@ -131,8 +139,8 @@ export function assessQuality(ocrData: OcrResultData, generatedLatex: string): Q
     quality = 'high';
   }
 
-  // Cap quality at medium if text contains digits and confidence < 85
-  if (hasDigits && confidence < 85 && quality === 'high') {
+  // Cap quality at medium if text contains multiple decimal/grouped numeric lines and confidence < 85
+  if (hasMultipleNumericLines && confidence < 85 && quality === 'high') {
     quality = 'medium';
   }
 

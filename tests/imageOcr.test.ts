@@ -2313,15 +2313,15 @@ describe('Playwright UI Interactivity: Image to LaTeX Tab', () => {
 });
 
 describe('Numeric Quality Honesty & Misread Warnings', () => {
-  it('caps quality at medium and warns when text contains digits and confidence < 85', () => {
+  it('caps quality at medium and warns when text contains multiple lines of decimal/grouped numbers and confidence < 85', () => {
     const ocrData = {
-      text: 'Total: 25 items\nSubtotal: 10 items',
+      text: 'Measurement A: 1.88\nMeasurement B: 7.29',
       confidence: 77,
     };
-    const latex = 'Total: 25 items\n\nSubtotal: 10 items';
+    const latex = 'Measurement A: 1.88\n\nMeasurement B: 7.29';
     const analysis = assessQuality(ocrData, latex);
 
-    assert.equal(analysis.quality, 'medium', 'Quality must be capped at medium when confidence < 85 with numbers');
+    assert.equal(analysis.quality, 'medium', 'Quality must be capped at medium when confidence < 85 with multiple decimal lines');
     assert.ok(
       analysis.warnings.some(w =>
         w.message.includes('Numbers may be misread (decimal points, 1/7, 0/O, 5/S): verify every value against the source.')
@@ -2330,12 +2330,34 @@ describe('Numeric Quality Honesty & Misread Warnings', () => {
     );
   });
 
+  it('does not warn on simple integer math formulas (x^2, 2x+1) or prose paragraphs even when confidence < 85', () => {
+    const eqData = {
+      text: 'f(x) = x^2 + 2x + 1',
+      confidence: 80,
+    };
+    const eqAnalysis = assessQuality(eqData, '\\[ f(x) = x^2 + 2x + 1 \\]');
+    assert.ok(
+      !eqAnalysis.warnings.some(w => w.message.includes('Numbers may be misread')),
+      'Should not warn about numbers on simple integer math'
+    );
+
+    const paraData = {
+      text: "Soit f une fonction continue sur l'intervalle [0, 1]. Calculer la moyenne.",
+      confidence: 82,
+    };
+    const paraAnalysis = assessQuality(paraData, "Soit f une fonction continue sur l'intervalle [0, 1]. Calculer la moyenne.");
+    assert.ok(
+      !paraAnalysis.warnings.some(w => w.message.includes('Numbers may be misread')),
+      'Should not warn about numbers on prose paragraph with simple integers'
+    );
+  });
+
   it('permits high quality when confidence >= 85 and numeric tokens look clean', () => {
     const ocrData = {
-      text: 'Total: 25 items',
+      text: 'Measurement A: 1.88\nMeasurement B: 7.29',
       confidence: 90,
     };
-    const latex = 'Total: 25 items';
+    const latex = 'Measurement A: 1.88\n\nMeasurement B: 7.29';
     const analysis = assessQuality(ocrData, latex);
 
     assert.equal(analysis.quality, 'high', 'Clean numbers with high confidence should remain high');

@@ -1,6 +1,6 @@
 {
   "name": "word-to-latex-offline",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Chrome extension to convert .docx and pasted content to LaTeX offline via pandoc-wasm",
   "private": true,
   "type": "module",
