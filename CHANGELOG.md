@@ -2,6 +2,13 @@
 
 All notable changes to the Word to LaTeX (Offline) browser extension are documented in this file.
 
+## [1.0.1] - 2026-10-11
+
+### Fixed
+- Fixed LaTeX compilation error on older LaTeX engines (TeX Live, MiKTeX, TeXnicCenter) for unnumbered tables by defining `\newcounter{none}` in Complete Document preambles when `\LTcaptype`, `\begin{longtable}`, or `\real{` is present.
+- Added `\usepackage{calc}` and ensuring `longtable`, `booktabs`, `array` are loaded for longtables with column width specifications.
+- Added preamble package and unnumbered longtable notes to Fragment mode comment header (`% For unnumbered longtables: \newcounter{none}`).
+
 ## [1.0.0] - 2026-10-10
 
 ### Added

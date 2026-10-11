@@ -178,6 +178,13 @@ describe('prependPackageComments', () => {
     const result = prependPackageComments(input);
     assert.ok(result.includes('% \\usepackage{tabularx}'));
   });
+
+  it('mentions calc and \\newcounter{none} for longtables in fragment comments', () => {
+    const input = '{\\def\\LTcaptype{none}\n\\begin{longtable}[]{@{}ll@{}}\nA & B \\\\\n\\end{longtable}\n}';
+    const result = prependPackageComments(input);
+    assert.ok(result.includes('% \\usepackage{calc}'));
+    assert.ok(result.includes('% For unnumbered longtables: \\newcounter{none}'));
+  });
 });
 
 describe('fixTableLists', () => {
@@ -521,6 +528,73 @@ describe('wrapCompleteDocument', () => {
     assert.ok(!bodyPart.includes('% Required packages'));
     assert.ok(!bodyPart.includes('% \\usepackage'));
     assert.ok(bodyPart.includes('\\begin{longtable}'));
+  });
+
+  it('contains \\newcounter{none} and calc exactly once for complete document with table', () => {
+    const tableFragment = [
+      '{\\def\\LTcaptype{none}',
+      '\\begin{longtable}[]{@{}ll@{}}',
+      '\\toprule',
+      'A & B \\\\',
+      '\\bottomrule',
+      '\\end{longtable}',
+      '}',
+    ].join('\n');
+    const doc = wrapCompleteDocument(tableFragment);
+    const countNone = (doc.match(/\\newcounter\{none\}/g) || []).length;
+    const countCalc = (doc.match(/\\usepackage\{calc\}/g) || []).length;
+    assert.equal(countNone, 1);
+    assert.equal(countCalc, 1);
+    assert.ok(doc.includes('\\usepackage{booktabs}'));
+    assert.ok(doc.includes('\\usepackage{longtable}'));
+    assert.ok(doc.includes('\\usepackage{array}'));
+
+    // Preamble ordering: \newcounter{none} appears after package lines
+    const lastPkgIdx = doc.lastIndexOf('\\usepackage{');
+    const newcounterIdx = doc.indexOf('\\newcounter{none}');
+    const beginDocIdx = doc.indexOf('\\begin{document}');
+    assert.ok(newcounterIdx > lastPkgIdx);
+    assert.ok(newcounterIdx < beginDocIdx);
+
+    // No duplicate if already present in input
+    const docAlreadyWithNone = wrapCompleteDocument(tableFragment + '\n\\newcounter{none}');
+    const countNone2 = (docAlreadyWithNone.match(/\\newcounter\{none\}/g) || []).length;
+    assert.equal(countNone2, 1);
+  });
+
+  it('keeps document without tables unchanged byte for byte', () => {
+    const plainFragment = 'Hello world, this is a plain paragraph.';
+    const doc = wrapCompleteDocument(plainFragment);
+    const expected = [
+      '\\documentclass[11pt,a4paper]{article}',
+      '\\usepackage{iftex}',
+      '\\ifPDFTeX',
+      '  \\usepackage[utf8]{inputenc}',
+      '  \\usepackage[T1]{fontenc}',
+      '\\fi',
+      '\\usepackage[english]{babel}',
+      '\\usepackage{amsmath,amssymb,amsfonts}',
+      '',
+      '\\begin{document}',
+      '',
+      'Hello world, this is a plain paragraph.',
+      '',
+      '\\end{document}',
+    ].join('\n');
+    assert.equal(doc, expected);
+    assert.ok(!doc.includes('\\newcounter{none}'));
+    assert.ok(!doc.includes('\\usepackage{calc}'));
+    assert.ok(!doc.includes('\\usepackage{longtable}'));
+  });
+
+  it('verifies preamble text compatibility for older LaTeX installs (compile test text check)', () => {
+    const tableFragment = '{\\def\\LTcaptype{none}\\begin{longtable}{ll}A & B\\end{longtable}}';
+    const doc = wrapCompleteDocument(tableFragment);
+    assert.ok(doc.includes('\\usepackage{longtable}'));
+    assert.ok(doc.includes('\\usepackage{booktabs}'));
+    assert.ok(doc.includes('\\usepackage{array}'));
+    assert.ok(doc.includes('\\usepackage{calc}'));
+    assert.ok(doc.includes('\\newcounter{none}'));
   });
 });
 

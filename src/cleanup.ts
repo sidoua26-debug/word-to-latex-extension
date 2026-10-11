@@ -414,7 +414,17 @@ export function prependPackageComments(latex: string): string {
     }
   }
 
+  const hasLongtable = /\\LTcaptype|\\begin\{longtable\}|\\real\{/.test(latex);
+  if (hasLongtable) {
+    for (const pkg of ['longtable', 'booktabs', 'array', 'calc']) {
+      needed.add(pkg);
+    }
+  }
+
   const notes: string[] = [];
+  if (hasLongtable && !latex.includes('% For unnumbered longtables: \\newcounter{none}')) {
+    notes.push('% For unnumbered longtables: \\newcounter{none}');
+  }
   if (/[\u0590-\u05FF\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF]/u.test(latex)) {
     notes.push('% Note: Right-to-Left (Arabic/Hebrew) text detected. Standard LaTeX requires a bidi package (e.g. polyglossia or babel) and an RTL font in your preamble.');
   }
@@ -561,6 +571,7 @@ export function stripPackageComments(latex: string): string {
   result = result.replace(/^% \\usepackage\{[^}]+\}\s*\n?/gm, '');
   result = result.replace(/^% Note: Right-to-Left[^\n]*\n?/gm, '');
   result = result.replace(/^% Note: Floating text boxes[^\n]*\n?/gm, '');
+  result = result.replace(/^% For unnumbered longtables:[^\n]*\n?/gm, '');
   return result.replace(/^\n+/, '');
 }
 
@@ -605,6 +616,13 @@ export function wrapCompleteDocument(
     }
   }
 
+  const hasLongtable = /\\LTcaptype|\\begin\{longtable\}|\\real\{/.test(latexFragment);
+  if (hasLongtable) {
+    for (const pkg of ['longtable', 'booktabs', 'array', 'calc']) {
+      neededPackages.add(pkg);
+    }
+  }
+
   const preamblePackages: string[] = [
     '\\usepackage{iftex}',
     '\\ifPDFTeX',
@@ -641,6 +659,10 @@ export function wrapCompleteDocument(
     if (!candidatePackages.includes(pkg) && pkg !== 'amsmath' && pkg !== 'amssymb') {
       preamblePackages.push(`\\usepackage{${pkg}}`);
     }
+  }
+
+  if (hasLongtable && !latexFragment.includes('\\newcounter{none}')) {
+    preamblePackages.push('\\newcounter{none}');
   }
 
   if (/[\u0590-\u05FF\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF]/u.test(latexFragment)) {
