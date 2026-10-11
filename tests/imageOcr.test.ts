@@ -38,7 +38,13 @@ import {
 } from '../src/imageOcr/mathParser.ts';
 import { detectAndParseTable } from '../src/imageOcr/tableParser.ts';
 import { formatLatexOutput } from '../src/imageOcr/latexGenerator.ts';
-import { convertImageToLatex, terminateTesseractWorker } from '../src/imageOcr/ocrEngine.ts';
+import {
+  convertImageToLatex,
+  terminateTesseractWorker,
+  setRecognitionEngine,
+  getActiveRecognitionEngine,
+} from '../src/imageOcr/ocrEngine.ts';
+import type { ImageRecognitionEngine } from '../src/imageOcr/types.ts';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DIST_POPUP_PATH = 'file://' + path.resolve(__dirname, '../dist/popup.html');
@@ -1922,6 +1928,171 @@ describe('Offline Tesseract OCR Engine (End-to-End on Fixtures)', () => {
       hasAccents || result.latex.toLowerCase().includes('caract') || result.latex.toLowerCase().includes('fonction'),
       `Expected French text/accents in output, got:\n${result.latex}`
     );
+  });
+
+  it('converts synthetic_table_ref.png without dropping rows or returning header alone', async () => {
+    const imgPath = path.resolve(__dirname, 'fixtures/synthetic_table_ref.png');
+    const imgBuffer = fs.readFileSync(imgPath);
+
+    const result = await convertImageToLatex(imgBuffer, {
+      mode: 'fragment',
+    });
+
+    assert.ok(result.rawText.trim().length > 0, 'Recognized text must not be empty');
+    assert.ok(result.rawText.includes('Age'), 'Output must contain header "Age"');
+
+    const ageRowPatterns = [
+      /20-29/,
+      /30-39/,
+      /40-49/,
+      /50-59/,
+      /60-69/,
+      /70-79/,
+      /80/,
+    ];
+    const matchedRows = ageRowPatterns.filter((p) => p.test(result.rawText));
+    assert.ok(
+      matchedRows.length >= 5,
+      `Expected at least 5 of 7 age rows to be recognized, matched ${matchedRows.length}:\n${result.rawText}`
+    );
+
+    // Output must not be just a header alone
+    const bodyLines = result.latex
+      .split('\n')
+      .map((l) => l.trim())
+      .filter((l) => l.length > 0 && !l.startsWith('%'));
+    assert.ok(
+      bodyLines.length >= 5,
+      `Output must contain content rows beyond headers alone, got:\n${bodyLines.join('\n')}`
+    );
+  });
+});
+
+describe('OCR Retry Logic (convertImageToLatex & Stub Engine)', () => {
+  it('triggers retry with PSM 3 when first pass confidence < 60', async () => {
+    const calls: Array<{ image: any; options: any }> = [];
+    const stubEngine: ImageRecognitionEngine = {
+      id: 'stub-retry-test',
+      name: 'Stub Engine for Retry Test',
+      async recognize(image, options) {
+        calls.push({ image, options });
+        if (calls.length === 1) {
+          return {
+            engine: 'stub',
+            rawText: 'uncertain text',
+            latex: 'uncertain latex',
+            confidence: 25,
+            quality: 'uncertain',
+            warnings: [],
+            isTable: false,
+            hasMath: false,
+          };
+        }
+        return {
+          engine: 'stub',
+          rawText: 'Age 20-29 ans',
+          latex: 'Age 20-29 ans',
+          confidence: 85,
+          quality: 'high',
+          warnings: [],
+          isTable: false,
+          hasMath: false,
+        };
+      },
+    };
+
+    const origEngine = getActiveRecognitionEngine();
+    try {
+      setRecognitionEngine(stubEngine);
+      const dummyBuffer = Buffer.from('fake-image-bytes');
+      const result = await convertImageToLatex(dummyBuffer, { mode: 'fragment' });
+
+      assert.equal(calls.length, 2, 'convertImageToLatex must retry once when confidence < 60');
+      assert.equal(calls[1].options.psm, '3', 'Retry call must request auto PSM 3');
+      assert.equal(result.confidence, 85, 'Result should adopt higher retry confidence');
+      assert.equal(result.rawText, 'Age 20-29 ans');
+    } finally {
+      setRecognitionEngine(origEngine);
+    }
+  });
+
+  it('does not trigger retry when first pass confidence >= 60', async () => {
+    const calls: Array<{ image: any; options: any }> = [];
+    const stubEngine: ImageRecognitionEngine = {
+      id: 'stub-no-retry-test',
+      name: 'Stub Engine No Retry',
+      async recognize(image, options) {
+        calls.push({ image, options });
+        return {
+          engine: 'stub',
+          rawText: 'High confidence content',
+          latex: 'High confidence content',
+          confidence: 80,
+          quality: 'high',
+          warnings: [],
+          isTable: false,
+          hasMath: false,
+        };
+      },
+    };
+
+    const origEngine = getActiveRecognitionEngine();
+    try {
+      setRecognitionEngine(stubEngine);
+      const dummyBuffer = Buffer.from('fake-image-bytes');
+      const result = await convertImageToLatex(dummyBuffer, { mode: 'fragment' });
+
+      assert.equal(calls.length, 1, 'convertImageToLatex must not retry when confidence >= 60');
+      assert.equal(result.confidence, 80);
+    } finally {
+      setRecognitionEngine(origEngine);
+    }
+  });
+
+  it('retains first pass result if retry pass yields lower confidence', async () => {
+    const calls: Array<{ image: any; options: any }> = [];
+    const stubEngine: ImageRecognitionEngine = {
+      id: 'stub-retry-lower-conf',
+      name: 'Stub Engine Lower Conf Retry',
+      async recognize(image, options) {
+        calls.push({ image, options });
+        if (calls.length === 1) {
+          return {
+            engine: 'stub',
+            rawText: 'First pass text',
+            latex: 'First pass text',
+            confidence: 45,
+            quality: 'uncertain',
+            warnings: [],
+            isTable: false,
+            hasMath: false,
+          };
+        }
+        return {
+          engine: 'stub',
+          rawText: 'Worse text',
+          latex: 'Worse text',
+          confidence: 15,
+          quality: 'uncertain',
+          warnings: [],
+          isTable: false,
+          hasMath: false,
+        };
+      },
+    };
+
+    const origEngine = getActiveRecognitionEngine();
+    try {
+      setRecognitionEngine(stubEngine);
+      const dummyBuffer = Buffer.from('fake-image-bytes');
+      const result = await convertImageToLatex(dummyBuffer, { mode: 'fragment' });
+
+      assert.equal(calls.length, 2, 'Retry should be attempted');
+      assert.equal(result.confidence, 45, 'Should keep first pass when retry confidence is lower');
+      assert.equal(result.rawText, 'First pass text');
+    } finally {
+      setRecognitionEngine(origEngine);
+    }
   });
 });
 

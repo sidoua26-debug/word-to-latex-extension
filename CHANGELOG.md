@@ -2,6 +2,13 @@
 
 All notable changes to the Word to LaTeX (Offline) browser extension are documented in this file.
 
+## [1.0.2] - 2026-10-11
+
+### Fixed
+- Fixed OCR recognition failures on bordered 2-column tables with wide white margins (e.g. medical reference tables) by adding automatic retry with auto PSM (3) on content-cropped, padded images when initial confidence is < 60% or recognized text is empty.
+- Added informative diagnostic warning and output message when no text is recognized ("No text recognized: crop to the content, enlarge the image, and avoid screenshots with large empty margins") instead of an empty result with only a header.
+- Added synthetic reference table test and retry logic unit test suite with stub recognition engine.
+
 ## [1.0.1] - 2026-10-11
 
 ### Fixed

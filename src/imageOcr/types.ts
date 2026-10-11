@@ -29,6 +29,7 @@ export interface RecognitionOptions {
   imageFileName?: string;
   hasFrench?: boolean;
   onProgress?: (statusText: string, progress: number) => void;
+  psm?: string;
 }
 
 export interface ImageRecognitionEngine {

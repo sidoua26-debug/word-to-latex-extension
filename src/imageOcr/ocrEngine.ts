@@ -80,6 +80,181 @@ export async function terminateTesseractWorker(): Promise<void> {
  * Default offline implementation using Tesseract.js (eng+fra).
  * Pluggable: can be replaced by an ONNX/WASM math transformer engine in the future.
  */
+function extractLines(data: any): any[] {
+  const lines: any[] = [];
+  if (data.blocks && data.blocks.length > 0) {
+    for (const block of data.blocks) {
+      for (const paragraph of block.paragraphs || []) {
+        for (const line of paragraph.lines || []) {
+          lines.push({
+            text: line.text,
+            confidence: line.confidence,
+            bbox: line.bbox,
+            words: line.words?.map((w: any) => ({
+              text: w.text,
+              confidence: w.confidence,
+              bbox: w.bbox,
+              symbols: w.symbols?.map((s: any) => ({
+                text: s.text,
+                confidence: s.confidence,
+                bbox: s.bbox,
+              })),
+            })),
+          });
+        }
+      }
+    }
+  } else if (data.lines && data.lines.length > 0) {
+    for (const line of data.lines) {
+      lines.push({
+        text: line.text,
+        confidence: line.confidence,
+        bbox: line.bbox,
+        words: line.words?.map((w: any) => ({
+          text: w.text,
+          confidence: w.confidence,
+          bbox: w.bbox,
+          symbols: w.symbols?.map((s: any) => ({
+            text: s.text,
+            confidence: s.confidence,
+            bbox: s.bbox,
+          })),
+        })),
+      });
+    }
+  }
+  return lines;
+}
+
+function cropAndPadCanvas(srcCanvas: HTMLCanvasElement): HTMLCanvasElement {
+  const ctx = srcCanvas.getContext('2d');
+  if (!ctx) return srcCanvas;
+  const w = srcCanvas.width;
+  const h = srcCanvas.height;
+  if (w === 0 || h === 0) return srcCanvas;
+
+  const imgData = ctx.getImageData(0, 0, w, h);
+  const data = imgData.data;
+
+  let minX = w;
+  let minY = h;
+  let maxX = -1;
+  let maxY = -1;
+
+  for (let y = 0; y < h; y++) {
+    for (let x = 0; x < w; x++) {
+      const idx = (y * w + x) * 4;
+      const r = data[idx];
+      const g = data[idx + 1];
+      const b = data[idx + 2];
+      const a = data[idx + 3];
+
+      const alphaFactor = a / 255;
+      const effectiveR = r * alphaFactor + 255 * (1 - alphaFactor);
+      const effectiveG = g * alphaFactor + 255 * (1 - alphaFactor);
+      const effectiveB = b * alphaFactor + 255 * (1 - alphaFactor);
+
+      if (effectiveR < 240 || effectiveG < 240 || effectiveB < 240) {
+        if (x < minX) minX = x;
+        if (x > maxX) maxX = x;
+        if (y < minY) minY = y;
+        if (y > maxY) maxY = y;
+      }
+    }
+  }
+
+  if (maxX < minX || maxY < minY) {
+    return srcCanvas;
+  }
+
+  const cropW = maxX - minX + 1;
+  const cropH = maxY - minY + 1;
+  const pad = 20;
+
+  const outCanvas = document.createElement('canvas');
+  outCanvas.width = cropW + pad * 2;
+  outCanvas.height = cropH + pad * 2;
+  const outCtx = outCanvas.getContext('2d');
+  if (!outCtx) return srcCanvas;
+
+  outCtx.fillStyle = '#ffffff';
+  outCtx.fillRect(0, 0, outCanvas.width, outCanvas.height);
+  outCtx.drawImage(srcCanvas, minX, minY, cropW, cropH, pad, pad, cropW, cropH);
+
+  return outCanvas;
+}
+
+/**
+ * Preprocesses an image for retry when initial recognition confidence is low.
+ * Flattens alpha onto white, crops margins to the content bounding box, and adds 20px padding.
+ */
+export async function preprocessRetryImage(
+  imageSource: string | HTMLCanvasElement | Buffer | Uint8Array
+): Promise<string | HTMLCanvasElement | Buffer | Uint8Array> {
+  if (typeof window === 'undefined') {
+    try {
+      const mod = 'sharp';
+      const sharpModule = await import(mod);
+      const sharp = sharpModule.default || sharpModule;
+      return await sharp(imageSource as any)
+        .flatten({ background: { r: 255, g: 255, b: 255 } })
+        .trim({ threshold: 10 })
+        .extend({ top: 20, bottom: 20, left: 20, right: 20, background: { r: 255, g: 255, b: 255 } })
+        .toBuffer();
+    } catch {
+      return imageSource;
+    }
+  }
+
+  if (typeof document === 'undefined') return imageSource;
+
+  try {
+    let canvas: HTMLCanvasElement;
+    if (typeof HTMLCanvasElement !== 'undefined' && imageSource instanceof HTMLCanvasElement) {
+      canvas = imageSource;
+    } else {
+      let srcUrl: string;
+      let revoke = false;
+      if (typeof imageSource === 'string') {
+        srcUrl = imageSource;
+      } else if (imageSource instanceof Uint8Array) {
+        const blob = new Blob([imageSource as any], { type: 'image/png' });
+        srcUrl = URL.createObjectURL(blob);
+        revoke = true;
+      } else {
+        return imageSource;
+      }
+
+      const img = await new Promise<HTMLImageElement>((resolve, reject) => {
+        const el = new Image();
+        el.crossOrigin = 'anonymous';
+        el.onload = () => resolve(el);
+        el.onerror = reject;
+        el.src = srcUrl;
+      });
+
+      if (revoke) {
+        URL.revokeObjectURL(srcUrl);
+      }
+
+      canvas = document.createElement('canvas');
+      canvas.width = img.naturalWidth || img.width;
+      canvas.height = img.naturalHeight || img.height;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return imageSource;
+      ctx.drawImage(img, 0, 0);
+    }
+
+    return cropAndPadCanvas(canvas);
+  } catch {
+    return imageSource;
+  }
+}
+
+/**
+ * Default offline implementation using Tesseract.js (eng+fra).
+ * Pluggable: can be replaced by an ONNX/WASM math transformer engine in the future.
+ */
 export class TesseractRecognitionEngine implements ImageRecognitionEngine {
   readonly id = 'tesseract-v7';
   readonly name = 'Tesseract.js OCR (eng + fra)';
@@ -94,54 +269,16 @@ export class TesseractRecognitionEngine implements ImageRecognitionEngine {
     const worker = await getTesseractWorker(onProgress);
 
     onProgress?.('Recognizing text and characters...', 0.3);
-    const result = await worker.recognize(imageSource as any, {}, { blocks: true });
+    const recognizeParams: Record<string, string> = {};
+    if (options.psm) {
+      recognizeParams.tessedit_pageseg_mode = options.psm;
+    }
+    const result = await worker.recognize(imageSource as any, recognizeParams, { blocks: true });
 
     onProgress?.('Analyzing structure and equations...', 0.8);
 
-    const rawText = result.data.text || '';
-    const lines: any[] = [];
-
-    if (result.data.blocks && result.data.blocks.length > 0) {
-      for (const block of result.data.blocks) {
-        for (const paragraph of block.paragraphs || []) {
-          for (const line of paragraph.lines || []) {
-            lines.push({
-              text: line.text,
-              confidence: line.confidence,
-              bbox: line.bbox,
-              words: line.words?.map((w: any) => ({
-                text: w.text,
-                confidence: w.confidence,
-                bbox: w.bbox,
-                symbols: w.symbols?.map((s: any) => ({
-                  text: s.text,
-                  confidence: s.confidence,
-                  bbox: s.bbox,
-                })),
-              })),
-            });
-          }
-        }
-      }
-    } else if (result.data.lines && result.data.lines.length > 0) {
-      for (const line of result.data.lines) {
-        lines.push({
-          text: line.text,
-          confidence: line.confidence,
-          bbox: line.bbox,
-          words: line.words?.map((w: any) => ({
-            text: w.text,
-            confidence: w.confidence,
-            bbox: w.bbox,
-            symbols: w.symbols?.map((s: any) => ({
-              text: s.text,
-              confidence: s.confidence,
-              bbox: s.bbox,
-            })),
-          })),
-        });
-      }
-    }
+    let rawText = result.data.text || '';
+    const lines = extractLines(result.data);
 
     const ocrData: OcrResultData = {
       text: rawText,
@@ -159,6 +296,11 @@ export class TesseractRecognitionEngine implements ImageRecognitionEngine {
     } else {
       // 2. Math expression & text parsing
       bodyContent = parseOcrToLatex(ocrData);
+    }
+
+    const emptyWarningMsg = 'No text recognized: crop to the content, enlarge the image, and avoid screenshots with large empty margins';
+    if (!rawText.trim() || !bodyContent.trim()) {
+      bodyContent = `% ${emptyWarningMsg}`;
     }
 
     // 3. Quality & honesty assessment
@@ -203,10 +345,38 @@ export function getActiveRecognitionEngine(): ImageRecognitionEngine {
 
 /**
  * Top-level conversion helper delegating to active ImageRecognitionEngine.
+ * If first pass returns empty text or confidence < 60 ("uncertain" threshold),
+ * retries once with auto PSM (3) on a flattened, cropped, padded image.
  */
 export async function convertImageToLatex(
   imageSource: string | HTMLCanvasElement | Buffer | Uint8Array,
   options: RecognitionOptions
 ): Promise<RecognitionResult> {
-  return activeEngine.recognize(imageSource, options);
+  const firstResult = await activeEngine.recognize(imageSource, options);
+
+  // If first pass returns empty text or confidence < 60 ("uncertain" threshold),
+  // retry once with auto PSM (3) on a flattened, cropped, padded image
+  if (!firstResult.rawText?.trim() || firstResult.confidence < 60) {
+    try {
+      options.onProgress?.('Retrying with auto segmentation and cropped padding...', 0.5);
+      const retrySource = await preprocessRetryImage(imageSource);
+      const retryOptions: RecognitionOptions = {
+        ...options,
+        psm: '3',
+      };
+      const retryResult = await activeEngine.recognize(retrySource, retryOptions);
+
+      // Keep the result with higher confidence (or if first pass was empty and retry produced text)
+      if (
+        retryResult.confidence > firstResult.confidence ||
+        (!firstResult.rawText?.trim() && retryResult.rawText?.trim())
+      ) {
+        return retryResult;
+      }
+    } catch {
+      // Keep firstResult if retry fails
+    }
+  }
+
+  return firstResult;
 }

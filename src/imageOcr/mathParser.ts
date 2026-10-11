@@ -796,8 +796,9 @@ export function parseOcrToLatex(ocrResult: OcrResultData): string {
       safeMathLine = safeMathLine.replace(/(?<!\\)\$/g, '\\$');
       outputBlocks.push(`${warningComment}\\[\n${safeMathLine}\n\\]`);
     } else {
-      // Natural language text: keep French accents and wrap any isolated single math symbols
-      outputBlocks.push(`${warningComment}${line}`);
+      // Natural language text: keep French accents and escape raw unescaped dollar signs
+      const safeTextLine = line.replace(/(?<!\\)\$/g, '\\$');
+      outputBlocks.push(`${warningComment}${safeTextLine}`);
     }
   }
 

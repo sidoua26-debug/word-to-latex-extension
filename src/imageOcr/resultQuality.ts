@@ -31,6 +31,13 @@ export function assessQuality(ocrData: OcrResultData, generatedLatex: string): Q
   const hasRadicalOrIntegral = /[√∫∑∏]/.test(text) || /\b(int|sum|prod|sqrt)\b/i.test(text);
   const hasMatrixLike = /^[\[\(].*[\]\)]$/.test(text) && lines.length >= 2;
 
+  // Check for empty text or empty latex
+  if (!text.trim() || !generatedLatex.trim()) {
+    warnings.push({
+      message: 'No text recognized: crop to the content, enlarge the image, and avoid screenshots with large empty margins',
+    });
+  }
+
   // 1. Confidence evaluation
   if (confidence < 50) {
     warnings.push({
