@@ -148,12 +148,38 @@ export function replaceMathSymbols(str: string): string {
 }
 
 /**
+ * Detects whether a line looks like a table row:
+ * "label | range" shape (or label followed by numeric range),
+ * with no math operators except hyphen/period.
+ */
+export function isTableRowPattern(line: string): boolean {
+  const trimmed = line.trim();
+  if (!trimmed) return false;
+
+  // Must not contain math operators or commands
+  if (/[=≠\+\*\/\\^_{}√∫∑∏]/.test(trimmed)) return false;
+
+  // Must have a label part containing letters
+  const hasLabel = /\p{L}{2,}/u.test(trimmed);
+  if (!hasLabel) return false;
+
+  // Must have a numeric range (e.g. 1.88 - 7.29 or 10-20 or 0.45 - 2.10)
+  const hasRange = /\d+(?:\.\d+)?\s*[-–—]\s*\d+(?:\.\d+)?/.test(trimmed);
+  return hasRange;
+}
+
+/**
  * Determines whether a line is primarily a mathematical expression
  * versus a natural language text line.
  */
 export function isMathExpression(line: string): boolean {
   const trimmed = line.trim();
   if (!trimmed) return false;
+
+  // Table rows with label and numeric range must not be wrapped in display math
+  if (isTableRowPattern(trimmed)) {
+    return false;
+  }
 
   // 1. Bilingual prose-stopword guard (true function words only)
   // Words with length >= 2 (Unicode letters)

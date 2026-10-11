@@ -36,7 +36,7 @@ export interface ImageRecognitionEngine {
   readonly id: string;
   readonly name: string;
   recognize(
-    image: string | HTMLCanvasElement | Buffer | Uint8Array,
+    image: string | HTMLCanvasElement | Uint8Array,
     options: RecognitionOptions
   ): Promise<RecognitionResult>;
 }

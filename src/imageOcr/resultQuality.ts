@@ -5,6 +5,7 @@
 
 import type { RecognitionQuality, RecognitionWarning } from './types.ts';
 import type { OcrResultData } from './mathParser.ts';
+import { isTableRowPattern } from './mathParser.ts';
 
 export interface QualityAnalysis {
   quality: RecognitionQuality;
@@ -50,7 +51,44 @@ export function assessQuality(ocrData: OcrResultData, generatedLatex: string): Q
     });
   }
 
-  // 2. 2D Math heuristic warnings
+  // 2. Numeric honesty evaluation
+  const hasDigits = /\d/.test(text);
+  if (hasDigits && confidence < 85) {
+    warnings.push({
+      message: 'Numbers may be misread (decimal points, 1/7, 0/O, 5/S): verify every value against the source.',
+    });
+  }
+
+  // Check for missing decimal anomaly: 3+ digit number next to neighbouring lines using decimals
+  let hasMissingDecimalAnomaly = false;
+  for (let i = 0; i < lines.length; i++) {
+    const has3PlusDigits = /(?:^|\D)\d{3,}(?:\D|$)/.test(lines[i]) && !/\d+\.\d+/.test(lines[i]);
+    if (has3PlusDigits) {
+      const prevHasDecimal = i > 0 && /\d+\.\d+/.test(lines[i - 1]);
+      const nextHasDecimal = i < lines.length - 1 && /\d+\.\d+/.test(lines[i + 1]);
+      if (prevHasDecimal || nextHasDecimal) {
+        hasMissingDecimalAnomaly = true;
+        break;
+      }
+    }
+  }
+  if (hasMissingDecimalAnomaly) {
+    warnings.push({
+      message: 'Potential missing decimal points detected: 3+ digit sequence appears adjacent to decimal values (e.g. 077 next to 0.94).',
+      suggestion: 'Check numbers carefully against the source image for dropped decimal points.',
+    });
+  }
+
+  // Check for table rows that were not reconstructed into a tabular grid
+  const tableRowLines = lines.filter(isTableRowPattern);
+  if (tableRowLines.length >= 2 && !generatedLatex.includes('\\begin{tabular}') && !generatedLatex.includes('\\begin{table}')) {
+    warnings.push({
+      message: 'Table structure detected but tables are not reconstructed; lines are preserved as plain text.',
+      suggestion: 'You may need to manually format rows into a \\begin{tabular} environment.',
+    });
+  }
+
+  // 3. 2D Math heuristic warnings
   if (hasRadicalOrIntegral) {
     warnings.push({
       message: 'Complex mathematical operators (integrals, summations, or radicals) detected.',
@@ -65,7 +103,7 @@ export function assessQuality(ocrData: OcrResultData, generatedLatex: string): Q
     });
   }
 
-  // 3. Question mark / garbled character checks
+  // 4. Question mark / garbled character checks
   const questionMarks = (text.match(/\?/g) || []).length;
   if (questionMarks >= 1) {
     warnings.push({
@@ -83,7 +121,7 @@ export function assessQuality(ocrData: OcrResultData, generatedLatex: string): Q
     });
   }
 
-  // 4. Quality grading
+  // 5. Quality grading
   let quality: RecognitionQuality = 'high';
   if (confidence < 60 || warnings.length >= 2) {
     quality = 'uncertain';
@@ -91,6 +129,11 @@ export function assessQuality(ocrData: OcrResultData, generatedLatex: string): Q
     quality = 'medium';
   } else {
     quality = 'high';
+  }
+
+  // Cap quality at medium if text contains digits and confidence < 85
+  if (hasDigits && confidence < 85 && quality === 'high') {
+    quality = 'medium';
   }
 
   return {

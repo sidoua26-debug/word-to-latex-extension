@@ -47,6 +47,7 @@ import {
   getActiveRecognitionEngine,
 } from '../src/imageOcr/ocrEngine.ts';
 import type { ImageRecognitionEngine } from '../src/imageOcr/types.ts';
+import { assessQuality } from '../src/imageOcr/resultQuality.ts';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DIST_POPUP_PATH = 'file://' + path.resolve(__dirname, '../dist/popup.html');
@@ -1971,7 +1972,7 @@ describe('Offline Tesseract OCR Engine (End-to-End on Fixtures)', () => {
 });
 
 describe('OCR Retry Logic (convertImageToLatex & Stub Engine)', () => {
-  it('triggers retry with PSM 3 when first pass confidence < 60', async () => {
+  it('triggers retry with PSM 3 and PSM 4 when first pass confidence < 60', async () => {
     const calls: Array<{ image: any; options: any }> = [];
     const stubEngine: ImageRecognitionEngine = {
       id: 'stub-retry-test',
@@ -1990,12 +1991,24 @@ describe('OCR Retry Logic (convertImageToLatex & Stub Engine)', () => {
             hasMath: false,
           };
         }
+        if (options.psm === '3') {
+          return {
+            engine: 'stub',
+            rawText: 'Age 20-29 ans',
+            latex: 'Age 20-29 ans',
+            confidence: 75,
+            quality: 'medium',
+            warnings: [],
+            isTable: false,
+            hasMath: false,
+          };
+        }
         return {
           engine: 'stub',
-          rawText: 'Age 20-29 ans',
-          latex: 'Age 20-29 ans',
+          rawText: 'Age 20-29 ans | 0.45 - 2.10',
+          latex: 'Age 20-29 ans | 0.45 - 2.10',
           confidence: 85,
-          quality: 'high',
+          quality: 'medium',
           warnings: [],
           isTable: false,
           hasMath: false,
@@ -2009,10 +2022,11 @@ describe('OCR Retry Logic (convertImageToLatex & Stub Engine)', () => {
       const dummyBuffer = Buffer.from('fake-image-bytes');
       const result = await convertImageToLatex(dummyBuffer, { mode: 'fragment' });
 
-      assert.equal(calls.length, 2, 'convertImageToLatex must retry once when confidence < 60');
-      assert.equal(calls[1].options.psm, '3', 'Retry call must request auto PSM 3');
+      assert.equal(calls.length, 3, 'convertImageToLatex must retry with both PSM 3 and PSM 4 when confidence < 60');
+      assert.equal(calls[1].options.psm, '3', 'Retry call 1 must request PSM 3');
+      assert.equal(calls[2].options.psm, '4', 'Retry call 2 must request PSM 4');
       assert.equal(result.confidence, 85, 'Result should adopt higher retry confidence');
-      assert.equal(result.rawText, 'Age 20-29 ans');
+      assert.equal(result.rawText, 'Age 20-29 ans | 0.45 - 2.10');
     } finally {
       setRecognitionEngine(origEngine);
     }
@@ -2089,7 +2103,7 @@ describe('OCR Retry Logic (convertImageToLatex & Stub Engine)', () => {
       const dummyBuffer = Buffer.from('fake-image-bytes');
       const result = await convertImageToLatex(dummyBuffer, { mode: 'fragment' });
 
-      assert.equal(calls.length, 2, 'Retry should be attempted');
+      assert.equal(calls.length, 3, 'Retry should run PSM 3 and PSM 4');
       assert.equal(result.confidence, 45, 'Should keep first pass when retry confidence is lower');
       assert.equal(result.rawText, 'First pass text');
     } finally {
@@ -2135,7 +2149,7 @@ describe('OCR Retry Logic (convertImageToLatex & Stub Engine)', () => {
       const dummyBuffer = Buffer.from('fake-image-bytes');
       const result = await convertImageToLatex(dummyBuffer, { mode: 'fragment' });
 
-      assert.equal(calls.length, 2, 'Retry should be attempted');
+      assert.equal(calls.length, 3, 'Retry should run PSM 3 and PSM 4');
       assert.equal(result.confidence, 40, 'Should reject retry because character count dropped by > 30%');
       assert.equal(result.rawText, 'This is a long first pass text with many characters here.');
     } finally {
@@ -2297,3 +2311,123 @@ describe('Playwright UI Interactivity: Image to LaTeX Tab', () => {
     assert.equal(await convertBtn.isDisabled(), true, 'Convert button should be disabled after clear');
   });
 });
+
+describe('Numeric Quality Honesty & Misread Warnings', () => {
+  it('caps quality at medium and warns when text contains digits and confidence < 85', () => {
+    const ocrData = {
+      text: 'Total: 25 items\nSubtotal: 10 items',
+      confidence: 77,
+    };
+    const latex = 'Total: 25 items\n\nSubtotal: 10 items';
+    const analysis = assessQuality(ocrData, latex);
+
+    assert.equal(analysis.quality, 'medium', 'Quality must be capped at medium when confidence < 85 with numbers');
+    assert.ok(
+      analysis.warnings.some(w =>
+        w.message.includes('Numbers may be misread (decimal points, 1/7, 0/O, 5/S): verify every value against the source.')
+      ),
+      'Must contain numbers misread warning'
+    );
+  });
+
+  it('permits high quality when confidence >= 85 and numeric tokens look clean', () => {
+    const ocrData = {
+      text: 'Total: 25 items',
+      confidence: 90,
+    };
+    const latex = 'Total: 25 items';
+    const analysis = assessQuality(ocrData, latex);
+
+    assert.equal(analysis.quality, 'high', 'Clean numbers with high confidence should remain high');
+    assert.ok(
+      !analysis.warnings.some(w => w.message.includes('Numbers may be misread')),
+      'Should not warn when confidence >= 85'
+    );
+  });
+
+  it('warns when a 3+ digit sequence appears adjacent to lines using decimals', () => {
+    const ocrData = {
+      text: '30-34 ans 0.94 - 6.7\n35-39 ans 077-524\n40-44ans 0.097 - 2.96',
+      confidence: 80,
+    };
+    const latex = '30-34 ans 0.94 - 6.7\n\n35-39 ans 077-524\n\n40-44ans 0.097 - 2.96';
+    const analysis = assessQuality(ocrData, latex);
+
+    assert.ok(
+      analysis.warnings.some(w =>
+        w.message.includes('Potential missing decimal points detected: 3+ digit sequence appears adjacent to decimal values')
+      ),
+      'Must warn about dropped decimal points'
+    );
+    assert.notEqual(analysis.quality, 'high', 'Must not report high quality with missing decimal anomaly');
+  });
+});
+
+describe('Table Rows as Display Math vs Plain Text Preservation', () => {
+  it('does not wrap synthetic table rows in display math and preserves plain text', () => {
+    const ocrData = {
+      text: 'Age ng/ml (sexe féminin)\n20-29 ans 0.45-2.10\n30-39 ans 0.55-2.80\n40-49 ans 0.70-3.40',
+      confidence: 88,
+    };
+    const latex = parseOcrToLatex(ocrData);
+
+    assert.ok(!latex.includes('\\['), `Synthetic table rows must not be wrapped in display math: ${latex}`);
+    assert.ok(!latex.includes('\\]'), `Synthetic table rows must not have display math closing: ${latex}`);
+    assert.ok(latex.includes('20-29 ans 0.45-2.10'), `Row 1 preserved: ${latex}`);
+    assert.ok(latex.includes('30-39 ans 0.55-2.80'), `Row 2 preserved: ${latex}`);
+
+    const quality = assessQuality(ocrData, latex);
+    assert.ok(
+      quality.warnings.some(w =>
+        w.message.includes('Table structure detected but tables are not reconstructed; lines are preserved as plain text.')
+      ),
+      'Must emit warning that table is not reconstructed'
+    );
+  });
+
+  it('does not wrap real lookalike table rows in display math', () => {
+    const ocrData = {
+      text: 'Age ng/ml (sexe féminin)\n20-24 ans 1.88 - 7.29\n25-29 ans 1.83 - 7.53\n30-34 ans 0.94 - 6.7\n35-39 ans 0.77 - 5.24',
+      confidence: 82,
+    };
+    const latex = parseOcrToLatex(ocrData);
+
+    assert.ok(!latex.includes('\\['), `Real lookalike rows must not be wrapped in display math: ${latex}`);
+    assert.ok(!latex.includes('\\]'), `Real lookalike rows must not have closing display math: ${latex}`);
+    assert.ok(latex.includes('20-24 ans 1.88 - 7.29'));
+    assert.ok(latex.includes('25-29 ans 1.83 - 7.53'));
+
+    const quality = assessQuality(ocrData, latex);
+    assert.ok(
+      quality.warnings.some(w =>
+        w.message.includes('Table structure detected but tables are not reconstructed; lines are preserved as plain text.')
+      ),
+      'Must emit warning for real lookalike table rows'
+    );
+  });
+
+  it('still wraps a real equation line in display math', () => {
+    const eqData = {
+      text: 'f(x) = x^2 + 2x + 1',
+      confidence: 95,
+    };
+    const eqLatex = parseOcrToLatex(eqData);
+    assert.ok(eqLatex.includes('\\['), `Real equation must be wrapped in display math: ${eqLatex}`);
+    assert.ok(eqLatex.includes('\\]'), `Real equation must have closing delimiter: ${eqLatex}`);
+  });
+
+  it('preserves table rows as plain text while wrapping real equation in mixed input', () => {
+    const mixedData = {
+      text: '20-24 ans 1.88 - 7.29\n25-29 ans 1.83 - 7.53\nf(x) = x^2 + 1',
+      confidence: 88,
+    };
+    const mixedLatex = parseOcrToLatex(mixedData);
+
+    // Table rows should not be wrapped
+    assert.ok(mixedLatex.includes('20-24 ans 1.88 - 7.29'));
+    assert.ok(mixedLatex.includes('25-29 ans 1.83 - 7.53'));
+    // Equation must be wrapped
+    assert.ok(mixedLatex.includes('\\[\nf(x) = x^2 + 1\n\\]'), `Equation should be wrapped: ${mixedLatex}`);
+  });
+});
+

@@ -2,6 +2,14 @@
 
 All notable changes to the Word to LaTeX (Offline) browser extension are documented in this file.
 
+## [1.0.4] - 2026-10-11
+
+### Fixed
+- Improved OCR table recognition via multi-PSM retry (running both PSM 3 and PSM 4 on 1.5x scaled, cropped, and padded images, picking best by higher confidence and length criteria).
+- Preserved tabular data rows (e.g. `label | range`) as unwrapped plain text lines instead of erroneously wrapping in LaTeX display math `\[ ... \]`.
+- Added honest quality warnings when numbers are present with confidence < 85% ("Numbers may be misread...") and capped quality accordingly.
+- Added warning indicating table borders and column alignments are not reconstructed.
+
 ## [1.0.3] - 2026-10-11
 
 ### Fixed

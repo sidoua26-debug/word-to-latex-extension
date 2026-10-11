@@ -169,28 +169,34 @@ function cropAndPadCanvas(srcCanvas: HTMLCanvasElement): HTMLCanvasElement {
 
   const cropW = maxX - minX + 1;
   const cropH = maxY - minY + 1;
+  const scale = 1.5;
   const pad = 20;
 
+  const scaledW = Math.round(cropW * scale);
+  const scaledH = Math.round(cropH * scale);
+
   const outCanvas = document.createElement('canvas');
-  outCanvas.width = cropW + pad * 2;
-  outCanvas.height = cropH + pad * 2;
+  outCanvas.width = scaledW + pad * 2;
+  outCanvas.height = scaledH + pad * 2;
   const outCtx = outCanvas.getContext('2d');
   if (!outCtx) return srcCanvas;
 
+  outCtx.imageSmoothingEnabled = true;
+  outCtx.imageSmoothingQuality = 'high';
   outCtx.fillStyle = '#ffffff';
   outCtx.fillRect(0, 0, outCanvas.width, outCanvas.height);
-  outCtx.drawImage(srcCanvas, minX, minY, cropW, cropH, pad, pad, cropW, cropH);
+  outCtx.drawImage(srcCanvas, minX, minY, cropW, cropH, pad, pad, scaledW, scaledH);
 
   return outCanvas;
 }
 
 /**
  * Preprocesses an image for retry when initial recognition confidence is low.
- * Flattens alpha onto white, crops margins to the content bounding box, and adds 20px padding.
+ * Flattens alpha onto white, crops margins to the content bounding box, scales 1.5x, and adds 20px padding.
  */
 export async function preprocessRetryImage(
-  imageSource: string | HTMLCanvasElement | Buffer | Uint8Array
-): Promise<string | HTMLCanvasElement | Buffer | Uint8Array> {
+  imageSource: string | HTMLCanvasElement | Uint8Array
+): Promise<string | HTMLCanvasElement | Uint8Array> {
   if (typeof window === 'undefined') {
     try {
       const helperMod = './imagePreprocessNode.js';
@@ -261,7 +267,7 @@ export class TesseractRecognitionEngine implements ImageRecognitionEngine {
   readonly name = 'Tesseract.js OCR (eng + fra)';
 
   async recognize(
-    imageSource: string | HTMLCanvasElement | Buffer | Uint8Array,
+    imageSource: string | HTMLCanvasElement | Uint8Array,
     options: RecognitionOptions
   ): Promise<RecognitionResult> {
     const { onProgress } = options;
@@ -345,40 +351,60 @@ export function getActiveRecognitionEngine(): ImageRecognitionEngine {
 }
 
 /**
+ * Combined selection rule: keeps the candidate if it has higher confidence
+ * AND is not shorter by more than 30% compared to baseline.
+ * If one has text and the other is empty, keeps the non-empty result.
+ */
+export function pickBestRecognition(
+  resA: RecognitionResult,
+  resB: RecognitionResult
+): RecognitionResult {
+  const lenA = resA.rawText?.trim().length || 0;
+  const lenB = resB.rawText?.trim().length || 0;
+
+  if (lenA === 0 && lenB > 0) return resB;
+  if (lenB === 0 && lenA > 0) return resA;
+  if (lenA === 0 && lenB === 0) return resA.confidence >= resB.confidence ? resA : resB;
+
+  if (resA.confidence > resB.confidence) {
+    if (lenA >= lenB * 0.7) {
+      return resA;
+    }
+    return resB;
+  } else if (resB.confidence > resA.confidence) {
+    if (lenB >= lenA * 0.7) {
+      return resB;
+    }
+    return resA;
+  } else {
+    return lenB > lenA ? resB : resA;
+  }
+}
+
+/**
  * Top-level conversion helper delegating to active ImageRecognitionEngine.
  * If first pass returns empty text or confidence < 60 ("uncertain" threshold),
- * retries once with auto PSM (3) on a flattened, cropped, padded image.
+ * retries on a flattened, cropped, 1.5x scaled, padded image with BOTH PSM 3 and PSM 4,
+ * keeping the best result by the combined rule.
  */
 export async function convertImageToLatex(
-  imageSource: string | HTMLCanvasElement | Buffer | Uint8Array,
+  imageSource: string | HTMLCanvasElement | Uint8Array,
   options: RecognitionOptions
 ): Promise<RecognitionResult> {
   const firstResult = await activeEngine.recognize(imageSource, options);
 
   // If first pass returns empty text or confidence < 60 ("uncertain" threshold),
-  // retry once with auto PSM (3) on a flattened, cropped, padded image
+  // retry with auto PSM 3 and PSM 4 on a flattened, cropped, padded, scaled image
   if (!firstResult.rawText?.trim() || firstResult.confidence < 60) {
     try {
       options.onProgress?.('Retrying with auto segmentation and cropped padding...', 0.5);
       const retrySource = await preprocessRetryImage(imageSource);
-      const retryOptions: RecognitionOptions = {
-        ...options,
-        psm: '3',
-      };
-      const retryResult = await activeEngine.recognize(retrySource, retryOptions);
 
-      const firstLen = firstResult.rawText.trim().length;
-      const retryLen = retryResult.rawText.trim().length;
-      const notSignificantlyShorter = firstLen === 0 || retryLen >= firstLen * 0.7;
+      const retry3 = await activeEngine.recognize(retrySource, { ...options, psm: '3' });
+      const retry4 = await activeEngine.recognize(retrySource, { ...options, psm: '4' });
 
-      // Keep the result with higher confidence (or if first pass was empty and retry produced text),
-      // provided retry text is not shorter than the first pass by more than 30%
-      if (
-        (retryResult.confidence > firstResult.confidence && notSignificantlyShorter) ||
-        (!firstResult.rawText?.trim() && retryResult.rawText?.trim())
-      ) {
-        return retryResult;
-      }
+      const bestRetry = pickBestRecognition(retry3, retry4);
+      return pickBestRecognition(firstResult, bestRetry);
     } catch {
       // Keep firstResult if retry fails
     }
