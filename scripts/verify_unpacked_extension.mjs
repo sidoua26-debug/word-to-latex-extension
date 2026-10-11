@@ -5,7 +5,7 @@ import assert from 'assert/strict';
 import fs from 'fs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const distDir = path.resolve(__dirname, '../dist');
+const distDir = process.env.EXTENSION_DIR ? path.resolve(process.env.EXTENSION_DIR) : path.resolve(__dirname, '../dist');
 const fixturesDir = path.resolve(__dirname, '../tests/fixtures');
 const realFixturesDir = path.resolve(__dirname, '../tests/fixtures/real');
 
@@ -128,6 +128,32 @@ async function testUnpackedExtension() {
   console.log('Recognized Math Equation Output:\n', imgMathOutput);
   assert.ok(imgMathOutput.includes('Recognition Quality'), 'Diagnostic headers attached');
   console.log('✓ Image Math OCR with diagnostic quality headers verified.');
+
+  // 5b. Test Image to LaTeX with Synthetic Bordered Reference Table (Browser Canvas Retry Path)
+  console.log('[Check 5b] Testing Image to LaTeX with synthetic_table_ref.png (Canvas retry path)...');
+  await page.locator('#clear-image-btn').click({ force: true });
+  await page.locator('#image-preview-card').waitFor({ state: 'hidden' });
+
+  const tableImgPath = path.join(fixturesDir, 'synthetic_table_ref.png');
+  await page.locator('#image-file').setInputFiles(tableImgPath);
+  await page.locator('#image-preview-card').waitFor({ state: 'visible' });
+  await page.locator('#convert-image-btn').click();
+
+  await page.waitForFunction(() => {
+    const el = document.getElementById('output');
+    return el && el.value && el.value.includes('Age');
+  }, { timeout: 25000 });
+
+  const imgTableOutput = await page.locator('#output').inputValue();
+  console.log('Recognized Synthetic Table Output (Browser Canvas Path):\n', imgTableOutput);
+
+  assert.ok(imgTableOutput.includes('Age'), 'Output must contain header "Age"');
+  const ageRows = [/20-29/, /30-39/, /40-49/, /50-59/, /60-69/, /70-79/, /80/];
+  const matchedRows = ageRows.filter((r) => r.test(imgTableOutput));
+  console.log(`Matched ${matchedRows.length}/7 age rows in browser canvas output.`);
+  assert.ok(matchedRows.length >= 5, `Expected >= 5 age rows, matched ${matchedRows.length}`);
+  assert.ok(!imgTableOutput.includes('(0%)'), 'Recognition quality must not be 0%');
+  console.log('✓ Synthetic table recognized via browser canvas retry path.');
 
   // 6. Verify 0 external network requests
   console.log('[Check 6] Verifying zero external network calls...');

@@ -13,7 +13,7 @@ import assert from 'assert/strict';
 import fs from 'fs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const distDir = path.resolve(__dirname, '../dist');
+const distDir = process.env.EXTENSION_DIR ? path.resolve(process.env.EXTENSION_DIR) : path.resolve(__dirname, '../dist');
 const fixturesDir = path.resolve(__dirname, '../tests/fixtures');
 
 async function runBrowserVerification() {

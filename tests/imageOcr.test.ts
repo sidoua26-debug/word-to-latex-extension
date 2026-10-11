@@ -32,10 +32,12 @@ import {
   isMathExpression,
   classifyWordSymbols,
   applySpatialSuperSubscripts,
+  escapeProseDollarSigns,
   type OcrWord,
   type OcrLine,
   type OcrResultData,
 } from '../src/imageOcr/mathParser.ts';
+import sharp from 'sharp';
 import { detectAndParseTable } from '../src/imageOcr/tableParser.ts';
 import { formatLatexOutput } from '../src/imageOcr/latexGenerator.ts';
 import {
@@ -2093,6 +2095,108 @@ describe('OCR Retry Logic (convertImageToLatex & Stub Engine)', () => {
     } finally {
       setRecognitionEngine(origEngine);
     }
+  });
+
+  it('rejects retry if retry text is shorter than first pass by more than 30%', async () => {
+    const calls: Array<{ image: any; options: any }> = [];
+    const stubEngine: ImageRecognitionEngine = {
+      id: 'stub-shorter-retry',
+      name: 'Stub Engine Shorter Text Retry',
+      async recognize(image, options) {
+        calls.push({ image, options });
+        if (calls.length === 1) {
+          return {
+            engine: 'stub',
+            rawText: 'This is a long first pass text with many characters here.',
+            latex: 'This is a long first pass text with many characters here.',
+            confidence: 40,
+            quality: 'uncertain',
+            warnings: [],
+            isTable: false,
+            hasMath: false,
+          };
+        }
+        return {
+          engine: 'stub',
+          rawText: 'Short text',
+          latex: 'Short text',
+          confidence: 85,
+          quality: 'high',
+          warnings: [],
+          isTable: false,
+          hasMath: false,
+        };
+      },
+    };
+
+    const origEngine = getActiveRecognitionEngine();
+    try {
+      setRecognitionEngine(stubEngine);
+      const dummyBuffer = Buffer.from('fake-image-bytes');
+      const result = await convertImageToLatex(dummyBuffer, { mode: 'fragment' });
+
+      assert.equal(calls.length, 2, 'Retry should be attempted');
+      assert.equal(result.confidence, 40, 'Should reject retry because character count dropped by > 30%');
+      assert.equal(result.rawText, 'This is a long first pass text with many characters here.');
+    } finally {
+      setRecognitionEngine(origEngine);
+    }
+  });
+});
+
+describe('Currency Dollar Escaping vs Inline Math', () => {
+  it('escapes a prose line with "$300" to "\\$300"', () => {
+    const input = 'The monthly subscription is $300 per user.';
+    const output = parseOcrToLatex({ text: input, confidence: 90 });
+    assert.ok(output.includes('\\$300'), `Expected \\$300 in output, got: ${output}`);
+    assert.ok(!output.includes('$$300'), `Should not double dollar: ${output}`);
+    assert.equal(escapeProseDollarSigns(input), 'The monthly subscription is \\$300 per user.');
+  });
+
+  it('keeps a line already containing "\\$" as "\\$" without double escaping', () => {
+    const input = 'The price was reduced from \\$300 to \\$150.';
+    const output = parseOcrToLatex({ text: input, confidence: 90 });
+    assert.ok(output.includes('\\$300'), `Expected \\$300 in output, got: ${output}`);
+    assert.ok(!output.includes('\\\\$300'), `Should not double escape: ${output}`);
+    assert.equal(escapeProseDollarSigns(input), 'The price was reduced from \\$300 to \\$150.');
+  });
+
+  it('preserves an inline math line with $x$ without breaking math mode', () => {
+    const input = 'Let $x$ be an arbitrary element of the set.';
+    const output = parseOcrToLatex({ text: input, confidence: 90 });
+    assert.ok(output.includes('$x$'), `Expected inline math $x$ preserved, got: ${output}`);
+    assert.ok(!output.includes('\\$x\\$'), `Should not escape inline math: ${output}`);
+    assert.equal(escapeProseDollarSigns(input), 'Let $x$ be an arbitrary element of the set.');
+  });
+});
+
+describe('Blank Image Recognition Handling', () => {
+  it('returns "No text recognized" message and no empty header-only output on blank 100x100 white image', async () => {
+    const blankBuffer = await sharp({
+      create: {
+        width: 100,
+        height: 100,
+        channels: 4,
+        background: { r: 255, g: 255, b: 255, alpha: 1 },
+      },
+    }).png().toBuffer();
+
+    const result = await convertImageToLatex(blankBuffer, { mode: 'fragment' });
+
+    assert.equal(result.rawText.trim(), '', 'Raw text should be empty for blank image');
+    assert.equal(result.quality, 'uncertain');
+    assert.ok(
+      result.warnings.some((w) =>
+        w.message.includes('No text recognized: crop to the content, enlarge the image, and avoid screenshots with large empty margins')
+      ),
+      'Must contain warning about no text recognized'
+    );
+    assert.ok(
+      result.latex.includes('% No text recognized: crop to the content, enlarge the image, and avoid screenshots with large empty margins'),
+      'Must include diagnostic comment in body'
+    );
+    const bodyCommentFound = result.latex.includes('% No text recognized: crop to the content, enlarge the image, and avoid screenshots with large empty margins');
+    assert.ok(bodyCommentFound, 'Latex output must contain explanatory body');
   });
 });
 

@@ -2,6 +2,15 @@
 
 All notable changes to the Word to LaTeX (Offline) browser extension are documented in this file.
 
+## [1.0.3] - 2026-10-11
+
+### Fixed
+- Tightened OCR retry rule to reject retries whose recognized text is shorter than first pass by more than 30% (character count).
+- Decoupled Sharp image preprocessing into a Node-only helper so that Sharp is zero-referenced in the client browser extension bundle.
+- Enhanced currency dollar sign escaping in natural language text (`$300` -> `\$300`) while preserving balanced inline math pairs (`$x$`) and preventing double-escaping (`\$`).
+- Added browser canvas retry test on synthetic reference table in unpacked extension verification.
+- Added test coverage for dollar escaping, blank image handling, and retry character length thresholds.
+
 ## [1.0.2] - 2026-10-11
 
 ### Fixed

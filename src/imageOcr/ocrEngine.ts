@@ -193,16 +193,17 @@ export async function preprocessRetryImage(
 ): Promise<string | HTMLCanvasElement | Buffer | Uint8Array> {
   if (typeof window === 'undefined') {
     try {
-      const mod = 'sharp';
-      const sharpModule = await import(mod);
-      const sharp = sharpModule.default || sharpModule;
-      return await sharp(imageSource as any)
-        .flatten({ background: { r: 255, g: 255, b: 255 } })
-        .trim({ threshold: 10 })
-        .extend({ top: 20, bottom: 20, left: 20, right: 20, background: { r: 255, g: 255, b: 255 } })
-        .toBuffer();
+      const helperMod = './imagePreprocessNode.js';
+      const helper = await import(helperMod);
+      return await helper.preprocessWithSharp(imageSource);
     } catch {
-      return imageSource;
+      try {
+        const helperModTs = './imagePreprocessNode.ts';
+        const helper = await import(helperModTs);
+        return await helper.preprocessWithSharp(imageSource);
+      } catch {
+        return imageSource;
+      }
     }
   }
 
@@ -366,9 +367,14 @@ export async function convertImageToLatex(
       };
       const retryResult = await activeEngine.recognize(retrySource, retryOptions);
 
-      // Keep the result with higher confidence (or if first pass was empty and retry produced text)
+      const firstLen = firstResult.rawText.trim().length;
+      const retryLen = retryResult.rawText.trim().length;
+      const notSignificantlyShorter = firstLen === 0 || retryLen >= firstLen * 0.7;
+
+      // Keep the result with higher confidence (or if first pass was empty and retry produced text),
+      // provided retry text is not shorter than the first pass by more than 30%
       if (
-        retryResult.confidence > firstResult.confidence ||
+        (retryResult.confidence > firstResult.confidence && notSignificantlyShorter) ||
         (!firstResult.rawText?.trim() && retryResult.rawText?.trim())
       ) {
         return retryResult;

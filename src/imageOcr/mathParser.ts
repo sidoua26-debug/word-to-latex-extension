@@ -728,6 +728,34 @@ export function reconstructStackedIntegrals(lines: OcrLine[]): OcrLine[] {
 }
 
 /**
+ * Escapes unescaped currency dollar signs (e.g. "$300") as "\$300",
+ * avoids double-escaping existing "\$", and preserves inline math "$x$".
+ */
+export function escapeProseDollarSigns(line: string): string {
+  const ESCAPED_PLACEHOLDER = '___ALREADY_ESCAPED_DOLLAR___';
+  let s = line.replace(/\\\$/g, ESCAPED_PLACEHOLDER);
+
+  // Match valid inline math pairs: $...$ where opening is not followed by whitespace or digit
+  // and closing is not preceded by whitespace.
+  const MATH_PLACEHOLDERS: string[] = [];
+  s = s.replace(/\$([^$\s\d][^$]*?[^$\s]|[^$\s\d])\$/g, (match) => {
+    MATH_PLACEHOLDERS.push(match);
+    return `___INLINE_MATH_${MATH_PLACEHOLDERS.length - 1}___`;
+  });
+
+  // Any remaining raw unescaped $ is currency or unmatched dollar sign: escape it
+  s = s.replace(/\$/g, '\\$');
+
+  // Restore inline math
+  s = s.replace(/___INLINE_MATH_(\d+)___/g, (_, idx) => MATH_PLACEHOLDERS[parseInt(idx, 10)]);
+
+  // Restore already escaped \$
+  s = s.replace(new RegExp(ESCAPED_PLACEHOLDER, 'g'), '\\$');
+
+  return s;
+}
+
+/**
  * Full mathematical OCR parser:
  * Takes raw OCR lines and metadata, and produces clean LaTeX code.
  */
@@ -796,8 +824,8 @@ export function parseOcrToLatex(ocrResult: OcrResultData): string {
       safeMathLine = safeMathLine.replace(/(?<!\\)\$/g, '\\$');
       outputBlocks.push(`${warningComment}\\[\n${safeMathLine}\n\\]`);
     } else {
-      // Natural language text: keep French accents and escape raw unescaped dollar signs
-      const safeTextLine = line.replace(/(?<!\\)\$/g, '\\$');
+      // Natural language text: keep French accents and escape raw currency dollar signs while preserving inline math
+      const safeTextLine = escapeProseDollarSigns(line);
       outputBlocks.push(`${warningComment}${safeTextLine}`);
     }
   }
