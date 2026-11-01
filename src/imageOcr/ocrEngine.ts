@@ -34,7 +34,7 @@ export async function getTesseractWorker(onProgress?: ProgressCallback): Promise
 
         let options: Record<string, unknown> = {
           cacheMethod: 'none',
-          gzip: true,
+          gzip: false,
         };
 
         if (isExtension) {

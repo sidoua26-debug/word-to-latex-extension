@@ -222,7 +222,7 @@ async function runBenchmark() {
   const t0Tess = performance.now();
   const worker = await createWorker(['eng', 'fra', 'equ'], 1, {
     cacheMethod: 'none',
-    gzip: true,
+    gzip: false,
     langPath: 'assets/tessdata',
   });
   const tessStartupMs = Math.round(performance.now() - t0Tess);

@@ -68,7 +68,9 @@ export function getEnvironmentMetadata() {
   const traineddataHashes = {};
   const tessdataDir = path.join(ROOT, 'assets', 'tessdata');
   for (const lang of ['eng', 'fra']) {
-    const p = path.join(tessdataDir, `${lang}.traineddata.gz`);
+    const pRaw = path.join(tessdataDir, `${lang}.traineddata`);
+    const pGz = path.join(tessdataDir, `${lang}.traineddata.gz`);
+    const p = fs.existsSync(pRaw) ? pRaw : pGz;
     if (fs.existsSync(p)) {
       const buf = fs.readFileSync(p);
       traineddataHashes[lang] = crypto.createHash('sha256').update(buf).digest('hex');

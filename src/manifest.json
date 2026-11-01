@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Word to LaTeX (Offline)",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Convert Word documents, pasted rich text, and tables to clean LaTeX fragments entirely offline via Pandoc WASM.",
   "action": {
     "default_popup": "popup.html",

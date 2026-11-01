@@ -23,7 +23,7 @@ async function runEvaluation() {
   console.log('--- Initializing Tesseract Worker (eng+fra+equ) ---');
   const worker = await createWorker(['eng', 'fra', 'equ'], 1, {
     cacheMethod: 'none',
-    gzip: true,
+    gzip: false,
     langPath: 'assets/tessdata',
   });
 

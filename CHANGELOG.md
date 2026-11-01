@@ -2,6 +2,11 @@
 
 All notable changes to the Word to LaTeX (Offline) browser extension are documented in this file.
 
+## [1.0.6] - 2026-10-14
+
+### Changed
+- Shipped Tesseract language data uncompressed (`.traineddata`) and configured `gzip: false` in worker initialization to satisfy Microsoft Edge Add-ons (Partner Center) archive validation rules against nested compressed files.
+
 ## [1.0.5] - 2026-10-11
 
 ### Fixed
