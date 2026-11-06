@@ -1,13 +1,45 @@
 # Third-Party Software Notices & Licenses
 *Word to LaTeX (Offline)*
 
-This document contains third-party software notices, attributions, and license texts applicable to components bundled with or used by **Word to LaTeX (Offline)**.
-
-No explicit license has been assigned to the project's original source code in this repository. The interaction between original code and GPL-licensed third-party components may raise separate licensing obligations requiring qualified legal review.
+This document details third-party software notices, attributions, copyright statements, and governing license texts applicable to components bundled with or utilized by **Word to LaTeX (Offline)**.
 
 ---
 
-## 1. Third-Party Component Inventory
+## 1. Project Licensing Scope & Architecture
+
+Word to LaTeX (Offline) is composed of independently authored original application code integrated with open-source third-party dependencies, runtimes, and WebAssembly binaries. To ensure transparency and compliance, the licensing boundaries are structured as follows:
+
+### 1.1 Original Application Code (MIT License)
+The independently authored source code in this repository—including:
+- TypeScript application logic in `src/` (`popup.ts`, `background.ts`, `docxPreprocess.ts`, `latexCleanup.ts`, `clipboardDetect.ts`, `imageOcr/`)
+- User interface markup and styling (`src/popup.html`, `src/popup.css`, `src/manifest.json`)
+- Build scripts (`esbuild.config.mjs`) and test suites (`tests/`)
+- Project-specific documentation authored for Word to LaTeX
+
+is licensed under the **MIT License** (see `LICENSE`). The MIT license grants broad permissions to use, copy, modify, merge, publish, distribute, sublicense, and sell the original code, subject to preserving the copyright notice and warranty disclaimer.
+
+This MIT license applies exclusively to the author's original contributions and does **not** assert MIT licensing over third-party dependencies, compiled binaries, or pretrained neural models.
+
+### 1.2 Third-Party Permissive Components
+The project incorporates several third-party permissive open-source libraries that retain their respective copyright notices and licenses:
+- **`pandoc-wasm` JavaScript wrapper** (v1.1.0): Licensed under the **MIT License** by Tweag I/O Limited, Johannes Wilm, and contributors.
+- **`fflate`** (v0.8.3): Licensed under the **MIT License** by Arjun Barrett.
+- **`@bjorn3/browser_wasi_shim`** (v0.4.2): Licensed under the **MIT License OR Apache-2.0** by bjorn3.
+- **`tesseract.js` and `tesseract.js-core`** (v7.0.0): Licensed under the **Apache License, Version 2.0** by the Naptha project, Google LLC, and contributors.
+- **Tesseract Language Models** (`tessdata/*.traineddata`): Licensed under the **Apache License, Version 2.0** by Google LLC and Tesseract OCR contributors.
+
+### 1.3 Third-Party Copyleft Component (Pandoc WebAssembly)
+The offline conversion engine incorporates `wasm/pandoc.wasm` (58,580,800 bytes; Pandoc version 3.10), which is governed by the **GNU General Public License, Version 2 or later (GPL-2.0-or-later)**. Copyright (C) 2006-2024 John MacFarlane and Pandoc contributors.
+
+### 1.4 Distribution Architecture & Technical Boundaries
+- **Source Code Repository**: When viewing or cloning the source repository, each file remains governed by its declared license. The original TypeScript code is MIT-licensed, and third-party dependencies are governed by their respective licenses.
+- **Packaged Extension Distribution**: When distributed as a packaged binary archive (`.zip` or `.crx` for Chrome Web Store / Microsoft Edge Add-ons) containing the bundled `pandoc.wasm` binary, the distribution bundle combines MIT-licensed original code with a GPL-licensed binary. Downstream recipients of the packaged extension must be provided with the notices, copyright disclosures, and source-code access required by the GNU GPL v2.0 or later for the GPL-covered component.
+- **Runtime Execution Seam**: At runtime inside the browser sandbox, `pandoc.wasm` executes within an isolated WebAssembly virtual machine memory space managed by `@bjorn3/browser_wasi_shim`. The extension communicates with the Pandoc engine across standard WASI input/output streams (piping input documents via virtual filesystem and reading output via stdout/stderr), mirroring command-line invocation. While this stream-based communication maintains technical process separation, distributing the files together in a unified extension archive triggers GPL compliance obligations for the distributed binary package.
+- **Preservation of Original Author Rights**: Distributing original code alongside GPL components in a combined package does not retroactively rewrite the original code's copyright or license; the author's original code remains licensed under MIT, which is a GPL-compatible permissive license.
+
+---
+
+## 2. Third-Party Component Inventory
 
 | Component | Bundled Files / Distribution Artifacts | Version | Governing License | Copyright / Authors |
 | :--- | :--- | :--- | :--- | :--- |
@@ -23,7 +55,7 @@ No explicit license has been assigned to the project's original source code in t
 
 ---
 
-## 2. Upstream Source Locations & Provenance
+## 3. Upstream Source Locations & Provenance
 
 The source code and provenance for third-party open-source components used by this extension are documented below:
 
@@ -48,9 +80,9 @@ The source code and provenance for third-party open-source components used by th
 
 ---
 
-## 3. Applicable License Texts
+## 4. Applicable License Texts
 
-### 3.1 GNU General Public License, Version 2 (June 1991)
+### 4.1 GNU General Public License, Version 2 (June 1991)
 *Applicable to: `wasm/pandoc.wasm` (Pandoc 3.10)*
 *Source: Free Software Foundation / Canonical Linux System Reference (`/usr/share/common-licenses/GPL-2`)*
 
@@ -397,7 +429,7 @@ Public License instead of this License.
 
 ---
 
-### 3.2 Apache License, Version 2.0 (January 2004)
+### 4.2 Apache License, Version 2.0 (January 2004)
 *Applicable to: Tesseract.js Core, Tesseract.js Worker, and Tesseract trained language models (`eng.traineddata`, `fra.traineddata`, `equ.traineddata`)*
 *Source: Apache Software Foundation / Canonical Linux System Reference (`/usr/share/common-licenses/Apache-2.0`)*
 
@@ -607,7 +639,7 @@ Apache License
 
 ---
 
-### 3.3 MIT License — `pandoc-wasm` JavaScript Wrapper
+### 4.3 MIT License — `pandoc-wasm` JavaScript Wrapper
 *Applicable to: `pandoc-wasm` JavaScript wrapper library (inlined in `popup.js`)*
 *Source: `node_modules/pandoc-wasm/LICENSE`*
 
@@ -671,7 +703,7 @@ GPL-compatible licenses.
 
 ---
 
-### 3.4 MIT License — `fflate`
+### 4.4 MIT License — `fflate`
 *Applicable to: `fflate` compression library (inlined in `popup.js`)*
 *Source: `node_modules/fflate/LICENSE`*
 
@@ -701,7 +733,7 @@ SOFTWARE.
 
 ---
 
-### 3.5 MIT License — `@bjorn3/browser_wasi_shim`
+### 4.5 MIT License — `@bjorn3/browser_wasi_shim`
 *Applicable to: `@bjorn3/browser_wasi_shim` WebAssembly System Interface library (inlined in `popup.js`)*
 *Source: `node_modules/@bjorn3/browser_wasi_shim/LICENSE-MIT`*
 

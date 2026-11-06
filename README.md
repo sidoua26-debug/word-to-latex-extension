@@ -169,4 +169,17 @@ word-to-latex-extension/
 
 ## License
 
-MIT
+The independently authored original source code, scripts, and documentation in this repository are licensed under the [MIT License](LICENSE).
+
+Copyright (c) 2026 sidoua26-debug
+
+### Third-Party Software & Bundled Components
+
+This project incorporates third-party open-source components, which remain governed by their respective licenses:
+
+- **Pandoc (WebAssembly)**: [GNU General Public License v2.0 or later](https://www.gnu.org/licenses/old-licenses/gpl-2.0.html) (GPL-2.0-or-later)
+- **Tesseract.js Core & Pretrained Models**: [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0)
+- **pandoc-wasm & fflate**: [MIT License](https://opensource.org/licenses/MIT)
+- **@bjorn3/browser_wasi_shim**: [MIT License](https://opensource.org/licenses/MIT) / [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0)
+
+**Distribution & Third-Party Obligations**: The independently authored original source code remains under the MIT License. When the extension is distributed as a packaged binary bundle containing the compiled Pandoc WebAssembly binary (`wasm/pandoc.wasm`), distribution of that package must comply with the requirements of the GNU General Public License v2.0 or later (including the provision of license notices and corresponding source access for the GPL component). See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for full license texts, provenance details, and component scope.

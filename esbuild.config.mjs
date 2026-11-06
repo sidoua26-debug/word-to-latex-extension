@@ -59,6 +59,16 @@ for (const file of staticFiles) {
   }
 }
 
+// 2b. Copy root licensing and third-party notices to dist/
+const licenseFiles = ['LICENSE', 'THIRD_PARTY_NOTICES.md'];
+for (const file of licenseFiles) {
+  const srcPath = join(__dirname, file);
+  if (existsSync(srcPath)) {
+    cpSync(srcPath, join(DIST, file));
+    console.log(`✓ Copied ${file} to dist/`);
+  }
+}
+
 // 3. Copy icons from assets/icons/ to dist/icons/
 const iconsSrcDir = join(ASSETS, 'icons');
 const iconsDestDir = join(DIST, 'icons');
@@ -89,6 +99,11 @@ mkdirSync(tesseractVendorDest, { recursive: true });
 const tesseractWorkerSrc = join(NODE_MODULES, 'tesseract.js', 'dist', 'worker.min.js');
 if (existsSync(tesseractWorkerSrc)) {
   cpSync(tesseractWorkerSrc, join(tesseractVendorDest, 'worker.min.js'));
+}
+
+const tesseractWorkerLicenseSrc = join(NODE_MODULES, 'tesseract.js', 'dist', 'worker.min.js.LICENSE.txt');
+if (existsSync(tesseractWorkerLicenseSrc)) {
+  cpSync(tesseractWorkerLicenseSrc, join(tesseractVendorDest, 'worker.min.js.LICENSE.txt'));
 }
 
 const tesseractCoreFiles = [
