@@ -1,7 +1,8 @@
 # Pandoc WebAssembly (pandoc.wasm) Corresponding-Source Manifest
 
-**Document Version:** 1.0 (Compliance Deliverable for Word to LaTeX v1.0.6)<br>
-**Status:** Review-Only Internal Audit Deliverable (Not Published)<br>
+**Document Version:** 1.2 (Compliance Manifest for Word to LaTeX v1.0.7 Release Candidate)<br>
+**Document Status:** Published (Committed to Repository Documentation)<br>
+**Source Archive Status:** Locally Archived (Release Asset & Web Hosting Pending Owner Activation)<br>
 **Subject Binary:** `wasm/pandoc.wasm` (Bundled in Word to LaTeX Offline extension and website)<br>
 **Governing License:** GNU General Public License v2.0 or later (GPL-2.0-or-later)
 
@@ -24,15 +25,18 @@
 
 ## 2. Corresponding-Source Package & Provenance
 
+> [!NOTE]
+> This manifest document is published in the public repository to disclose exact provenance, checksums, and compilation instructions. The corresponding-source archive itself (`pandoc-3.10-corresponding-source.tar.gz`) is verified and maintained in the release preparation environment; publication as a downloadable release asset or web download is pending owner activation.
+
 | Property | Value |
 | :--- | :--- |
-| **Source Archive** | `pandoc-3.10.tar.gz` |
+| **Source Archive** | `pandoc-3.10-corresponding-source.tar.gz` (based on upstream `pandoc-3.10.tar.gz`) |
 | **Exact Byte Size** | 8,759,054 bytes |
 | **SHA-256 Checksum** | `fc82815542c29802d087c25e2c1421146030806b71255ec40fc0e828fe1df877` |
 | **Source Repository** | <https://github.com/jgm/pandoc> |
 | **Release Archive URL** | <https://github.com/jgm/pandoc/archive/refs/tags/3.10.tar.gz> |
 | **Hackage Mirror URL** | <https://hackage.haskell.org/package/pandoc-3.10/pandoc-3.10.tar.gz> |
-
+| **Archive Status** | Verified locally; unhosted on public distribution endpoints |
 ---
 
 ## 3. Build Toolchain, Configuration & Patches
@@ -113,23 +117,35 @@ endif
 
 ## 4. Distribution Channels & Compliance Architecture
 
-| Channel | Delivery Format | GPLv2 Section 3 Mechanism | Compliance Evaluation & Requirements |
+The following table evaluates each distribution channel against GNU General Public License v2.0 Section 3 requirements, identifying active postures, conditional paths, and channels currently lacking confirmed corresponding-source arrangements:
+
+| Channel | Delivery Format | GPLv2 Section 3 Mechanism | Compliance Status & Requirements |
 | :--- | :--- | :--- | :--- |
-| **GitHub Releases** *(if used)* | `word-to-latex-offline-1.0.6.zip` | Section 3 (paragraph 5) — Equivalent Network Access | **Fully Compliant**: Host `pandoc-3.10-corresponding-source.tar.gz` as a release asset alongside the binary `.zip`. Satisfies access from the designated place directly without written offer overhead. |
-| **ExtensionGuy Website** | `pandoc.wasm.gz` via HTTP GET | Section 3 (paragraph 5) — Equivalent Network Access | **Fully Compliant**: Host `pandoc-3.10-source.tar.gz` at `https://extensionguy.me/assets/wasm/` alongside existing `assets/wasm/LICENSE.txt`. Satisfies equivalent access from the designated web host. |
-| **Microsoft Edge Add-ons** | Extension package (.zip) installed via Edge store | Section 3(a) or 3(b) or Network Reference in Notices | Store does not host standalone source files. Extension now bundles `LICENSE` and `THIRD_PARTY_NOTICES.md` with exact source URLs. Activating a binding 3(b) written offer requires owner authorization. |
-| **Chrome Web Store** | Extension package (.crx) installed via Chrome store | Section 3(a) or 3(b) or Network Reference in Notices | Store does not host standalone source files. Same posture as Edge Add-ons. |
+| **GitHub Repository** | Source code & docs via Git clone/web | Section 1 & Section 2 (source only) | **Active / Published**: Source code, build configurations, and this manifest are published under scoped MIT licensing. No pre-compiled GPL binary is tracked directly in Git history. |
+| **GitHub Releases** *(if activated)* | `word-to-latex-offline-1.0.7.zip` | Section 3 (paragraph 5) — Equivalent Network Access | **Conditional (Pending Release Creation)**: If a GitHub Release is created for the binary `.zip`, hosting `pandoc-3.10-corresponding-source.tar.gz` as a release asset alongside the binary satisfies access from the designated place directly without written offer overhead. Currently no GitHub Release exists. |
+| **ExtensionGuy Website** | `pandoc.wasm.gz` served via HTTP GET | Section 3 (paragraph 5) — Equivalent Network Access | **Conditional (Pending Deployment)**: When the website serves `pandoc.wasm.gz`, hosting `pandoc-3.10-corresponding-source.tar.gz` at `https://extensionguy.me/assets/wasm/` alongside the binary satisfies access from the designated web host. Currently the source archive is not deployed to `extensionguy.me`. |
+| **Microsoft Edge Add-ons** | Packaged extension (.zip) containing `wasm/` and `source/` | Section 3(a) — Accompanying with Complete Corresponding Source | **Candidate Packaging Implemented / Pending Submission**: Candidate build system bundles `source/pandoc-3.10-corresponding-source.tar.gz` directly inside the v1.0.7 extension archive. Accompanying the binary directly with corresponding source pursues compliance under GPLv2 Section 3(a) without a three-year written offer. **Current store packages (v1.0.6) have not been updated.** Submission of v1.0.7 requires owner approval and qualified legal review. |
+| **Chrome Web Store** | Packaged extension (.crx/.zip) containing `wasm/` and `source/` | Section 3(a) — Accompanying with Complete Corresponding Source | **Candidate Packaging Implemented / Pending Submission**: Same posture as Edge Add-ons. Candidate packages `source/pandoc-3.10-corresponding-source.tar.gz` alongside `wasm/pandoc.wasm` for v1.0.7. **Current store packages (v1.0.6) have not been updated.** |
 
 ---
 
-## 5. Review Archive Inventory
+## 5. Review Archive Inventory & Verification
 
-The review-only corresponding-source bundle `pandoc-3.10-corresponding-source.tar.gz` staged in the scratch area contains:
+The verified corresponding-source bundle `pandoc-3.10-corresponding-source.tar.gz` (8,759,054 bytes, SHA-256 `fc82815542c29802d087c25e2c1421146030806b71255ec40fc0e828fe1df877`) contains the complete upstream Pandoc 3.10 source tree and WebAssembly build harness:
 
-1. `pandoc-3.10/` (Full Haskell source tree, 20 subdirectories, 42 source files)
-2. `pandoc-3.10/cabal.project` (WASM cross-compilation constraints & dependency overrides)
-3. `pandoc-3.10/flake.nix` & `pandoc-3.10/flake.lock` (Complete Nix toolchain environment lock)
-4. `pandoc-3.10/Makefile` (Target `pandoc.wasm`)
-5. `pandoc-3.10/wasm/patches/` (6 patches for transitive dependencies)
-6. `pandoc-3.10/COPYING.md` (Verbatim GNU General Public License v2)
+1. `pandoc-3.10/` (Full Haskell source tree, 20 subdirectories, 42 top-level and module source trees)
+2. `pandoc-3.10/cabal.project` (WASM cross-compilation constraints & dependency overrides, lines 14–97)
+3. `pandoc-3.10/flake.nix` & `pandoc-3.10/flake.lock` (Complete Nix toolchain environment definition)
+4. `pandoc-3.10/Makefile` (WASM build target `pandoc.wasm`)
+5. `pandoc-3.10/wasm/patches/` (All 6 required patches for transitive dependencies: `conduit-extra.patch`, `lua.patch`, `memory.patch`, `splitmix.patch`, `streaming-commons.patch`, `xml-conduit.patch`)
+6. `pandoc-3.10/COPYING.md` (Verbatim GNU General Public License v2.0 text)
 7. `pandoc-3.10/COPYRIGHT` (Full third-party Haskell library copyright and author index)
+
+### 5.1 Verification Checklist
+- [x] Exact binary hash matches upstream official Pandoc 3.10 WASM release asset bit-for-bit (`b47c9de52b5b45f103c2dac6fea52591aeafe3dd6cafed13331b67575233a2ff`).
+- [x] Source archive SHA-256 matches verified upstream release tarball (`fc82815542c29802d087c25e2c1421146030806b71255ec40fc0e828fe1df877`).
+- [x] All 6 WASM patches and Nix/Cabal build configurations present and intact.
+- [x] Build system updated to bundle source archive at `dist/source/pandoc-3.10-corresponding-source.tar.gz` with mandatory SHA-256 validation.
+- [x] Packaging regression tests in `tests/distributionPackaging.test.ts` verify archive bundling, hash, and contents.
+- [ ] Source archive deployed to public web or release hosting (pending owner authorization).
+- [ ] Updated package submitted to Chrome Web Store and Microsoft Edge Add-ons (pending owner decision).

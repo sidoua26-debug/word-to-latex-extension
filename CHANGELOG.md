@@ -2,6 +2,20 @@
 
 All notable changes to the Word to LaTeX (Offline) browser extension are documented in this file.
 
+## [1.0.7] - 2026-11-06
+
+### Added
+- Bundled complete Pandoc 3.10 corresponding-source archive (`source/pandoc-3.10-corresponding-source.tar.gz`) directly inside the extension distribution package accompanying the WebAssembly binary, pursuing compliance under GNU General Public License v2.0 Section 3(a).
+- Automated reproducible upstream Pandoc source acquisition and SHA-256 integrity verification script (`scripts/fetch-pandoc-source.mjs`).
+- Distribution packaging and licensing integrity regression test suite (`tests/distributionPackaging.test.ts`).
+
+### Changed
+- Clarified licensing scope across repository documentation and package distribution: independently authored original code is licensed under the MIT License (`LICENSE`), with comprehensive third-party attribution and notices maintained in `THIRD_PARTY_NOTICES.md`.
+- Updated build pipeline (`esbuild.config.mjs`) to verify and stage third-party notices, license texts, and the corresponding-source archive automatically during `npm run build`.
+
+### Fixed
+- Addressed potential third-party source-code availability gaps for packaged browser marketplace distributions by self-containing the corresponding source code alongside the binary without requiring external network access or a separate written offer.
+
 ## [1.0.6] - 2026-10-14
 
 ### Changed

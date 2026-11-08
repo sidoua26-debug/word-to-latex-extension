@@ -4,6 +4,8 @@ node_modules/
 # Build artifacts
 dist/
 *.zip
+*.tar.gz
+source/
 
 # Temporary test / generated sample files
 sample-paper.docx

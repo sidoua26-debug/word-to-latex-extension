@@ -1,5 +1,7 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
+import { execSync } from 'node:child_process';
 import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -32,6 +34,11 @@ describe('Distribution Packaging & Licensing Integrity', () => {
 
     const pkg = JSON.parse(readFileSync(packageJsonPath, 'utf8'));
     assert.equal(pkg.license, 'MIT', 'package.json must specify license: MIT');
+    assert.equal(pkg.version, '1.0.7', 'package.json version must be 1.0.7');
+
+    const srcManifestPath = join(ROOT, 'src', 'manifest.json');
+    const srcManifest = JSON.parse(readFileSync(srcManifestPath, 'utf8'));
+    assert.equal(srcManifest.version, '1.0.7', 'src/manifest.json version must be 1.0.7');
 
     const manifestPath = join(ROOT, 'docs', 'PANDOC_WASM_SOURCE_MANIFEST.md');
     assert.ok(existsSync(manifestPath), 'docs/PANDOC_WASM_SOURCE_MANIFEST.md must exist');
@@ -66,6 +73,7 @@ describe('Distribution Packaging & Licensing Integrity', () => {
 
     const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
     assert.equal(manifest.manifest_version, 3, 'Must be Manifest V3');
+    assert.equal(manifest.version, '1.0.7', 'dist/manifest.json version must be 1.0.7');
     assert.deepEqual(manifest.permissions, [], 'Permissions must be strictly empty (offline air-gap)');
 
     const wasmPath = join(DIST, 'wasm', 'pandoc.wasm');
@@ -119,5 +127,29 @@ describe('Distribution Packaging & Licensing Integrity', () => {
       assert.ok(!file.includes('.git'), `dist/ must not contain git artifacts: ${file}`);
       assert.ok(!file.includes('node_modules'), `dist/ must not contain node_modules: ${file}`);
     }
+  });
+
+  it('dist/ contains verified Pandoc 3.10 corresponding-source archive and valid contents', () => {
+    const archivePath = join(DIST, 'source', 'pandoc-3.10-corresponding-source.tar.gz');
+    assert.ok(existsSync(archivePath), 'dist/source/pandoc-3.10-corresponding-source.tar.gz must exist');
+
+    const content = readFileSync(archivePath);
+    const hash = createHash('sha256').update(content).digest('hex');
+    assert.equal(
+      hash,
+      'fc82815542c29802d087c25e2c1421146030806b71255ec40fc0e828fe1df877',
+      'Bundled source archive SHA-256 must match verified value',
+    );
+    assert.equal(statSync(archivePath).size, 8_759_054, 'Exact byte size must be 8,759,054 bytes');
+
+    // Verify archive contents using tar
+    const tarEntries = execSync(`tar -tzf "${archivePath}"`, { encoding: 'utf8' }).split('\n');
+    assert.ok(tarEntries.some((e) => e.includes('pandoc-3.10/cabal.project')), 'Must include cabal.project');
+    assert.ok(tarEntries.some((e) => e.includes('pandoc-3.10/flake.nix')), 'Must include flake.nix');
+    assert.ok(tarEntries.some((e) => e.includes('pandoc-3.10/Makefile')), 'Must include Makefile');
+    assert.ok(tarEntries.some((e) => e.includes('pandoc-3.10/wasm/patches/conduit-extra.patch')), 'Must include conduit-extra.patch');
+    assert.ok(tarEntries.some((e) => e.includes('pandoc-3.10/wasm/patches/lua.patch')), 'Must include lua.patch');
+    assert.ok(tarEntries.some((e) => e.includes('pandoc-3.10/wasm/patches/memory.patch')), 'Must include memory.patch');
+    assert.ok(tarEntries.some((e) => e.includes('pandoc-3.10/COPYING.md')), 'Must include COPYING.md (GPLv2)');
   });
 });

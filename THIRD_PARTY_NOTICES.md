@@ -37,6 +37,20 @@ The offline conversion engine incorporates `wasm/pandoc.wasm` (58,580,800 bytes;
 - **Runtime Execution Seam**: At runtime inside the browser sandbox, `pandoc.wasm` executes within an isolated WebAssembly virtual machine memory space managed by `@bjorn3/browser_wasi_shim`. The extension communicates with the Pandoc engine across standard WASI input/output streams (piping input documents via virtual filesystem and reading output via stdout/stderr), mirroring command-line invocation. While this stream-based communication maintains technical process separation, distributing the files together in a unified extension archive triggers GPL compliance obligations for the distributed binary package.
 - **Preservation of Original Author Rights**: Distributing original code alongside GPL components in a combined package does not retroactively rewrite the original code's copyright or license; the author's original code remains licensed under MIT, which is a GPL-compatible permissive license.
 
+### 1.5 Self-Contained Source Packaging Candidate (GPL-2.0-or-later Section 3(a))
+To address GPLv2 Section 3 distribution obligations for the bundled Pandoc 3.10 WebAssembly binary (`wasm/pandoc.wasm`), the candidate build system packages the complete corresponding machine-readable source archive directly within future extension releases at:
+`source/pandoc-3.10-corresponding-source.tar.gz`
+- **Archive Filename**: `pandoc-3.10-corresponding-source.tar.gz`
+- **Byte Size**: 8,759,054 bytes
+- **SHA-256 Checksum**: `fc82815542c29802d087c25e2c1421146030806b71255ec40fc0e828fe1df877`
+- **Upstream Revision**: Pandoc Git tag `3.10` / commit `9376458c26d25d222e5a898ede254ebb2f47ffbe`
+- **Packaging Mechanism**: Accompanying the binary directly with the complete corresponding source code on the same distribution medium pursues compliance under GPLv2 Section 3(a). This self-contained packaging ensures that recipients of the extension package receive the source code directly without requiring a separate three-year written offer.
+
+> [!IMPORTANT]
+> **Current Store Status Notice**: Currently published Chrome Web Store and Microsoft Edge Add-ons packages (v1.0.6) do **not** include this bundled source archive. This self-contained layout is prepared exclusively in the candidate build system for future marketplace release submissions (v1.0.7).
+>
+> **Remaining Compliance Considerations**: While accompanying the binary with source under Section 3(a) is standard practice for software interchange, legal compliance is not conclusively established without formal qualified legal review and validation of store-specific submission guidelines.
+
 ---
 
 ## 2. Third-Party Component Inventory
@@ -59,13 +73,14 @@ The offline conversion engine incorporates `wasm/pandoc.wasm` (58,580,800 bytes;
 
 The source code and provenance for third-party open-source components used by this extension are documented below:
 
-- **Pandoc (Upstream Source)**:
+- **Pandoc (Upstream Source & WebAssembly Build Harness)**:
   - Repository: <https://github.com/jgm/pandoc>
   - Release Tag: `3.10` (<https://github.com/jgm/pandoc/releases/tag/3.10>)
+  - Git Commit: `9376458c26d25d222e5a898ede254ebb2f47ffbe`
   - Hackage Package: <https://hackage.haskell.org/package/pandoc-3.10>
-- **Pandoc WebAssembly Packaging & Build Tooling**:
-  - Repository: <https://github.com/pandoc/pandoc-wasm>
-  - Note: Upstream Pandoc source code alone does not provide the WebAssembly cross-compilation environment; the build recipes and scripts are maintained in `pandoc-wasm`.
+  - Complete Corresponding Source Archive: Bundled at `source/pandoc-3.10-corresponding-source.tar.gz` (SHA-256: `fc82815542c29802d087c25e2c1421146030806b71255ec40fc0e828fe1df877`). Upstream Pandoc 3.10 incorporates its own WebAssembly build harness (`cabal.project`, `flake.nix`, `Makefile`, and `wasm/patches/`). Full details in `docs/PANDOC_WASM_SOURCE_MANIFEST.md`.
+- **Pandoc JavaScript Wrapper (`pandoc-wasm`)**:
+  - Repository: <https://github.com/pandoc/pandoc-wasm> (v1.1.0, MIT License)
 - **Tesseract.js & Tesseract OCR**:
   - Tesseract.js: <https://github.com/naptha/tesseract.js> (v7.0.0)
   - Tesseract.js Core: <https://github.com/naptha/tesseract.js-core> (v7.0.0)

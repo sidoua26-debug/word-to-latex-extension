@@ -1,7 +1,9 @@
 import * as esbuild from 'esbuild';
-import { cpSync, mkdirSync, existsSync } from 'fs';
+import { createHash } from 'crypto';
+import { cpSync, mkdirSync, existsSync, readFileSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
+import { ensurePandocSourceArchive } from './scripts/fetch-pandoc-source.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const DIST = join(__dirname, 'dist');
@@ -126,5 +128,45 @@ if (existsSync(tessdataSrc)) {
   cpSync(tessdataSrc, tessdataDest, { recursive: true });
   console.log('✓ Bundled offline traineddata to dist/tessdata/');
 }
+
+// 7. Bundle verified Pandoc 3.10 corresponding-source archive into dist/source/
+const EXPECTED_SOURCE_SHA256 = 'fc82815542c29802d087c25e2c1421146030806b71255ec40fc0e828fe1df877';
+const SOURCE_ARCHIVE_FILENAME = 'pandoc-3.10-corresponding-source.tar.gz';
+const sourceArchiveLocalPath = join(__dirname, 'source', SOURCE_ARCHIVE_FILENAME);
+const distSourceDir = join(DIST, 'source');
+const distSourceDest = join(distSourceDir, SOURCE_ARCHIVE_FILENAME);
+
+let verifiedSourcePath = null;
+const candidateArchivePaths = [
+  process.env.PANDOC_SOURCE_ARCHIVE,
+  sourceArchiveLocalPath,
+].filter(Boolean);
+
+for (const p of candidateArchivePaths) {
+  if (existsSync(p)) {
+    const fileBuffer = readFileSync(p);
+    const actualHash = createHash('sha256').update(fileBuffer).digest('hex');
+    if (actualHash === EXPECTED_SOURCE_SHA256) {
+      verifiedSourcePath = p;
+      break;
+    } else {
+      console.error(`✗ Checksum mismatch on candidate archive ${p}: expected ${EXPECTED_SOURCE_SHA256}, got ${actualHash}`);
+      process.exit(1);
+    }
+  }
+}
+
+if (!verifiedSourcePath) {
+  try {
+    verifiedSourcePath = await ensurePandocSourceArchive(sourceArchiveLocalPath);
+  } catch (err) {
+    console.error(`✗ Could not bundle Pandoc source archive: ${err.message}`);
+    process.exit(1);
+  }
+}
+
+mkdirSync(distSourceDir, { recursive: true });
+cpSync(verifiedSourcePath, distSourceDest);
+console.log(`✓ Bundled verified Pandoc corresponding-source archive to dist/source/${SOURCE_ARCHIVE_FILENAME}`);
 
 console.log('✓ Build complete → dist/');
