@@ -13,8 +13,9 @@
     "eval": "node --experimental-strip-types scripts/eval.mjs",
     "corpus:add-real": "node scripts/add_real_sample.mjs",
     "setup:tectonic": "node scripts/setup_tectonic.mjs",
-    "clean": "rm -rf dist word-to-latex-offline.zip",
-    "package": "npm run build && (cd dist && zip -r ../word-to-latex-offline.zip .)"
+    "clean": "rm -rf dist dist-edge word-to-latex-offline.zip word-to-latex-offline-edge-v1.0.7.zip",
+    "package": "npm run build && (cd dist && zip -r ../word-to-latex-offline.zip .)",
+    "package:edge": "node scripts/package-edge.mjs"
   },
   "dependencies": {
     "fflate": "^0.8.3",

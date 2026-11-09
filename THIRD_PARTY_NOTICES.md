@@ -37,17 +37,17 @@ The offline conversion engine incorporates `wasm/pandoc.wasm` (58,580,800 bytes;
 - **Runtime Execution Seam**: At runtime inside the browser sandbox, `pandoc.wasm` executes within an isolated WebAssembly virtual machine memory space managed by `@bjorn3/browser_wasi_shim`. The extension communicates with the Pandoc engine across standard WASI input/output streams (piping input documents via virtual filesystem and reading output via stdout/stderr), mirroring command-line invocation. While this stream-based communication maintains technical process separation, distributing the files together in a unified extension archive triggers GPL compliance obligations for the distributed binary package.
 - **Preservation of Original Author Rights**: Distributing original code alongside GPL components in a combined package does not retroactively rewrite the original code's copyright or license; the author's original code remains licensed under MIT, which is a GPL-compatible permissive license.
 
-### 1.5 Self-Contained Source Packaging Candidate (GPL-2.0-or-later Section 3(a))
-To address GPLv2 Section 3 distribution obligations for the bundled Pandoc 3.10 WebAssembly binary (`wasm/pandoc.wasm`), the candidate build system packages the complete corresponding machine-readable source archive directly within future extension releases at:
-`source/pandoc-3.10-corresponding-source.tar.gz`
-- **Archive Filename**: `pandoc-3.10-corresponding-source.tar.gz`
-- **Byte Size**: 8,759,054 bytes
-- **SHA-256 Checksum**: `fc82815542c29802d087c25e2c1421146030806b71255ec40fc0e828fe1df877`
-- **Upstream Revision**: Pandoc Git tag `3.10` / commit `9376458c26d25d222e5a898ede254ebb2f47ffbe`
+### 1.5 Self-Contained Source Packaging (GPL-2.0-or-later Section 3(a))
+To address GPLv2 Section 3 distribution obligations for the bundled Pandoc 3.10 WebAssembly binary (`wasm/pandoc.wasm`), the build system packages the complete corresponding machine-readable source code directly within the extension package under GPLv2 Section 3(a). Depending on the target browser marketplace, the corresponding source is packaged as follows:
+
+- **Chrome Web Store Distribution (v1.0.7)**: Bundles the verified corresponding-source archive at `source/pandoc-3.10-corresponding-source.tar.gz` (8,759,054 bytes; SHA-256: `fc82815542c29802d087c25e2c1421146030806b71255ec40fc0e828fe1df877`).
+- **Microsoft Edge Add-ons Candidate (v1.0.7)**: To satisfy Microsoft Edge Partner Center archive validation rules that prohibit nested compressed files within extension packages, the Edge distribution (`word-to-latex-offline-edge-v1.0.7.zip`) provides the verified Pandoc 3.10 source tree directly as extracted files at `source/pandoc-3.10/`, leaving zero nested compressed archives inside the package.
+
+- **Upstream Revision**: Pandoc Git tag `3.10` / commit `9376458c26d25d222e5a898ede254ebb2f47ffbe`.
 - **Packaging Mechanism**: Accompanying the binary directly with the complete corresponding source code on the same distribution medium pursues compliance under GPLv2 Section 3(a). This self-contained packaging ensures that recipients of the extension package receive the source code directly without requiring a separate three-year written offer.
 
 > [!IMPORTANT]
-> **Current Store Status Notice**: Currently published Chrome Web Store and Microsoft Edge Add-ons packages (v1.0.6) do **not** include this bundled source archive. This self-contained layout is prepared exclusively in the candidate build system for future marketplace release submissions (v1.0.7).
+> **Store Status Notice**: Currently published Microsoft Edge Add-ons package is v1.0.6 (without bundled source). Chrome Web Store v1.0.7 is currently Pending Review. The Edge unpacked-source package (`word-to-latex-offline-edge-v1.0.7.zip`) is a candidate prepared specifically to address Edge Partner Center validation requirements.
 >
 > **Remaining Compliance Considerations**: While accompanying the binary with source under Section 3(a) is standard practice for software interchange, legal compliance is not conclusively established without formal qualified legal review and validation of store-specific submission guidelines.
 

@@ -152,4 +152,50 @@ describe('Distribution Packaging & Licensing Integrity', () => {
     assert.ok(tarEntries.some((e) => e.includes('pandoc-3.10/wasm/patches/memory.patch')), 'Must include memory.patch');
     assert.ok(tarEntries.some((e) => e.includes('pandoc-3.10/COPYING.md')), 'Must include COPYING.md (GPLv2)');
   });
+
+  it('Edge distribution package contains extracted Pandoc 3.10 source tree with zero nested compressed archives', () => {
+    const distEdge = join(ROOT, 'dist-edge');
+    const edgeZip = join(ROOT, 'word-to-latex-offline-edge-v1.0.7.zip');
+
+    // Run package:edge if not yet generated
+    if (!existsSync(distEdge) || !existsSync(edgeZip)) {
+      execSync('npm run package:edge', { cwd: ROOT, stdio: 'pipe' });
+    }
+
+    assert.ok(existsSync(distEdge), 'dist-edge/ directory must exist');
+    assert.ok(existsSync(edgeZip), 'word-to-latex-offline-edge-v1.0.7.zip must exist');
+
+    // Verify outer ZIP structural integrity
+    execSync(`zip -T "${edgeZip}"`);
+
+    // Verify manifest in dist-edge
+    const edgeManifest = JSON.parse(readFileSync(join(distEdge, 'manifest.json'), 'utf8'));
+    assert.equal(edgeManifest.manifest_version, 3, 'Must be Manifest V3');
+    assert.equal(edgeManifest.version, '1.0.7', 'Version must be 1.0.7');
+    assert.deepEqual(edgeManifest.permissions, [], 'Permissions must be strictly empty');
+
+    // Verify pandoc.wasm in dist-edge
+    const wasmPath = join(distEdge, 'wasm', 'pandoc.wasm');
+    assert.ok(existsSync(wasmPath), 'dist-edge/wasm/pandoc.wasm must exist');
+    const wasmHash = createHash('sha256').update(readFileSync(wasmPath)).digest('hex');
+    assert.equal(wasmHash, 'b47c9de52b5b45f103c2dac6fea52591aeafe3dd6cafed13331b67575233a2ff');
+
+    // Verify extracted source tree exists and .tar.gz does NOT exist in dist-edge
+    assert.ok(!existsSync(join(distEdge, 'source', 'pandoc-3.10-corresponding-source.tar.gz')), 'No .tar.gz in dist-edge');
+    const extractedSource = join(distEdge, 'source', 'pandoc-3.10');
+    assert.ok(existsSync(extractedSource), 'dist-edge/source/pandoc-3.10 must exist');
+    assert.ok(existsSync(join(extractedSource, 'cabal.project')), 'Must include cabal.project');
+    assert.ok(existsSync(join(extractedSource, 'flake.nix')), 'Must include flake.nix');
+    assert.ok(existsSync(join(extractedSource, 'Makefile')), 'Must include Makefile');
+    assert.ok(existsSync(join(extractedSource, 'wasm', 'patches', 'conduit-extra.patch')), 'Must include conduit-extra.patch');
+    assert.ok(existsSync(join(extractedSource, 'COPYING.md')), 'Must include COPYING.md');
+
+    // Verify zero nested compressed archives in zip entries
+    const zipEntries = execSync(`unzip -l "${edgeZip}"`, { encoding: 'utf8' }).split('\n');
+    for (const line of zipEntries) {
+      assert.ok(!line.endsWith('.tar.gz'), `Edge zip must not contain .tar.gz: ${line}`);
+      assert.ok(!line.endsWith('.gz'), `Edge zip must not contain .gz: ${line}`);
+      assert.ok(!line.endsWith('.tgz'), `Edge zip must not contain .tgz: ${line}`);
+    }
+  });
 });
